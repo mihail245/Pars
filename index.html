@@ -3,338 +3,2130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StreamHub - Премиум Медиатека</title>
-<style>
-  :root {
-    --bg-color: #0f1015;
-    --card-bg: #181a20;
-    --accent-color: #e50914;
-    --text-main: #ffffff;
-    --text-muted: #9ca3af;
-    --border-color: #2d3139;
-  }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg-color);
-    color: var(--text-main);
+<title>StreamHub — Медиатека</title>
+
+<style>
+:root {
+    --bg: #0b0d11;
+    --card: #151820;
+    --card2: #1b1f28;
+    --border: #292e38;
+    --accent: #e50914;
+    --accent-hover: #ff2631;
+    --text: #fff;
+    --muted: #9ca3af;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
     margin: 0;
     padding: 30px;
-  }
+    background:
+        radial-gradient(
+            circle at top,
+            #191d27 0,
+            #0b0d11 48%
+        );
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
 
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
+header {
+    max-width: 1500px;
+    margin: 0 auto 35px;
 
-  header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 25px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    overflow: hidden;
     display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  }
+    align-items: center;
+    justify-content: space-between;
 
-  .video-container {
+    gap: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.logo-icon {
+    width: 44px;
+    height: 44px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 13px;
+
+    background: var(--accent);
+
+    font-size: 21px;
+
+    box-shadow:
+        0 8px 25px rgba(229, 9, 20, .25);
+}
+
+.logo h1 {
+    margin: 0;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.logo span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted);
+    font-size: 13px;
+}
+
+
+/* =========================
+   GRID
+========================= */
+
+.grid {
+    max-width: 1500px;
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(400px, 1fr)
+        );
+
+    gap: 25px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+    overflow: hidden;
+
+    background:
+        rgba(21, 24, 32, .96);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 50px rgba(0, 0, 0, .35);
+}
+
+
+/* =========================
+   VIDEO
+========================= */
+
+.video-container {
     position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-    background: #000;
-  }
 
-  .card video {
-    position: absolute;
-    top: 0;
-    left: 0;
+    aspect-ratio: 16 / 9;
+
+    background: #000;
+
+    overflow: hidden;
+}
+
+.video-container video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    outline: none;
-  }
 
-  .card-body {
-    padding: 20px;
+    display: block;
+
+    object-fit: contain;
+
+    background: #000;
+}
+
+
+/* =========================
+   PLAYER CONTROLS
+========================= */
+
+.player-controls {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    padding:
+        55px 13px
+        12px;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0,0,0,.92)
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity .2s ease;
+}
+
+.video-container:hover
+.player-controls,
+
+.video-container.controls-visible
+.player-controls {
+    opacity: 1;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-wrap {
+    height: 18px;
+
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-grow: 1;
-  }
+    align-items: center;
 
-  .card-title {
+    cursor: pointer;
+}
+
+.progress {
+    width: 100%;
+
+    height: 5px;
+
+    appearance: none;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #555;
+
+    cursor: pointer;
+}
+
+.progress::-webkit-slider-thumb {
+    appearance: none;
+
+    width: 13px;
+    height: 13px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+        var(--accent);
+
+    cursor: pointer;
+}
+
+.progress::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+        var(--accent);
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   CONTROL ROW
+========================= */
+
+.controls-row {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+.control-btn {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 auto;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        transform .1s ease;
+}
+
+.control-btn:hover {
+    background:
+        rgba(255,255,255,.13);
+}
+
+.control-btn:active {
+    transform: scale(.94);
+}
+
+.time {
+    margin-right: auto;
+
+    color: #ddd;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   VOLUME
+========================= */
+
+.volume {
+    width: 75px;
+
+    accent-color:
+        var(--accent);
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings {
+    position: relative;
+}
+
+.settings-menu {
+    position: absolute;
+
+    right: 0;
+    bottom: 47px;
+
+    width: 195px;
+
+    padding: 8px;
+
+    background:
+        #171a20;
+
+    border:
+        1px solid #30343d;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.6);
+
+    display: none;
+
+    z-index: 100;
+}
+
+.settings-menu.open {
+    display: block;
+}
+
+.settings-title {
+    padding:
+        7px 9px;
+
+    color:
+        var(--muted);
+
+    font-size: 11px;
+
+    text-transform:
+        uppercase;
+}
+
+.speed-option,
+.quality-option {
+    width: 100%;
+
+    padding: 9px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background:
+        transparent;
+
+    color:
+        white;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.speed-option:hover,
+.quality-option:hover {
+    background:
+        rgba(255,255,255,.1);
+}
+
+.speed-option.active,
+.quality-option.active {
+    background:
+        rgba(229,9,20,.18);
+
+    color:
+        #ff6268;
+}
+
+
+/* =========================
+   CARD BODY
+========================= */
+
+.card-body {
+    padding: 17px;
+}
+
+.card-title {
+    margin-bottom: 14px;
+
+    color: var(--text);
+
     font-size: 15px;
     font-weight: 600;
-    color: var(--text-main);
-    line-height: 1.4;
-    word-break: break-word;
-  }
 
-  .timestamps-section {
+    line-height: 1.45;
+
+    word-break: break-word;
+}
+
+
+/* =========================
+   TIMESTAMPS
+========================= */
+
+.timestamps-section {
+    max-height: 125px;
+
     display: flex;
     flex-wrap: wrap;
+
     gap: 6px;
-    max-height: 140px;
+
     overflow-y: auto;
+
     padding-right: 4px;
-  }
+}
 
-  .timestamp-badge {
-    background: rgba(229, 9, 20, 0.15);
-    color: #ff4d4f;
-    border: 1px solid rgba(229, 9, 20, 0.3);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
+.timestamp-badge {
+    padding:
+        6px 9px;
+
+    border:
+        1px solid
+        rgba(229,9,20,.35);
+
+    border-radius: 7px;
+
+    background:
+        rgba(229,9,20,.12);
+
+    color:
+        #ff6268;
+
+    font-size: 11px;
+
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
 
-  .timestamp-badge:hover {
-    background: var(--accent-color);
-    color: #fff;
-  }
+    transition:
+        .15s;
+}
 
-  .no-timestamps {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-style: italic;
-  }
+.timestamp-badge:hover {
+    background:
+        var(--accent);
 
-  .card-footer {
+    color:
+        white;
+}
+
+.no-timestamps {
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.card-footer {
+    margin-top: 15px;
+
+    padding-top: 13px;
+
+    border-top:
+        1px solid
+        var(--border);
+
     display: flex;
-    justify-content: space-between;
+
     align-items: center;
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-  }
 
-  .card-footer a {
-    color: #38bdf8;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-  }
+    justify-content: space-between;
+}
 
-  .card-footer a:hover {
-    text-decoration: underline;
-  }
+.source {
+    color:
+        #38bdf8;
+
+    font-size:
+        13px;
+
+    text-decoration:
+        none;
+}
+
+.source:hover {
+    text-decoration:
+        underline;
+}
+
+.duration {
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 15px;
+    }
+
+    header {
+        margin-bottom: 22px;
+    }
+
+    .logo h1 {
+        font-size: 20px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .volume {
+        display: none;
+    }
+
+    .control-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .time {
+        font-size: 11px;
+    }
+}
 </style>
 </head>
+
+
 <body>
 
+
 <header>
-  <h1>🎬 Персональная Медиатека</h1>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ▶
+        </div>
+
+        <div>
+
+            <h1>
+                Персональная медиатека
+            </h1>
+
+            <span id="video-count">
+                Загрузка...
+            </span>
+
+        </div>
+
+    </div>
+
 </header>
 
-<div class="grid" id="video-grid"></div>
+
+<div
+    class="grid"
+    id="video-grid">
+</div>
+
 
 <script>
-  // Сюда автоматически вставлены данные из вашего JSON-файла
-  const videos = [
+   const videos = [
     {
       "page": "https://sex-studentki.city/video/nu-eto-prajm-srazu-dvuh-aziatok-trahaju-i-na-lica-im-konchaju-247118",
-      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud28652.mp4?hash=663a13f25a28d0346d4ae1c0ee07b8e3&expires=1790891892&ip=85.190.102.209",
+      "video_url": "https://cs23.vps-vids.com/vids80087/sexstud28652.mp4?hash=1a9518961a35fa5224e8bbaddc63e3e6&expires=1790891003&ip=85.190.102.209",
       "timestamps": [
-        {"category": "Эротика", "time": "00:24"},
-        {"category": "разговоры и пошлости", "time": "00:31"},
-        {"category": "разговоры и пошлости", "time": "20:33"},
-        {"category": "разговоры и пошлости", "time": "28:24"},
-        {"category": "поцелуи", "time": "01:23"},
-        {"category": "поцелуи", "time": "06:21"},
-        {"category": "поцелуи", "time": "08:58"},
-        {"category": "поцелуи", "time": "16:30"},
-        {"category": "поцелуи", "time": "33:23"},
-        {"category": "раздевается", "time": "02:14"},
-        {"category": "мастурбирует", "time": "06:02"},
-        {"category": "куни", "time": "07:28"},
-        {"category": "куни", "time": "08:28"},
-        {"category": "мастурбирует ей", "time": "09:27"},
-        {"category": "взаимная мастурбация", "time": "09:46"},
-        {"category": "куни", "time": "10:56"},
-        {"category": "римминг ей", "time": "10:56"},
-        {"category": "минет", "time": "13:44"},
-        {"category": "минет", "time": "19:44"},
-        {"category": "минет", "time": "28:48"},
-        {"category": "минет", "time": "30:12"},
-        {"category": "минет", "time": "34:03"},
-        {"category": "минет", "time": "35:58"},
-        {"category": "минет", "time": "37:40"},
-        {"category": "заглатывает", "time": "14:35"},
-        {"category": "лижет яйца", "time": "15:55"},
-        {"category": "лижет яйца", "time": "19:59"},
-        {"category": "лижет яйца", "time": "28:46"},
-        {"category": "лижет яйца", "time": "35:17"},
-        {"category": "лижет яйца", "time": "36:56"},
-        {"category": "скачет на члене", "time": "18:37"},
-        {"category": "скачет на члене", "time": "21:08"},
-        {"category": "скачет на члене", "time": "31:32"},
-        {"category": "потекла", "time": "19:11"},
-        {"category": "потекла", "time": "21:34"},
-        {"category": "потекла", "time": "31:44"},
-        {"category": "римминг ей", "time": "19:12"},
-        {"category": "села на лицо", "time": "20:42"},
-        {"category": "села на лицо", "time": "24:22"},
-        {"category": "взяла за горло", "time": "21:56"},
-        {"category": "взяла за горло", "time": "23:04"},
-        {"category": "миссионерская", "time": "23:47"},
-        {"category": "оргазм", "time": "24:09"},
-        {"category": "взял за горло", "time": "24:48"},
-        {"category": "взял за горло", "time": "27:30"},
-        {"category": "взял за горло", "time": "33:29"},
-        {"category": "раком", "time": "26:11"},
-        {"category": "поза 69", "time": "26:19"},
-        {"category": "секс боком", "time": "34:46"},
-        {"category": "секс боком", "time": "36:20"},
-        {"category": "обкончал", "time": "37:54"},
-        {"category": "поцелуи со спермой", "time": "38:36"}
+        { "category": "Эротика", "time": "00:24" },
+        { "category": "разговоры и пошлости", "time": "00:31" },
+        { "category": "разговоры и пошлости", "time": "20:33" },
+        { "category": "разговоры и пошлости", "time": "28:24" },
+        { "category": "поцелуи", "time": "01:23" },
+        { "category": "поцелуи", "time": "06:21" },
+        { "category": "поцелуи", "time": "08:58" },
+        { "category": "поцелуи", "time": "16:30" },
+        { "category": "поцелуи", "time": "33:23" },
+        { "category": "раздевается", "time": "02:14" },
+        { "category": "мастурбирует", "time": "06:02" },
+        { "category": "куни", "time": "07:28" },
+        { "category": "куни", "time": "08:28" },
+        { "category": "мастурбирует ей", "time": "09:27" },
+        { "category": "взаимная мастурбация", "time": "09:46" },
+        { "category": "куни", "time": "10:56" },
+        { "category": "римминг ей", "time": "10:56" },
+        { "category": "минет", "time": "13:44" },
+        { "category": "минет", "time": "19:44" },
+        { "category": "минет", "time": "28:48" },
+        { "category": "минет", "time": "30:12" },
+        { "category": "минет", "time": "34:03" },
+        { "category": "минет", "time": "35:58" },
+        { "category": "минет", "time": "37:40" },
+        { "category": "заглатывает", "time": "14:35" },
+        { "category": "лижет яйца", "time": "15:55" },
+        { "category": "лижет яйца", "time": "19:59" },
+        { "category": "лижет яйца", "time": "28:46" },
+        { "category": "лижет яйца", "time": "35:17" },
+        { "category": "лижет яйца", "time": "36:56" },
+        { "category": "скачет на члене", "time": "18:37" },
+        { "category": "скачет на члене", "time": "21:08" },
+        { "category": "скачет на члене", "time": "31:32" },
+        { "category": "потекла", "time": "19:11" },
+        { "category": "потекла", "time": "21:34" },
+        { "category": "потекла", "time": "31:44" },
+        { "category": "римминг ей", "time": "19:12" },
+        { "category": "села на лицо", "time": "20:42" },
+        { "category": "села на лицо", "time": "24:22" },
+        { "category": "взяла за горло", "time": "21:56" },
+        { "category": "взяла за горло", "time": "23:04" },
+        { "category": "миссионерская", "time": "23:47" },
+        { "category": "оргазм", "time": "24:09" },
+        { "category": "взял за горло", "time": "24:48" },
+        { "category": "взял за горло", "time": "27:30" },
+        { "category": "взял за горло", "time": "33:29" },
+        { "category": "раком", "time": "26:11" },
+        { "category": "поза 69", "time": "26:19" },
+        { "category": "секс боком", "time": "34:46" },
+        { "category": "секс боком", "time": "36:20" },
+        { "category": "обкончал", "time": "37:54" },
+        { "category": "поцелуи со спермой", "time": "38:36" }
       ]
     },
     {
       "page": "https://sex-studentki.city/video/u-nih-vse-stabil-no-on-ee-ebet-so-strast-ju-a-ona-konchaet-sil-no-80312",
-      "video_url": "https://cs20.vps-vids.com/vids307881/sexstud25382.mp4?hash=7d64393b97bcd95a625ad58d9e84bae1&expires=1790891896&ip=85.190.102.209",
+      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud25382.mp4?hash=a83530a8b67a197c5010fbd0e6c3a906&expires=1790891007&ip=85.190.102.209",
       "timestamps": [
-        {"category": "Мастурбирует ей", "time": "01:01"},
-        {"category": "Мастурбирует ей", "time": "08:41"},
-        {"category": "Мастурбирует ей", "time": "29:59"},
-        {"category": "минет", "time": "03:30"},
-        {"category": "минет", "time": "30:13"},
-        {"category": "оргазм", "time": "03:47"},
-        {"category": "оргазм", "time": "09:27"},
-        {"category": "оргазм", "time": "10:30"},
-        {"category": "оргазм", "time": "17:13"},
-        {"category": "оргазм", "time": "21:27"},
-        {"category": "оргазм", "time": "29:32"},
-        {"category": "оргазм", "time": "31:00"},
-        {"category": "оргазм", "time": "32:20"},
-        {"category": "скачет на члене", "time": "05:24"},
-        {"category": "скачет на члене", "time": "09:03"},
-        {"category": "скачет на члене", "time": "11:20"},
-        {"category": "дрочит ему", "time": "08:28"},
-        {"category": "секс боком", "time": "11:04"},
-        {"category": "миссионерская", "time": "11:40"},
-        {"category": "миссионерская", "time": "17:05"},
-        {"category": "миссионерская", "time": "22:54"},
-        {"category": "судорожный оргазм", "time": "13:23"},
-        {"category": "римминг ей", "time": "13:38"},
-        {"category": "куни", "time": "13:38"},
-        {"category": "раком", "time": "14:03"},
-        {"category": "раком", "time": "16:22"},
-        {"category": "раком", "time": "25:32"},
-        {"category": "секс на животе", "time": "15:57"},
-        {"category": "камшот", "time": "18:44"},
-        {"category": "куни", "time": "19:12"},
-        {"category": "мастурбирует", "time": "21:48"},
-        {"category": "лижет яйца", "time": "32:38"},
-        {"category": "кончил в рот", "time": "33:21"}
+        { "category": "Мастурбирует ей", "time": "01:01" },
+        { "category": "Мастурбирует ей", "time": "08:41" },
+        { "category": "Мастурбирует ей", "time": "29:59" },
+        { "category": "минет", "time": "03:30" },
+        { "category": "минет", "time": "30:13" },
+        { "category": "оргазм", "time": "03:47" },
+        { "category": "оргазм", "time": "09:27" },
+        { "category": "оргазм", "time": "10:30" },
+        { "category": "оргазм", "time": "17:13" },
+        { "category": "оргазм", "time": "21:27" },
+        { "category": "оргазм", "time": "29:32" },
+        { "category": "оргазм", "time": "31:00" },
+        { "category": "оргазм", "time": "32:20" },
+        { "category": "скачет на члене", "time": "05:24" },
+        { "category": "скачет на члене", "time": "09:03" },
+        { "category": "скачет на члене", "time": "11:20" },
+        { "category": "дрочит ему", "time": "08:28" },
+        { "category": "секс боком", "time": "11:04" },
+        { "category": "миссионерская", "time": "11:40" },
+        { "category": "миссионерская", "time": "17:05" },
+        { "category": "миссионерская", "time": "22:54" },
+        { "category": "судорожный оргазм", "time": "13:23" },
+        { "category": "римминг ей", "time": "13:38" },
+        { "category": "куни", "time": "13:38" },
+        { "category": "раком", "time": "14:03" },
+        { "category": "раком", "time": "16:22" },
+        { "category": "раком", "time": "25:32" },
+        { "category": "секс на животе", "time": "15:57" },
+        { "category": "камшот", "time": "18:44" },
+        { "category": "куни", "time": "19:12" },
+        { "category": "мастурбирует", "time": "21:48" },
+        { "category": "лижет яйца", "time": "32:38" },
+        { "category": "кончил в рот", "time": "33:21" }
       ]
     },
     {
       "page": "https://sex-studentki.city/video/milaja-takaja-hochetsja-v-nee-vstavit-i-posmotret-kak-ona-konchaet-361135",
-      "video_url": "https://cs11.vps-vids.com/vids400665/sexstud28901.mp4?hash=0df2aa0c55ee79eb09bb8dfcd552faba&expires=1790891900&ip=85.190.102.209",
+      "video_url": "https://cs17.vps-vids.com/vids38561/sexstud28901.mp4?hash=5d485107ec945adc927108ad4c4ada5c&expires=1790891012&ip=85.190.102.209",
       "timestamps": [
-        {"category": "Пошлости", "time": "00:32"},
-        {"category": "Пошлости", "time": "02:07"},
-        {"category": "Пошлости", "time": "02:58"},
-        {"category": "Пошлости", "time": "03:55"},
-        {"category": "Пошлости", "time": "05:22"},
-        {"category": "Пошлости", "time": "08:27"},
-        {"category": "Пошлости", "time": "14:53"},
-        {"category": "минет", "time": "00:41"},
-        {"category": "минет", "time": "13:26"},
-        {"category": "минет", "time": "18:06"},
-        {"category": "мастурбирует", "time": "03:17"},
-        {"category": "раком", "time": "03:58"},
-        {"category": "раком", "time": "11:47"},
-        {"category": "судорожный оргазм", "time": "05:37"},
-        {"category": "судорожный оргазм", "time": "07:55"},
-        {"category": "судорожный оргазм", "time": "09:55"},
-        {"category": "судорожный оргазм", "time": "12:30"},
-        {"category": "судорожный оргазм", "time": "17:43"},
-        {"category": "села на член", "time": "06:37"},
-        {"category": "села на член", "time": "19:41"},
-        {"category": "потекла", "time": "07:04"},
-        {"category": "оргазм", "time": "08:55"},
-        {"category": "оргазм", "time": "20:23"},
-        {"category": "меж сисек", "time": "14:44"},
-        {"category": "дрочит ему", "time": "15:17"},
-        {"category": "миссионерская", "time": "17:08"},
-        {"category": "кончил на грудь", "time": "18:18"},
-        {"category": "глотает сперму", "time": "18:41"}
+        { "category": "Пошлости", "time": "00:32" },
+        { "category": "Пошлости", "time": "02:07" },
+        { "category": "Пошлости", "time": "02:58" },
+        { "category": "Пошлости", "time": "03:55" },
+        { "category": "Пошлости", "time": "05:22" },
+        { "category": "Пошлости", "time": "08:27" },
+        { "category": "Пошлости", "time": "14:53" },
+        { "category": "минет", "time": "00:41" },
+        { "category": "минет", "time": "13:26" },
+        { "category": "минет", "time": "18:06" },
+        { "category": "мастурбирует", "time": "03:17" },
+        { "category": "раком", "time": "03:58" },
+        { "category": "раком", "time": "11:47" },
+        { "category": "судорожный оргазм", "time": "05:37" },
+        { "category": "судорожный оргазм", "time": "07:55" },
+        { "category": "судорожный оргазм", "time": "09:55" },
+        { "category": "судорожный оргазм", "time": "12:30" },
+        { "category": "судорожный оргазм", "time": "17:43" },
+        { "category": "села на член", "time": "06:37" },
+        { "category": "села на член", "time": "19:41" },
+        { "category": "потекла", "time": "07:04" },
+        { "category": "оргазм", "time": "08:55" },
+        { "category": "оргазм", "time": "20:23" },
+        { "category": "меж сисек", "time": "14:44" },
+        { "category": "дрочит ему", "time": "15:17" },
+        { "category": "миссионерская", "time": "17:08" },
+        { "category": "кончил на грудь", "time": "18:18" },
+        { "category": "глотает сперму", "time": "18:41" }
       ]
+    },
+    {
+      "page": "https://sex-studentki.city/video/ja-zh-ne-znala-chto-drug-trahaet-do-orgazma-davno-by-emu-davala-71217",
+      "video_url": "https://cs2.vps-vids.com/vids440666/sexstud26550.mp4?hash=47aad8f7e8bc2749e212da779442be5f&expires=1790891016&ip=85.190.102.209",
+      "timestamps": []
+    },
+    {
+      "page": "https://sex-studentki.city/video/vot-chto-vidit-devushka-kogda-ty-ee-ebesh-63148",
+      "video_url": "https://cs11.vps-vids.com/vids400665/sexstud22100.mp4?hash=c1d55bf33ad89bee4630b82f347cf23a&expires=1790891021&ip=85.190.102.209",
+      "timestamps": []
     }
   ];
 
-  const grid = document.getElementById('video-grid');
+/* ==========================================================
+   ELEMENTS
+========================================================== */
 
-  videos.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
+const grid =
+    document.getElementById(
+        "video-grid"
+    );
 
-    const urlParts = item.page.split('/');
-    const rawName = urlParts[urlParts.length - 1] || `Видео #${index + 1}`;
-    const cleanTitle = decodeURIComponent(rawName.split('-').slice(0, -1).join(' '));
+const count =
+    document.getElementById(
+        "video-count"
+    );
 
-    let timestampsHTML = '';
-    if (item.timestamps && item.timestamps.length > 0) {
-      timestampsHTML = '<div class="timestamps-section">';
-      item.timestamps.forEach(ts => {
-        const match = ts.time.match(/(\d{2}):(\d{2})/);
-        let seconds = 0;
-        if (match) {
-          seconds = parseInt(match[1]) * 60 + parseInt(match[2]);
+
+count.textContent =
+    `${videos.length} видео`;
+
+
+/* ==========================================================
+   TIME FORMAT
+========================================================== */
+
+function formatTime(seconds) {
+
+    if (
+        !Number.isFinite(seconds)
+    ) {
+        return "00:00";
+    }
+
+
+    seconds =
+        Math.max(
+            0,
+            Math.floor(seconds)
+        );
+
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const secs =
+        seconds % 60;
+
+
+    if (hours > 0) {
+
+        return (
+            String(hours).padStart(2, "0")
+            + ":"
+            +
+            String(minutes).padStart(2, "0")
+            + ":"
+            +
+            String(secs).padStart(2, "0")
+        );
+    }
+
+
+    return (
+        String(minutes).padStart(2, "0")
+        + ":"
+        +
+        String(secs).padStart(2, "0")
+    );
+}
+
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+function getTitle(
+    url,
+    index
+) {
+
+    try {
+
+        const parts =
+            url.split("/");
+
+        const last =
+            parts[parts.length - 1];
+
+
+        if (!last) {
+            return `Видео #${index + 1}`;
         }
-        timestampsHTML += `<button class="timestamp-badge" onclick="seekVideo(this, ${seconds})">${ts.category} (${ts.time})</button>`;
-      });
-      timestampsHTML += '</div>';
-    } else {
-      timestampsHTML = '<span class="no-timestamps">Таймкоды отсутствуют</span>';
+
+
+        const name =
+            last
+                .split("-")
+                .slice(0, -1)
+                .join(" ");
+
+
+        return decodeURIComponent(name)
+            .replace(/-/g, " ")
+            .trim()
+            ||
+            `Видео #${index + 1}`;
+
     }
 
-    card.innerHTML = `
-      <div class="video-container">
-        <video controls preload="metadata">
-          <source src="${item.video_url}" type="video/mp4">
-          Ваш браузер не поддерживает видео.
-        </video>
-      </div>
-      <div class="card-body">
-        <div class="card-title" title="${cleanTitle}">${cleanTitle || rawName}</div>
-        ${timestampsHTML}
-        <div class="card-footer">
-          <a href="${item.page}" target="_blank">Источник ↗</a>
-        </div>
-      </div>
-    `;
+    catch {
 
-    grid.appendChild(card);
-  });
+        return `Видео #${index + 1}`;
 
-  function seekVideo(button, seconds) {
-    const card = button.closest('.card');
-    const video = card.querySelector('video');
-    if (video) {
-      video.currentTime = seconds;
-      video.play();
     }
-  }
+}
+
+
+/* ==========================================================
+   CREATE PLAYER
+========================================================== */
+
+function createPlayer(item) {
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+    container.className =
+        "video-container";
+
+
+    const video =
+        document.createElement(
+            "video"
+        );
+
+
+    video.preload =
+        "metadata";
+
+    video.playsInline =
+        true;
+
+
+    const source =
+        document.createElement(
+            "source"
+        );
+
+
+    source.src =
+        item.video_url;
+
+    source.type =
+        "video/mp4";
+
+
+    video.appendChild(
+        source
+    );
+
+
+    /* ------------------------------------------------------
+       CONTROLS
+    ------------------------------------------------------ */
+
+    const controls =
+        document.createElement(
+            "div"
+        );
+
+    controls.className =
+        "player-controls";
+
+
+    /* ------------------------------------------------------
+       PROGRESS
+    ------------------------------------------------------ */
+
+    const progressWrap =
+        document.createElement(
+            "div"
+        );
+
+    progressWrap.className =
+        "progress-wrap";
+
+
+    const progress =
+        document.createElement(
+            "input"
+        );
+
+    progress.type =
+        "range";
+
+    progress.className =
+        "progress";
+
+    progress.min =
+        "0";
+
+    progress.max =
+        "100";
+
+    progress.step =
+        "0.1";
+
+    progress.value =
+        "0";
+
+
+    progressWrap.appendChild(
+        progress
+    );
+
+
+    /* ------------------------------------------------------
+       ROW
+    ------------------------------------------------------ */
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "controls-row";
+
+
+    /* PLAY */
+
+    const play =
+        document.createElement(
+            "button"
+        );
+
+    play.type =
+        "button";
+
+    play.className =
+        "control-btn";
+
+    play.textContent =
+        "▶";
+
+    play.title =
+        "Воспроизвести";
+
+
+    /* BACK */
+
+    const back =
+        document.createElement(
+            "button"
+        );
+
+    back.type =
+        "button";
+
+    back.className =
+        "control-btn";
+
+    back.textContent =
+        "↶";
+
+    back.title =
+        "Назад 10 секунд";
+
+
+    /* FORWARD */
+
+    const forward =
+        document.createElement(
+            "button"
+        );
+
+    forward.type =
+        "button";
+
+    forward.className =
+        "control-btn";
+
+    forward.textContent =
+        "↷";
+
+    forward.title =
+        "Вперёд 10 секунд";
+
+
+    /* TIME */
+
+    const time =
+        document.createElement(
+            "span"
+        );
+
+    time.className =
+        "time";
+
+    time.textContent =
+        "00:00 / 00:00";
+
+
+    /* VOLUME */
+
+    const volume =
+        document.createElement(
+            "input"
+        );
+
+    volume.type =
+        "range";
+
+    volume.className =
+        "volume";
+
+    volume.min =
+        "0";
+
+    volume.max =
+        "1";
+
+    volume.step =
+        "0.01";
+
+    volume.value =
+        "1";
+
+    volume.title =
+        "Громкость";
+
+
+    /* ------------------------------------------------------
+       SETTINGS
+    ------------------------------------------------------ */
+
+    const settings =
+        document.createElement(
+            "div"
+        );
+
+    settings.className =
+        "settings";
+
+
+    const settingsButton =
+        document.createElement(
+            "button"
+        );
+
+    settingsButton.type =
+        "button";
+
+    settingsButton.className =
+        "control-btn";
+
+    settingsButton.textContent =
+        "⚙";
+
+    settingsButton.title =
+        "Настройки";
+
+
+    const menu =
+        document.createElement(
+            "div"
+        );
+
+    menu.className =
+        "settings-menu";
+
+
+    /* SPEED */
+
+    const speedTitle =
+        document.createElement(
+            "div"
+        );
+
+    speedTitle.className =
+        "settings-title";
+
+    speedTitle.textContent =
+        "Скорость";
+
+
+    menu.appendChild(
+        speedTitle
+    );
+
+
+    const speeds = [
+        0.25,
+        0.5,
+        0.75,
+        1,
+        1.25,
+        1.5,
+        1.75,
+        2
+    ];
+
+
+    speeds.forEach(
+        speed => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+            button.className =
+                "speed-option";
+
+
+            button.textContent =
+                speed === 1
+                    ? "1× — обычная"
+                    : `${speed}×`;
+
+
+            if (speed === 1) {
+                button.classList.add(
+                    "active"
+                );
+            }
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    video.playbackRate =
+                        speed;
+
+
+                    menu
+                        .querySelectorAll(
+                            ".speed-option"
+                        )
+                        .forEach(
+                            element =>
+                                element.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            menu.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    /* QUALITY */
+
+    const qualityTitle =
+        document.createElement(
+            "div"
+        );
+
+    qualityTitle.className =
+        "settings-title";
+
+    qualityTitle.textContent =
+        "Качество";
+
+
+    menu.appendChild(
+        qualityTitle
+    );
+
+
+    const quality =
+        document.createElement(
+            "button"
+        );
+
+    quality.type =
+        "button";
+
+    quality.className =
+        "quality-option active";
+
+    quality.textContent =
+        "Авто";
+
+
+    quality.addEventListener(
+        "click",
+        () => {
+
+            /*
+             * Один MP4-файл не содержит
+             * нескольких вариантов качества.
+             *
+             * Для настоящего переключения
+             * 1080p / 720p / 480p нужны
+             * отдельные URL.
+             */
+
+            quality.classList.add(
+                "active"
+            );
+
+        }
+    );
+
+
+    menu.appendChild(
+        quality
+    );
+
+
+    settings.appendChild(
+        settingsButton
+    );
+
+    settings.appendChild(
+        menu
+    );
+
+
+    /* ------------------------------------------------------
+       PIP
+    ------------------------------------------------------ */
+
+    const pip =
+        document.createElement(
+            "button"
+        );
+
+    pip.type =
+        "button";
+
+    pip.className =
+        "control-btn";
+
+    pip.textContent =
+        "▣";
+
+    pip.title =
+        "Картинка в картинке";
+
+
+    /* ------------------------------------------------------
+       FULLSCREEN
+    ------------------------------------------------------ */
+
+    const fullscreen =
+        document.createElement(
+            "button"
+        );
+
+    fullscreen.type =
+        "button";
+
+    fullscreen.className =
+        "control-btn";
+
+    fullscreen.textContent =
+        "⛶";
+
+    fullscreen.title =
+        "Полный экран";
+
+
+    /* ------------------------------------------------------
+       APPEND CONTROLS
+    ------------------------------------------------------ */
+
+    row.appendChild(
+        back
+    );
+
+    row.appendChild(
+        play
+    );
+
+    row.appendChild(
+        forward
+    );
+
+    row.appendChild(
+        time
+    );
+
+    row.appendChild(
+        volume
+    );
+
+    row.appendChild(
+        pip
+    );
+
+    row.appendChild(
+        settings
+    );
+
+    row.appendChild(
+        fullscreen
+    );
+
+
+    controls.appendChild(
+        progressWrap
+    );
+
+    controls.appendChild(
+        row
+    );
+
+
+    container.appendChild(
+        video
+    );
+
+    container.appendChild(
+        controls
+    );
+
+
+    /* ======================================================
+       PLAY / PAUSE
+    ====================================================== */
+
+    play.addEventListener(
+        "click",
+        () => {
+
+            if (video.paused) {
+
+                video.play();
+
+            } else {
+
+                video.pause();
+
+            }
+
+        }
+    );
+
+
+    video.addEventListener(
+        "play",
+        () => {
+
+            play.textContent =
+                "❚❚";
+
+            play.title =
+                "Пауза";
+
+        }
+    );
+
+
+    video.addEventListener(
+        "pause",
+        () => {
+
+            play.textContent =
+                "▶";
+
+            play.title =
+                "Воспроизвести";
+
+        }
+    );
+
+
+    /* ======================================================
+       SEEK
+    ====================================================== */
+
+    back.addEventListener(
+        "click",
+        () => {
+
+            video.currentTime =
+                Math.max(
+                    0,
+                    video.currentTime - 10
+                );
+
+        }
+    );
+
+
+    forward.addEventListener(
+        "click",
+        () => {
+
+            video.currentTime =
+                Math.min(
+                    video.duration || Infinity,
+                    video.currentTime + 10
+                );
+
+        }
+    );
+
+
+    /* ======================================================
+       PROGRESS
+    ====================================================== */
+
+    video.addEventListener(
+        "timeupdate",
+        () => {
+
+            if (video.duration) {
+
+                progress.value =
+                    (
+                        video.currentTime /
+                        video.duration
+                    ) * 100;
+
+            }
+
+
+            time.textContent =
+                formatTime(
+                    video.currentTime
+                )
+                +
+                " / "
+                +
+                formatTime(
+                    video.duration
+                );
+
+        }
+    );
+
+
+    progress.addEventListener(
+        "input",
+        () => {
+
+            if (video.duration) {
+
+                video.currentTime =
+                    (
+                        Number(
+                            progress.value
+                        ) / 100
+                    )
+                    *
+                    video.duration;
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
+       VOLUME
+    ====================================================== */
+
+    volume.addEventListener(
+        "input",
+        () => {
+
+            video.volume =
+                Number(
+                    volume.value
+                );
+
+        }
+    );
+
+
+    /* ======================================================
+       SETTINGS
+    ====================================================== */
+
+    settingsButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            menu.classList.toggle(
+                "open"
+            );
+
+        }
+    );
+
+
+    menu.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        () => {
+
+            menu.classList.remove(
+                "open"
+            );
+
+        }
+    );
+
+
+    /* ======================================================
+       FULLSCREEN
+    ====================================================== */
+
+    fullscreen.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (
+                    document.fullscreenElement
+                ) {
+
+                    await document.exitFullscreen();
+
+                } else {
+
+                    await container.requestFullscreen();
+
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "Fullscreen error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
+       PICTURE IN PICTURE
+    ====================================================== */
+
+    pip.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (
+                    !document.pictureInPictureEnabled
+                ) {
+                    return;
+                }
+
+
+                if (
+                    document.pictureInPictureElement
+                ) {
+
+                    await
+                        document.exitPictureInPicture();
+
+                } else {
+
+                    await
+                        video.requestPictureInPicture();
+
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "PiP error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
+       AUTO HIDE CONTROLS
+    ====================================================== */
+
+    let hideTimer;
+
+
+    function showControls() {
+
+        container.classList.add(
+            "controls-visible"
+        );
+
+
+        clearTimeout(
+            hideTimer
+        );
+
+
+        hideTimer =
+            setTimeout(
+                () => {
+
+                    if (
+                        !video.paused
+                    ) {
+
+                        container.classList.remove(
+                            "controls-visible"
+                        );
+
+                    }
+
+                },
+                2500
+            );
+
+    }
+
+
+    container.addEventListener(
+        "mousemove",
+        showControls
+    );
+
+
+    container.addEventListener(
+        "touchstart",
+        showControls
+    );
+
+
+    /* ======================================================
+       KEYBOARD
+    ====================================================== */
+
+    container.tabIndex =
+        0;
+
+
+    container.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.target.tagName ===
+                    "INPUT"
+                ||
+                event.target.tagName ===
+                    "BUTTON"
+            ) {
+                return;
+            }
+
+
+            switch (
+                event.key
+            ) {
+
+                case " ":
+
+                    event.preventDefault();
+
+                    if (
+                        video.paused
+                    ) {
+
+                        video.play();
+
+                    } else {
+
+                        video.pause();
+
+                    }
+
+                    break;
+
+
+                case "ArrowLeft":
+
+                    video.currentTime =
+                        Math.max(
+                            0,
+                            video.currentTime - 5
+                        );
+
+                    break;
+
+
+                case "ArrowRight":
+
+                    video.currentTime =
+                        Math.min(
+                            video.duration ||
+                                Infinity,
+                            video.currentTime + 5
+                        );
+
+                    break;
+
+
+                case "ArrowUp":
+
+                    video.volume =
+                        Math.min(
+                            1,
+                            video.volume + .1
+                        );
+
+                    volume.value =
+                        video.volume;
+
+                    break;
+
+
+                case "ArrowDown":
+
+                    video.volume =
+                        Math.max(
+                            0,
+                            video.volume - .1
+                        );
+
+                    volume.value =
+                        video.volume;
+
+                    break;
+
+
+                case "m":
+
+                case "M":
+
+                    video.muted =
+                        !video.muted;
+
+                    break;
+
+
+                case "f":
+
+                case "F":
+
+                    fullscreen.click();
+
+                    break;
+
+            }
+
+        }
+    );
+
+
+    return container;
+}
+
+
+/* ==========================================================
+   CREATE CARDS
+========================================================== */
+
+videos.forEach(
+    (item, index) => {
+
+        const card =
+            document.createElement(
+                "article"
+            );
+
+        card.className =
+            "card";
+
+
+        const player =
+            createPlayer(
+                item
+            );
+
+
+        card.appendChild(
+            player
+        );
+
+
+        const body =
+            document.createElement(
+                "div"
+            );
+
+        body.className =
+            "card-body";
+
+
+        /* TITLE */
+
+        const title =
+            document.createElement(
+                "div"
+            );
+
+        title.className =
+            "card-title";
+
+        title.textContent =
+            getTitle(
+                item.page,
+                index
+            );
+
+
+        body.appendChild(
+            title
+        );
+
+
+        /* ==================================================
+           TIMESTAMPS
+        ================================================== */
+
+        if (
+            Array.isArray(
+                item.timestamps
+            )
+            &&
+            item.timestamps.length > 0
+        ) {
+
+            const timestamps =
+                document.createElement(
+                    "div"
+                );
+
+            timestamps.className =
+                "timestamps-section";
+
+
+            item.timestamps.forEach(
+                ts => {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+                    button.type =
+                        "button";
+
+                    button.className =
+                        "timestamp-badge";
+
+
+                    button.textContent =
+                        `${ts.category} (${ts.time})`;
+
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const video =
+                                player.querySelector(
+                                    "video"
+                                );
+
+
+                            const parts =
+                                ts.time
+                                    .split(":")
+                                    .map(Number);
+
+
+                            let seconds = 0;
+
+
+                            if (
+                                parts.length === 2
+                            ) {
+
+                                seconds =
+                                    parts[0] * 60 +
+                                    parts[1];
+
+                            }
+
+
+                            if (
+                                parts.length === 3
+                            ) {
+
+                                seconds =
+                                    parts[0] * 3600 +
+                                    parts[1] * 60 +
+                                    parts[2];
+
+                            }
+
+
+                            if (
+                                Number.isFinite(
+                                    seconds
+                                )
+                            ) {
+
+                                video.currentTime =
+                                    seconds;
+
+                                video.play();
+
+                            }
+
+                        }
+                    );
+
+
+                    timestamps.appendChild(
+                        button
+                    );
+
+                }
+            );
+
+
+            body.appendChild(
+                timestamps
+            );
+
+        } else {
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+            empty.className =
+                "no-timestamps";
+
+            empty.textContent =
+                "Таймкоды отсутствуют";
+
+
+            body.appendChild(
+                empty
+            );
+
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        const footer =
+            document.createElement(
+                "div"
+            );
+
+        footer.className =
+            "card-footer";
+
+
+        const source =
+            document.createElement(
+                "a"
+            );
+
+        source.className =
+            "source";
+
+        source.href =
+            item.page;
+
+        source.target =
+            "_blank";
+
+        source.rel =
+            "noopener noreferrer";
+
+        source.textContent =
+            "Источник ↗";
+
+
+        const duration =
+            document.createElement(
+                "span"
+            );
+
+        duration.className =
+            "duration";
+
+        duration.textContent =
+            "Загрузка...";
+
+
+        const video =
+            player.querySelector(
+                "video"
+            );
+
+
+        video.addEventListener(
+            "loadedmetadata",
+            () => {
+
+                duration.textContent =
+                    formatTime(
+                        video.duration
+                    );
+
+            }
+        );
+
+
+        footer.appendChild(
+            source
+        );
+
+        footer.appendChild(
+            duration
+        );
+
+
+        body.appendChild(
+            footer
+        );
+
+        card.appendChild(
+            body
+        );
+
+        grid.appendChild(
+            card
+        );
+
+    }
+);
+
 </script>
 
 </body>
