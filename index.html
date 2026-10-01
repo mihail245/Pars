@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StreamHub - Premium Media</title>
+<title>StreamHub - Премиум Медиатека</title>
 <style>
   :root {
     --bg-color: #0f1015;
@@ -30,14 +30,13 @@
   header h1 {
     font-size: 28px;
     font-weight: 700;
-    letter-spacing: 0.5px;
     color: var(--text-main);
     margin: 0;
   }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 25px;
     max-width: 1400px;
     margin: 0 auto;
@@ -50,18 +49,13 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
   }
 
   .video-container {
     position: relative;
     width: 100%;
-    padding-top: 56.25%; /* Соотношение сторон 16:9 */
+    padding-top: 56.25%;
     background: #000;
   }
 
@@ -91,12 +85,11 @@
     word-break: break-word;
   }
 
-  /* Стили для таймкодов / глав */
   .timestamps-section {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    max-height: 80px;
+    max-height: 140px;
     overflow-y: auto;
     padding-right: 4px;
   }
@@ -105,13 +98,12 @@
     background: rgba(229, 9, 20, 0.15);
     color: #ff4d4f;
     border: 1px solid rgba(229, 9, 20, 0.3);
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s;
-    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
   }
 
   .timestamp-badge:hover {
@@ -155,21 +147,138 @@
 <div class="grid" id="video-grid"></div>
 
 <script>
-  // Сюда автоматически подгружаются данные из вашего парсера (или из файла direct_videos.json)
+  // Сюда автоматически вставлены данные из вашего JSON-файла
   const videos = [
     {
       "page": "https://sex-studentki.city/video/nu-eto-prajm-srazu-dvuh-aziatok-trahaju-i-na-lica-im-konchaju-247118",
-      "video_url": "https://cs23.vps-vids.com/vids80087/sexstud28652.mp4?hash=1a9518961a35fa5224e8bbaddc63e3e6&expires=1790891003&ip=85.190.102.209",
+      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud28652.mp4?hash=663a13f25a28d0346d4ae1c0ee07b8e3&expires=1790891892&ip=85.190.102.209",
       "timestamps": [
-        { "text": "00:15 Вступление", "href": "#" },
-        { "text": "01:30 Основной момент", "href": "#" },
-        { "text": "04:00 Кульминация", "href": "#" }
+        {"category": "Эротика", "time": "00:24"},
+        {"category": "разговоры и пошлости", "time": "00:31"},
+        {"category": "разговоры и пошлости", "time": "20:33"},
+        {"category": "разговоры и пошлости", "time": "28:24"},
+        {"category": "поцелуи", "time": "01:23"},
+        {"category": "поцелуи", "time": "06:21"},
+        {"category": "поцелуи", "time": "08:58"},
+        {"category": "поцелуи", "time": "16:30"},
+        {"category": "поцелуи", "time": "33:23"},
+        {"category": "раздевается", "time": "02:14"},
+        {"category": "мастурбирует", "time": "06:02"},
+        {"category": "куни", "time": "07:28"},
+        {"category": "куни", "time": "08:28"},
+        {"category": "мастурбирует ей", "time": "09:27"},
+        {"category": "взаимная мастурбация", "time": "09:46"},
+        {"category": "куни", "time": "10:56"},
+        {"category": "римминг ей", "time": "10:56"},
+        {"category": "минет", "time": "13:44"},
+        {"category": "минет", "time": "19:44"},
+        {"category": "минет", "time": "28:48"},
+        {"category": "минет", "time": "30:12"},
+        {"category": "минет", "time": "34:03"},
+        {"category": "минет", "time": "35:58"},
+        {"category": "минет", "time": "37:40"},
+        {"category": "заглатывает", "time": "14:35"},
+        {"category": "лижет яйца", "time": "15:55"},
+        {"category": "лижет яйца", "time": "19:59"},
+        {"category": "лижет яйца", "time": "28:46"},
+        {"category": "лижет яйца", "time": "35:17"},
+        {"category": "лижет яйца", "time": "36:56"},
+        {"category": "скачет на члене", "time": "18:37"},
+        {"category": "скачет на члене", "time": "21:08"},
+        {"category": "скачет на члене", "time": "31:32"},
+        {"category": "потекла", "time": "19:11"},
+        {"category": "потекла", "time": "21:34"},
+        {"category": "потекла", "time": "31:44"},
+        {"category": "римминг ей", "time": "19:12"},
+        {"category": "села на лицо", "time": "20:42"},
+        {"category": "села на лицо", "time": "24:22"},
+        {"category": "взяла за горло", "time": "21:56"},
+        {"category": "взяла за горло", "time": "23:04"},
+        {"category": "миссионерская", "time": "23:47"},
+        {"category": "оргазм", "time": "24:09"},
+        {"category": "взял за горло", "time": "24:48"},
+        {"category": "взял за горло", "time": "27:30"},
+        {"category": "взял за горло", "time": "33:29"},
+        {"category": "раком", "time": "26:11"},
+        {"category": "поза 69", "time": "26:19"},
+        {"category": "секс боком", "time": "34:46"},
+        {"category": "секс боком", "time": "36:20"},
+        {"category": "обкончал", "time": "37:54"},
+        {"category": "поцелуи со спермой", "time": "38:36"}
       ]
     },
     {
       "page": "https://sex-studentki.city/video/u-nih-vse-stabil-no-on-ee-ebet-so-strast-ju-a-ona-konchaet-sil-no-80312",
-      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud25382.mp4?hash=a83530a8b67a197c5010fbd0e6c3a906&expires=1790891007&ip=85.190.102.209",
-      "timestamps": []
+      "video_url": "https://cs20.vps-vids.com/vids307881/sexstud25382.mp4?hash=7d64393b97bcd95a625ad58d9e84bae1&expires=1790891896&ip=85.190.102.209",
+      "timestamps": [
+        {"category": "Мастурбирует ей", "time": "01:01"},
+        {"category": "Мастурбирует ей", "time": "08:41"},
+        {"category": "Мастурбирует ей", "time": "29:59"},
+        {"category": "минет", "time": "03:30"},
+        {"category": "минет", "time": "30:13"},
+        {"category": "оргазм", "time": "03:47"},
+        {"category": "оргазм", "time": "09:27"},
+        {"category": "оргазм", "time": "10:30"},
+        {"category": "оргазм", "time": "17:13"},
+        {"category": "оргазм", "time": "21:27"},
+        {"category": "оргазм", "time": "29:32"},
+        {"category": "оргазм", "time": "31:00"},
+        {"category": "оргазм", "time": "32:20"},
+        {"category": "скачет на члене", "time": "05:24"},
+        {"category": "скачет на члене", "time": "09:03"},
+        {"category": "скачет на члене", "time": "11:20"},
+        {"category": "дрочит ему", "time": "08:28"},
+        {"category": "секс боком", "time": "11:04"},
+        {"category": "миссионерская", "time": "11:40"},
+        {"category": "миссионерская", "time": "17:05"},
+        {"category": "миссионерская", "time": "22:54"},
+        {"category": "судорожный оргазм", "time": "13:23"},
+        {"category": "римминг ей", "time": "13:38"},
+        {"category": "куни", "time": "13:38"},
+        {"category": "раком", "time": "14:03"},
+        {"category": "раком", "time": "16:22"},
+        {"category": "раком", "time": "25:32"},
+        {"category": "секс на животе", "time": "15:57"},
+        {"category": "камшот", "time": "18:44"},
+        {"category": "куни", "time": "19:12"},
+        {"category": "мастурбирует", "time": "21:48"},
+        {"category": "лижет яйца", "time": "32:38"},
+        {"category": "кончил в рот", "time": "33:21"}
+      ]
+    },
+    {
+      "page": "https://sex-studentki.city/video/milaja-takaja-hochetsja-v-nee-vstavit-i-posmotret-kak-ona-konchaet-361135",
+      "video_url": "https://cs11.vps-vids.com/vids400665/sexstud28901.mp4?hash=0df2aa0c55ee79eb09bb8dfcd552faba&expires=1790891900&ip=85.190.102.209",
+      "timestamps": [
+        {"category": "Пошлости", "time": "00:32"},
+        {"category": "Пошлости", "time": "02:07"},
+        {"category": "Пошлости", "time": "02:58"},
+        {"category": "Пошлости", "time": "03:55"},
+        {"category": "Пошлости", "time": "05:22"},
+        {"category": "Пошлости", "time": "08:27"},
+        {"category": "Пошлости", "time": "14:53"},
+        {"category": "минет", "time": "00:41"},
+        {"category": "минет", "time": "13:26"},
+        {"category": "минет", "time": "18:06"},
+        {"category": "мастурбирует", "time": "03:17"},
+        {"category": "раком", "time": "03:58"},
+        {"category": "раком", "time": "11:47"},
+        {"category": "судорожный оргазм", "time": "05:37"},
+        {"category": "судорожный оргазм", "time": "07:55"},
+        {"category": "судорожный оргазм", "time": "09:55"},
+        {"category": "судорожный оргазм", "time": "12:30"},
+        {"category": "судорожный оргазм", "time": "17:43"},
+        {"category": "села на член", "time": "06:37"},
+        {"category": "села на член", "time": "19:41"},
+        {"category": "потекла", "time": "07:04"},
+        {"category": "оргазм", "time": "08:55"},
+        {"category": "оргазм", "time": "20:23"},
+        {"category": "меж сисек", "time": "14:44"},
+        {"category": "дрочит ему", "time": "15:17"},
+        {"category": "миссионерская", "time": "17:08"},
+        {"category": "кончил на грудь", "time": "18:18"},
+        {"category": "глотает сперму", "time": "18:41"}
+      ]
     }
   ];
 
@@ -179,23 +288,20 @@
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Красивое формирование названия из URL
     const urlParts = item.page.split('/');
     const rawName = urlParts[urlParts.length - 1] || `Видео #${index + 1}`;
     const cleanTitle = decodeURIComponent(rawName.split('-').slice(0, -1).join(' '));
 
-    // Генерация кнопок таймкодов
     let timestampsHTML = '';
     if (item.timestamps && item.timestamps.length > 0) {
       timestampsHTML = '<div class="timestamps-section">';
       item.timestamps.forEach(ts => {
-        // Парсим секунды из текста вида "01:23" для перемотки плеера
-        const match = ts.text.match(/(\d{2}):(\d{2})/);
+        const match = ts.time.match(/(\d{2}):(\d{2})/);
         let seconds = 0;
         if (match) {
           seconds = parseInt(match[1]) * 60 + parseInt(match[2]);
         }
-        timestampsHTML += `<button class="timestamp-badge" onclick="seekVideo(this, ${seconds})">${ts.text}</button>`;
+        timestampsHTML += `<button class="timestamp-badge" onclick="seekVideo(this, ${seconds})">${ts.category} (${ts.time})</button>`;
       });
       timestampsHTML += '</div>';
     } else {
@@ -221,7 +327,6 @@
     grid.appendChild(card);
   });
 
-  // Функция для перемотки видео при клике на таймкод
   function seekVideo(button, seconds) {
     const card = button.closest('.card');
     const video = card.querySelector('video');
