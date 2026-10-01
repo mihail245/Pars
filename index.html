@@ -2,33 +2,103 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Parser Demo</title>
+<title>Video Parser</title>
+<style>
+  body { font-family: system-ui, sans-serif; background:#111; color:#eee; padding:20px; }
+  input, button { padding:8px 12px; font-size:14px; border-radius:6px; border:1px solid #333; }
+  input { background:#1b1b1b; color:#eee; width:420px; }
+  button { background:#2a7; color:#fff; cursor:pointer; border:none; }
+  button:hover { background:#3b8; }
+  #log { margin-top:16px; white-space:pre-wrap; font-family:monospace; font-size:13px; }
+  .card { background:#1b1b1b; border:1px solid #2a2a2a; border-radius:8px; padding:10px; margin:8px 0; }
+  .card img { max-width:160px; border-radius:6px; display:block; margin-bottom:6px; }
+  .card a { color:#6cf; word-break:break-all; }
+</style>
 </head>
 <body>
-<input id="url" placeholder="URL" style="width:400px">
-<button onclick="parse()">Парсить</button>
-<pre id="out"></pre>
+
+<h3>Video Parser (demo)</h3>
+<input id="url" placeholder="https://example.com/page" />
+<button onclick="run()">Парсить</button>
+<button onclick="download()">Скачать JSON</button>
+<div id="log"></div>
 
 <script>
-async function parse() {
-  const url = document.getElementById('url').value;
-  const out = document.getElementById('out');
+let results = [];
+
+async function run() {
+  const url = document.getElementById('url').value.trim();
+  const log = document.getElementById('log');
+  log.innerHTML = '';
+  results = [];
+
+  if (!url) { log.textContent = 'Введи URL'; return; }
+
   try {
-    // CORS заблокирует прямой запрос к чужому домену
-    const res = await fetch(url);
+    // CORS: прямой fetch к чужому домену обычно блокируется.
+    // Для демо используем публичный CORS-прокси.
+    const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+    const res = await fetch(proxy);
     const html = await res.text();
+
     const doc = new DOMParser().parseFromString(html, 'text/html');
+    const base = new URL(url);
 
-    const items = [...doc.querySelectorAll('a')]
-      .map(a => ({ text: a.textContent.trim(), href: a.href }))
-      .filter(x => x.href);
+    const meta = (prop) => {
+      const el = doc.querySelector(`meta[property="${prop}"], meta[name="${prop}"]`);
+      return el ? el.getAttribute('content') : null;
+    };
 
-    out.textContent = JSON.stringify(items.slice(0, 50), null, 2);
+    let title = meta('og:title') || (doc.title || null);
+    let video = meta('og:video') || meta('og:video:url') || meta('og:video:secure_url');
+    let preview = meta('og:image');
+
+    if (!video) {
+      const v = doc.querySelector('video');
+      if (v) {
+        video = v.getAttribute('src');
+        if (!video) {
+          const s = v.querySelector('source');
+          if (s) video = s.getAttribute('src');
+        }
+      }
+    }
+    if (!video) {
+      const iframe = doc.querySelector('iframe');
+      if (iframe) video = iframe.getAttribute('src');
+    }
+
+    if (video) video = new URL(video, base).href;
+    if (preview) preview = new URL(preview, base).href;
+
+    results.push({ page: url, title, video_url: video, preview });
+
+    log.innerHTML = renderCard(results[0]);
   } catch (e) {
-    out.textContent = 'Ошибка: ' + e.message +
-      '\nCORS блокирует прямые запросы из браузера. Нужен серверный прокси.';
+    log.textContent = 'Ошибка: ' + e.message +
+      '\n\nПричины: CORS, блокировка антиботом, сайт на JS.';
   }
 }
+
+function renderCard(d) {
+  return `
+    <div class="card">
+      ${d.preview ? `<img src="${d.preview}" alt="">` : ''}
+      <b>${d.title || '—'}</b><br>
+      ${d.video_url ? `<a href="${d.video_url}" target="_blank">${d.video_url}</a>` : 'видео не найдено'}
+    </div>
+  `;
+}
+
+function download() {
+  if (!results.length) return;
+  const blob = new Blob([JSON.stringify(results, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'videos.json';
+  a.click();
+}
 </script>
+
 </body>
 </html>
