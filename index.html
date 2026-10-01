@@ -2,95 +2,174 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Local Video Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamHub - Premium Media</title>
 <style>
+  :root {
+    --bg-color: #0f1015;
+    --card-bg: #181a20;
+    --accent-color: #e50914;
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --border-color: #2d3139;
+  }
+
   body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #0f0f0f;
-    color: #f1f1f1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-main);
     margin: 0;
-    padding: 20px;
+    padding: 30px;
   }
-  h1 {
+
+  header {
     text-align: center;
-    color: #fff;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    margin: 0;
+  }
+
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 25px;
     max-width: 1400px;
     margin: 0 auto;
   }
+
   .card {
-    background: #1f1f1f;
-    border: 1px solid #333;
-    border-radius: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .card video {
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .video-container {
+    position: relative;
     width: 100%;
-    height: 180px;
+    padding-top: 56.25%; /* Соотношение сторон 16:9 */
     background: #000;
+  }
+
+  .card video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     outline: none;
   }
-  .card-content {
-    padding: 15px;
+
+  .card-body {
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     flex-grow: 1;
   }
+
   .card-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #aaa;
-    word-break: break-all;
-    flex-grow: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.4;
+    word-break: break-word;
   }
-  .card a {
-    color: #3ea6ff;
+
+  /* Стили для таймкодов / глав */
+  .timestamps-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 80px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .timestamp-badge {
+    background: rgba(229, 9, 20, 0.15);
+    color: #ff4d4f;
+    border: 1px solid rgba(229, 9, 20, 0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+
+  .timestamp-badge:hover {
+    background: var(--accent-color);
+    color: #fff;
+  }
+
+  .no-timestamps {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .card-footer a {
+    color: #38bdf8;
     text-decoration: none;
     font-size: 13px;
-    align-self: flex-start;
+    font-weight: 500;
   }
-  .card a:hover {
+
+  .card-footer a:hover {
     text-decoration: underline;
   }
 </style>
 </head>
 <body>
 
-<h1>Моя медиатека</h1>
+<header>
+  <h1>🎬 Персональная Медиатека</h1>
+</header>
+
 <div class="grid" id="video-grid"></div>
 
 <script>
-  // Данные, полученные из вашего парсера
+  // Сюда автоматически подгружаются данные из вашего парсера (или из файла direct_videos.json)
   const videos = [
     {
       "page": "https://sex-studentki.city/video/nu-eto-prajm-srazu-dvuh-aziatok-trahaju-i-na-lica-im-konchaju-247118",
-      "video_url": "https://cs23.vps-vids.com/vids80087/sexstud28652.mp4?hash=1a9518961a35fa5224e8bbaddc63e3e6&expires=1790891003&ip=85.190.102.209"
+      "video_url": "https://cs23.vps-vids.com/vids80087/sexstud28652.mp4?hash=1a9518961a35fa5224e8bbaddc63e3e6&expires=1790891003&ip=85.190.102.209",
+      "timestamps": [
+        { "text": "00:15 Вступление", "href": "#" },
+        { "text": "01:30 Основной момент", "href": "#" },
+        { "text": "04:00 Кульминация", "href": "#" }
+      ]
     },
     {
       "page": "https://sex-studentki.city/video/u-nih-vse-stabil-no-on-ee-ebet-so-strast-ju-a-ona-konchaet-sil-no-80312",
-      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud25382.mp4?hash=a83530a8b67a197c5010fbd0e6c3a906&expires=1790891007&ip=85.190.102.209"
-    },
-    {
-      "page": "https://sex-studentki.city/video/milaja-takaja-hochetsja-v-nee-vstavit-i-posmotret-kak-ona-konchaet-361135",
-      "video_url": "https://cs17.vps-vids.com/vids38561/sexstud28901.mp4?hash=5d485107ec945adc927108ad4c4ada5c&expires=1790891012&ip=85.190.102.209"
-    },
-    {
-      "page": "https://sex-studentki.city/video/ja-zh-ne-znala-chto-drug-trahaet-do-orgazma-davno-by-emu-davala-71217",
-      "video_url": "https://cs2.vps-vids.com/vids440666/sexstud26550.mp4?hash=47aad8f7e8bc2749e212da779442be5f&expires=1790891016&ip=85.190.102.209"
-    },
-    {
-      "page": "https://sex-studentki.city/video/vot-chto-vidit-devushka-kogda-ty-ee-ebesh-63148",
-      "video_url": "https://cs11.vps-vids.com/vids400665/sexstud22100.mp4?hash=c1d55bf33ad89bee4630b82f347cf23a&expires=1790891021&ip=85.190.102.209"
+      "video_url": "https://cs5.vps-vids.com/vids974241/sexstud25382.mp4?hash=a83530a8b67a197c5010fbd0e6c3a906&expires=1790891007&ip=85.190.102.209",
+      "timestamps": []
     }
   ];
 
@@ -100,23 +179,57 @@
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Извлекаем короткое имя для отображения из URL страницы
+    // Красивое формирование названия из URL
     const urlParts = item.page.split('/');
-    const videoName = urlParts[urlParts.length - 1] || `Видео #${index + 1}`;
+    const rawName = urlParts[urlParts.length - 1] || `Видео #${index + 1}`;
+    const cleanTitle = decodeURIComponent(rawName.split('-').slice(0, -1).join(' '));
+
+    // Генерация кнопок таймкодов
+    let timestampsHTML = '';
+    if (item.timestamps && item.timestamps.length > 0) {
+      timestampsHTML = '<div class="timestamps-section">';
+      item.timestamps.forEach(ts => {
+        // Парсим секунды из текста вида "01:23" для перемотки плеера
+        const match = ts.text.match(/(\d{2}):(\d{2})/);
+        let seconds = 0;
+        if (match) {
+          seconds = parseInt(match[1]) * 60 + parseInt(match[2]);
+        }
+        timestampsHTML += `<button class="timestamp-badge" onclick="seekVideo(this, ${seconds})">${ts.text}</button>`;
+      });
+      timestampsHTML += '</div>';
+    } else {
+      timestampsHTML = '<span class="no-timestamps">Таймкоды отсутствуют</span>';
+    }
 
     card.innerHTML = `
-      <video controls preload="metadata">
-        <source src="${item.video_url}" type="video/mp4">
-        Ваш браузер не поддерживает элемент video.
-      </video>
-      <div class="card-content">
-        <div class="card-title">${videoName}</div>
-        <a href="${item.page}" target="_blank">Открыть оригинал сайта ↗</a>
+      <div class="video-container">
+        <video controls preload="metadata">
+          <source src="${item.video_url}" type="video/mp4">
+          Ваш браузер не поддерживает видео.
+        </video>
+      </div>
+      <div class="card-body">
+        <div class="card-title" title="${cleanTitle}">${cleanTitle || rawName}</div>
+        ${timestampsHTML}
+        <div class="card-footer">
+          <a href="${item.page}" target="_blank">Источник ↗</a>
+        </div>
       </div>
     `;
 
     grid.appendChild(card);
   });
+
+  // Функция для перемотки видео при клике на таймкод
+  function seekVideo(button, seconds) {
+    const card = button.closest('.card');
+    const video = card.querySelector('video');
+    if (video) {
+      video.currentTime = seconds;
+      video.play();
+    }
+  }
 </script>
 
 </body>
