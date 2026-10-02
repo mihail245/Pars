@@ -26,12 +26,8 @@
     z-index: 100;
   }
   .logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 20px;
-    font-weight: 700;
-    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 20px; font-weight: 700; cursor: pointer;
   }
   .logo-icon {
     width: 32px; height: 22px;
@@ -42,14 +38,9 @@
   }
   .header-btns { display: flex; gap: 10px; }
   .btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: none;
-    background: #272727;
-    color: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background .2s;
+    padding: 8px 16px; border-radius: 20px; border: none;
+    background: #272727; color: #fff; cursor: pointer;
+    font-size: 14px; transition: background .2s;
   }
   .btn:hover { background: #3a3a3a; }
   .btn-primary { background: #ff0000; }
@@ -64,59 +55,39 @@
     gap: 20px;
   }
   .video-card {
-    cursor: pointer;
-    border-radius: 12px;
-    overflow: hidden;
+    cursor: pointer; border-radius: 12px; overflow: hidden;
     transition: transform .2s;
   }
   .video-card:hover { transform: translateY(-3px); }
   .video-thumb {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: #000;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
+    width: 100%; aspect-ratio: 16/9;
+    background: #111;
+    position: relative; border-radius: 12px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background-size: cover; background-position: center;
   }
-  .video-thumb video {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    pointer-events: none;
+  .video-thumb .play-overlay {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff;
+    opacity: 0; transition: opacity .2s;
+    backdrop-filter: blur(4px);
   }
-  .video-thumb::after {
-    content: '▶';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255,255,255,.9);
-    font-size: 40px;
-    background: rgba(0,0,0,.15);
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .video-card:hover .video-thumb::after { opacity: 1; }
+  .video-card:hover .video-thumb .play-overlay { opacity: 1; }
   .video-info { padding: 10px 4px; }
   .video-title {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-weight: 600; font-size: 15px; margin-bottom: 4px;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
   }
   .video-date { font-size: 12px; color: #aaa; }
   .delete-btn {
-    margin-top: 6px;
-    background: transparent;
-    border: 1px solid #444;
-    color: #ff6b6b;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
+    margin-top: 6px; background: transparent;
+    border: 1px solid #444; color: #ff6b6b;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 12px; cursor: pointer;
   }
   .delete-btn:hover { background: #2a1010; }
 
@@ -132,68 +103,49 @@
   }
   .back-btn:hover { color: #fff; }
 
-  .player-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 16px 0 8px;
-  }
+  .player-title { font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
   .player-meta { color: #aaa; font-size: 14px; margin-bottom: 20px; }
 
   /* ===== Кастомный плеер ===== */
   .player-wrap {
-    position: relative;
-    width: 100%;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    user-select: none;
+    position: relative; width: 100%;
+    background: #000; border-radius: 12px;
+    overflow: hidden; user-select: none;
   }
   .player-wrap video {
-    width: 100%;
-    display: block;
-    max-height: 70vh;
-    background: #000;
+    width: 100%; display: block;
+    max-height: 70vh; background: #000;
   }
   .controls {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
+    position: absolute; left: 0; right: 0; bottom: 0;
     background: linear-gradient(transparent, rgba(0,0,0,.85));
     padding: 40px 16px 12px;
-    opacity: 0;
-    transition: opacity .25s;
+    opacity: 0; transition: opacity .25s;
   }
   .player-wrap:hover .controls,
   .player-wrap.paused .controls { opacity: 1; }
 
-  /* Прогресс-бар с превью таймкода */
+  /* Прогресс-бар */
   .progress-wrap {
-    position: relative;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 8px;
+    position: relative; height: 18px;
+    display: flex; align-items: center;
+    cursor: pointer; margin-bottom: 8px;
   }
   .progress-bg {
-    width: 100%;
-    height: 5px;
+    width: 100%; height: 5px;
     background: rgba(255,255,255,.25);
-    border-radius: 3px;
-    overflow: hidden;
+    border-radius: 3px; overflow: hidden;
     transition: height .15s;
   }
   .progress-wrap:hover .progress-bg { height: 7px; }
   .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: #ff0000;
-    border-radius: 3px;
+    height: 100%; width: 0%;
+    background: #ff0000; border-radius: 3px;
   }
   .progress-thumb {
     position: absolute;
     width: 14px; height: 14px;
-    background: #ff0000;
-    border-radius: 50%;
+    background: #ff0000; border-radius: 50%;
     top: 50%;
     transform: translate(-50%, -50%) scale(0);
     transition: transform .15s;
@@ -202,58 +154,41 @@
   .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1); }
 
   .time-tooltip {
-    position: absolute;
-    bottom: 24px;
+    position: absolute; bottom: 24px;
     transform: translateX(-50%);
-    background: rgba(0,0,0,.9);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-    opacity: 0;
-    pointer-events: none;
-    white-space: nowrap;
-    transition: opacity .15s;
+    background: rgba(0,0,0,.9); color: #fff;
+    padding: 4px 8px; border-radius: 4px;
+    font-size: 12px; font-variant-numeric: tabular-nums;
+    opacity: 0; pointer-events: none;
+    white-space: nowrap; transition: opacity .15s;
   }
   .progress-wrap:hover .time-tooltip { opacity: 1; }
 
   /* Нижний ряд управления */
   .ctrl-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #fff;
+    display: flex; align-items: center; gap: 12px; color: #fff;
   }
   .ctrl-btn {
     background: none; border: none; color: #fff;
     cursor: pointer; padding: 6px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-    transition: background .15s;
-    font-size: 18px;
-    line-height: 1;
+    border-radius: 50%; transition: background .15s;
+    font-size: 18px; line-height: 1;
   }
   .ctrl-btn:hover { background: rgba(255,255,255,.15); }
   .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; }
 
   .time-display {
-    font-size: 13px;
-    font-variant-numeric: tabular-nums;
-    color: #eee;
-    min-width: 100px;
+    font-size: 13px; font-variant-numeric: tabular-nums;
+    color: #eee; min-width: 100px;
   }
   .spacer { flex: 1; }
 
-  .volume-wrap {
-    display: flex; align-items: center; gap: 6px;
-  }
+  .volume-wrap { display: flex; align-items: center; gap: 6px; }
   .volume-slider {
-    width: 0;
-    opacity: 0;
+    width: 0; opacity: 0;
     transition: width .25s, opacity .25s;
-    accent-color: #ff0000;
-    cursor: pointer;
+    accent-color: #ff0000; cursor: pointer;
   }
   .volume-wrap:hover .volume-slider { width: 80px; opacity: 1; }
 
@@ -266,79 +201,35 @@
 
   /* ===== Админка ===== */
   .admin-panel {
-    display: none;
-    max-width: 640px;
-    margin: 0 auto;
+    display: none; max-width: 640px; margin: 0 auto;
   }
   .admin-panel.active { display: block; }
   .admin-panel h2 { margin-bottom: 20px; }
 
-  .field {
-    margin-bottom: 16px;
-  }
+  .field { margin-bottom: 16px; }
   .field label {
     display: block; font-size: 13px; color: #aaa; margin-bottom: 6px;
   }
-  .field input[type="text"],
-  .field input[type="password"] {
-    width: 100%;
-    padding: 12px 14px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: border .15s;
+  .field input[type="text"] {
+    width: 100%; padding: 12px 14px;
+    background: #1a1a1a; border: 1px solid #333;
+    border-radius: 8px; color: #fff; font-size: 14px;
+    outline: none; transition: border .15s;
   }
-  .field input:focus { border-color: #ff0000; }
-
-  .file-drop {
-    border: 2px dashed #333;
-    border-radius: 12px;
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-    color: #888;
-  }
-  .file-drop:hover { border-color: #ff0000; background: #1a1010; }
-  .file-drop.has-file { border-color: #4caf50; background: #0f1a0f; color: #4caf50; }
-  .file-drop input { display: none; }
-
-  .progress-upload {
-    height: 6px;
-    background: #333;
-    border-radius: 3px;
-    margin-top: 12px;
-    overflow: hidden;
-    display: none;
-  }
-  .progress-upload.active { display: block; }
-  .progress-upload-fill {
-    height: 100%; width: 0%;
-    background: #ff0000;
-    transition: width .3s;
-  }
+  .field input[type="text"]:focus { border-color: #ff0000; }
+  .field small { color: #666; font-size: 12px; display: block; margin-top: 6px; }
 
   .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #666;
+    text-align: center; padding: 60px 20px; color: #666;
   }
 
   .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
+    position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #222;
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 8px;
+    background: #222; color: #fff;
+    padding: 12px 20px; border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0,0,0,.5);
-    transition: transform .3s;
-    z-index: 1000;
+    transition: transform .3s; z-index: 1000;
     border-left: 4px solid #4caf50;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
@@ -364,7 +255,7 @@
     <h2 style="margin-bottom:20px;">Все видео</h2>
     <div class="video-grid" id="videoGrid"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
-      <p>Пока нет видео. Зайдите в админку и загрузите первое 🎬</p>
+      <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
     </div>
   </div>
 
@@ -373,7 +264,7 @@
     <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
 
     <div class="player-wrap paused" id="playerWrap">
-      <video id="mainVideo" preload="metadata"></video>
+      <video id="mainVideo" preload="metadata" crossorigin="anonymous"></video>
 
       <div class="controls">
         <div class="progress-wrap" id="progressWrap">
@@ -387,10 +278,10 @@
         <div class="ctrl-row">
           <button class="ctrl-btn" id="playBtn" title="Play/Pause"></button>
           <button class="ctrl-btn" id="backBtn" title="-10 сек">
-            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" transform="scale(-1,1) translate(-24,0)"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z"/></svg>
           </button>
           <button class="ctrl-btn" id="fwdBtn" title="+10 сек">
-            <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
           </button>
 
           <div class="time-display">
@@ -419,7 +310,7 @@
 
   <!-- АДМИНКА -->
   <div class="admin-panel" id="adminPanel">
-    <h2>⚙ Загрузка видео</h2>
+    <h2>⚙ Добавить видео</h2>
 
     <div class="field">
       <label>Название видео</label>
@@ -427,20 +318,20 @@
     </div>
 
     <div class="field">
-      <label>Видеофайл</label>
-      <div class="file-drop" id="fileDrop">
-        <input type="file" id="videoFile" accept="video/*">
-        <div id="fileDropText">📁 Нажмите или перетащите видео сюда<br><small>MP4, WebM, MOV</small></div>
-      </div>
+      <label>Ссылка на видеофайл</label>
+      <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4">
+      <small>Прямая ссылка на MP4/WebM/MOV файл (не YouTube-страница!)</small>
     </div>
 
-    <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="uploadBtn" onclick="uploadVideo()">
-      Загрузить видео
+    <div class="field">
+      <label>Ссылка на превью (необязательно)</label>
+      <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
+      <small>Картинка-обложка. Если пусто — будет чёрный фон</small>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
+      Добавить видео
     </button>
-
-    <div class="progress-upload" id="uploadProgress">
-      <div class="progress-upload-fill" id="uploadProgressFill"></div>
-    </div>
   </div>
 </main>
 
@@ -450,10 +341,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import {
-  getDatabase, ref as dbRef, push, set, onValue, remove, serverTimestamp
+  getDatabase, ref as dbRef, push, set, onValue, remove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -467,8 +355,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
 const db = getDatabase(app);
+const videosRef = dbRef(db, 'videos');
 
 // ===== Утилиты =====
 function fmtTime(s) {
@@ -494,6 +382,19 @@ function fmtDate(ts) {
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+// Достать ID видео из YouTube-ссылки (если пользователь вставил YouTube)
+function getYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
 // ===== Навигация =====
 window.showLibrary = function() {
   document.getElementById('libraryView').classList.remove('hidden');
@@ -503,20 +404,19 @@ window.showLibrary = function() {
   v.pause();
   v.removeAttribute('src');
   v.load();
+  document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
 };
 
 window.showAdmin = function() {
   document.getElementById('libraryView').classList.add('hidden');
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.add('active');
-  const v = document.getElementById('mainVideo');
-  v.pause();
+  document.getElementById('mainVideo').pause();
 };
 
-// ===== Загрузка списка видео =====
+// ===== Список видео =====
 const videoGrid = document.getElementById('videoGrid');
 const emptyState = document.getElementById('emptyState');
-const videosRef = dbRef(db, 'videos');
 
 onValue(videosRef, (snapshot) => {
   const data = snapshot.val() || {};
@@ -533,9 +433,19 @@ onValue(videosRef, (snapshot) => {
   list.forEach(v => {
     const card = document.createElement('div');
     card.className = 'video-card';
+
+    // Превью: своя картинка или YouTube thumbnail
+    let thumbStyle = '';
+    const ytId = getYouTubeId(v.url);
+    if (v.thumb) {
+      thumbStyle = `background-image: url('${escapeHtml(v.thumb)}')`;
+    } else if (ytId) {
+      thumbStyle = `background-image: url('https://img.youtube.com/vi/${ytId}/hqdefault.jpg')`;
+    }
+
     card.innerHTML = `
-      <div class="video-thumb">
-        <video src="${v.url}#t=0.5" preload="metadata" muted></video>
+      <div class="video-thumb" style="${thumbStyle}">
+        <div class="play-overlay">▶</div>
       </div>
       <div class="video-info">
         <div class="video-title">${escapeHtml(v.title)}</div>
@@ -552,12 +462,6 @@ onValue(videosRef, (snapshot) => {
   });
 });
 
-function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  })[c]);
-}
-
 // ===== Воспроизведение =====
 const mainVideo = document.getElementById('mainVideo');
 const playerView = document.getElementById('playerView');
@@ -568,10 +472,32 @@ function playVideo(v) {
   document.getElementById('adminPanel').classList.remove('active');
   playerView.classList.add('active');
   document.getElementById('playerTitle').textContent = v.title;
-  document.getElementById('playerMeta').textContent = `Загружено: ${fmtDate(v.createdAt)}`;
-  mainVideo.src = v.url;
-  mainVideo.play().catch(()=>{});
+  document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
   window.scrollTo({top:0, behavior:'smooth'});
+
+  const ytId = getYouTubeId(v.url);
+
+  // Если YouTube-ссылка — встраиваем iframe вместо <video>
+  document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
+
+  if (ytId) {
+    mainVideo.style.display = 'none';
+    document.querySelector('.controls').style.display = 'none';
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+    iframe.style.cssText = 'width:100%; height:70vh; display:block; border:0; background:#000;';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    playerWrap.insertBefore(iframe, playerWrap.firstChild);
+  } else {
+    mainVideo.style.display = 'block';
+    document.querySelector('.controls').style.display = 'block';
+    mainVideo.src = v.url;
+    mainVideo.play().catch(err => {
+      console.warn(err);
+      showToast('Не удалось воспроизвести. Проверьте ссылку и CORS.', true);
+    });
+  }
 }
 
 // ===== Кастомные контролы =====
@@ -605,7 +531,7 @@ mainVideo.onpause = updatePlayIcon;
 updatePlayIcon();
 
 backBtn10.onclick = () => { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); };
-fwdBtn10.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration, mainVideo.currentTime + 10); };
+fwdBtn10.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); };
 
 mainVideo.ontimeupdate = () => {
   const cur = mainVideo.currentTime;
@@ -618,6 +544,9 @@ mainVideo.ontimeupdate = () => {
 };
 mainVideo.onloadedmetadata = () => {
   durTimeEl.textContent = fmtTime(mainVideo.duration);
+};
+mainVideo.onerror = () => {
+  showToast('Ошибка загрузки видео. Возможно CORS или неверная ссылка.', true);
 };
 
 // Прогресс-бар
@@ -636,7 +565,6 @@ progressWrap.addEventListener('mousemove', (e) => {
   if (mainVideo.duration) timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
 });
 
-// Drag-перемотка
 let dragging = false;
 progressWrap.addEventListener('mousedown', (e) => { dragging = true; seekFromEvent(e); });
 window.addEventListener('mousemove', (e) => { if (dragging) seekFromEvent(e); });
@@ -673,6 +601,7 @@ speedBtn.onclick = () => {
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT') return;
+  if (document.querySelector('.player-view iframe')) return; // для YouTube свои клавиши
   switch (e.key) {
     case ' ': e.preventDefault(); playBtn.click(); break;
     case 'ArrowLeft': backBtn10.click(); break;
@@ -684,95 +613,39 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ===== Админка: загрузка файла =====
-const fileDrop = document.getElementById('fileDrop');
-const videoFileInput = document.getElementById('videoFile');
-const fileDropText = document.getElementById('fileDropText');
-
-fileDrop.onclick = () => videoFileInput.click();
-fileDrop.ondragover = (e) => { e.preventDefault(); fileDrop.style.borderColor = '#ff0000'; };
-fileDrop.ondragleave = () => { fileDrop.style.borderColor = '#333'; };
-fileDrop.ondrop = (e) => {
-  e.preventDefault();
-  fileDrop.style.borderColor = '#333';
-  if (e.dataTransfer.files[0]) {
-    videoFileInput.files = e.dataTransfer.files;
-    onFileSelected();
-  }
-};
-videoFileInput.onchange = onFileSelected;
-
-function onFileSelected() {
-  const f = videoFileInput.files[0];
-  if (!f) return;
-  fileDrop.classList.add('has-file');
-  const sizeMB = (f.size / 1024 / 1024).toFixed(1);
-  fileDropText.innerHTML = `✅ ${f.name}<br><small>${sizeMB} МБ</small>`;
-}
-
-// Загрузка
-window.uploadVideo = async function() {
+// ===== Админка: добавление видео =====
+window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
-  const file = videoFileInput.files[0];
+  const url = document.getElementById('videoUrl').value.trim();
+  const thumb = document.getElementById('videoThumb').value.trim();
 
   if (!title) return showToast('Введите название', true);
-  if (!file) return showToast('Выберите файл', true);
+  if (!url) return showToast('Введите ссылку на видео', true);
+  if (!/^https?:\/\//i.test(url)) return showToast('Ссылка должна начинаться с http:// или https://', true);
 
-  const uploadBtn = document.getElementById('uploadBtn');
-  const progBox = document.getElementById('uploadProgress');
-  const progFill = document.getElementById('uploadProgressFill');
-  uploadBtn.disabled = true;
-  uploadBtn.textContent = 'Загрузка...';
-  progBox.classList.add('active');
-  progFill.style.width = '0%';
+  const addBtn = document.getElementById('addBtn');
+  addBtn.disabled = true;
+  addBtn.textContent = 'Добавление...';
 
   try {
-    const fileName = `videos/${Date.now()}_${file.name.replace(/[^\w.-]/g, '_')}`;
-    const storageRef = sRef(storage, fileName);
-    const task = uploadBytesResumable(storageRef, file);
-
-    task.on('state_changed',
-      (snap) => {
-        const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
-        progFill.style.width = pct + '%';
-      },
-      (err) => {
-        console.error(err);
-        showToast('Ошибка загрузки: ' + err.message, true);
-        resetUpload();
-      },
-      async () => {
-        const url = await getDownloadURL(task.snapshot.ref);
-        const newRef = push(videosRef);
-        await set(newRef, {
-          title,
-          url,
-          storagePath: fileName,
-          createdAt: Date.now()
-        });
-        showToast('✅ Видео загружено!');
-        resetUpload();
-        // Очистка формы
-        document.getElementById('videoTitle').value = '';
-        videoFileInput.value = '';
-        fileDrop.classList.remove('has-file');
-        fileDropText.innerHTML = '📁 Нажмите или перетащите видео сюда<br><small>MP4, WebM, MOV</small>';
-        setTimeout(showLibrary, 800);
-      }
-    );
+    const newRef = push(videosRef);
+    await set(newRef, {
+      title,
+      url,
+      thumb: thumb || '',
+      createdAt: Date.now()
+    });
+    showToast('✅ Видео добавлено!');
+    document.getElementById('videoTitle').value = '';
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('videoThumb').value = '';
+    setTimeout(showLibrary, 500);
   } catch (err) {
     console.error(err);
     showToast('Ошибка: ' + err.message, true);
-    resetUpload();
-  }
-
-  function resetUpload() {
-    uploadBtn.disabled = false;
-    uploadBtn.textContent = 'Загрузить видео';
-    setTimeout(() => {
-      progBox.classList.remove('active');
-      progFill.style.width = '0%';
-    }, 500);
+  } finally {
+    addBtn.disabled = false;
+    addBtn.textContent = 'Добавить видео';
   }
 };
 
@@ -780,10 +653,6 @@ window.uploadVideo = async function() {
 async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
-    if (v.storagePath) {
-      try { await deleteObject(sRef(storage, v.storagePath)); }
-      catch (e) { console.warn('Storage delete failed:', e); }
-    }
     await remove(dbRef(db, 'videos/' + v.id));
     showToast('Видео удалено');
   } catch (err) {
