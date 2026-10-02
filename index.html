@@ -53,6 +53,9 @@
   }
   .btn-danger:hover { background: #3a1515; }
   .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-sm {
+    padding: 6px 12px; font-size: 13px; border-radius: 14px;
+  }
 
   /* ===== Контент ===== */
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
@@ -84,6 +87,16 @@
     backdrop-filter: blur(4px);
   }
   .video-card:hover .video-thumb .play-overlay { opacity: 1; }
+  .video-thumb .ts-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,.75);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
   .video-info { padding: 10px 4px; }
   .video-title {
     font-weight: 600; font-size: 15px; margin-bottom: 4px;
@@ -114,6 +127,69 @@
   .player-title { font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
   .player-meta { color: #aaa; font-size: 14px; margin-bottom: 20px; }
 
+  /* ===== Секция таймкодов под плеером ===== */
+  .timestamps-block {
+    margin-top: 20px;
+    padding: 16px;
+    background: #181818;
+    border-radius: 12px;
+    border: 1px solid #272727;
+  }
+  .timestamps-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .timestamps-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .timestamps-header .count {
+    font-size: 12px;
+    color: #888;
+  }
+  .timestamps-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .timestamps-list::-webkit-scrollbar { width: 6px; }
+  .timestamps-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .ts-chip {
+    background: rgba(255, 0, 0, 0.12);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s, color .15s, transform .1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ts-chip:hover {
+    background: #ff0000;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .ts-chip .ts-time {
+    font-variant-numeric: tabular-nums;
+    opacity: .8;
+    font-weight: 700;
+  }
+  .ts-empty {
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+  }
+
   /* ===== Кастомный плеер ===== */
   .player-wrap {
     position: relative; width: 100%;
@@ -133,7 +209,7 @@
   .player-wrap:hover .controls,
   .player-wrap.paused .controls { opacity: 1; }
 
-  /* Прогресс-бар */
+  /* Прогресс-бар + маркеры таймкодов */
   .progress-wrap {
     position: relative; height: 18px;
     display: flex; align-items: center;
@@ -142,13 +218,30 @@
   .progress-bg {
     width: 100%; height: 5px;
     background: rgba(255,255,255,.25);
-    border-radius: 3px; overflow: hidden;
+    border-radius: 3px;
     transition: height .15s;
+    position: relative;
+    overflow: visible;
   }
   .progress-wrap:hover .progress-bg { height: 7px; }
   .progress-fill {
+    position: absolute;
+    top: 0; left: 0;
     height: 100%; width: 0%;
-    background: #ff0000; border-radius: 3px;
+    background: #ff0000;
+    border-radius: 3px;
+  }
+  /* Маркеры таймкодов на прогресс-баре */
+  .ts-marker {
+    position: absolute;
+    top: 50%;
+    width: 3px; height: 12px;
+    background: #ffcc00;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 0 4px rgba(255, 204, 0, 0.7);
+    z-index: 2;
   }
   .progress-thumb {
     position: absolute;
@@ -158,6 +251,7 @@
     transform: translate(-50%, -50%) scale(0);
     transition: transform .15s;
     pointer-events: none;
+    z-index: 3;
   }
   .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1); }
 
@@ -169,6 +263,7 @@
     font-size: 12px; font-variant-numeric: tabular-nums;
     opacity: 0; pointer-events: none;
     white-space: nowrap; transition: opacity .15s;
+    z-index: 5;
   }
   .progress-wrap:hover .time-tooltip { opacity: 1; }
 
@@ -209,7 +304,7 @@
 
   /* ===== Админка ===== */
   .admin-panel {
-    display: none; max-width: 640px; margin: 0 auto;
+    display: none; max-width: 720px; margin: 0 auto;
   }
   .admin-panel.active { display: block; }
   .admin-panel h2 { margin-bottom: 20px; }
@@ -218,14 +313,80 @@
   .field label {
     display: block; font-size: 13px; color: #aaa; margin-bottom: 6px;
   }
-  .field input[type="text"] {
+  .field input[type="text"],
+  .field textarea {
     width: 100%; padding: 12px 14px;
     background: #1a1a1a; border: 1px solid #333;
     border-radius: 8px; color: #fff; font-size: 14px;
     outline: none; transition: border .15s;
+    font-family: inherit;
+    resize: vertical;
   }
-  .field input[type="text"]:focus { border-color: #ff0000; }
+  .field input[type="text"]:focus,
+  .field textarea:focus { border-color: #ff0000; }
   .field small { color: #666; font-size: 12px; display: block; margin-top: 6px; }
+
+  /* Секция таймкодов в админке */
+  .ts-admin-block {
+    border: 1px solid #272727;
+    border-radius: 10px;
+    padding: 14px;
+    background: #141414;
+  }
+  .ts-admin-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .ts-admin-header span { font-size: 13px; color: #aaa; }
+  .ts-admin-list { display: flex; flex-direction: column; gap: 8px; }
+  .ts-admin-row {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .ts-admin-row input[type="text"] {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .ts-admin-row .ts-input-time {
+    flex: 0 0 100px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .ts-admin-row .ts-input-label {
+    flex: 1;
+  }
+  .ts-admin-row .ts-remove-btn {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1px solid #444;
+    color: #ff6b6b;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, border-color .15s;
+  }
+  .ts-admin-row .ts-remove-btn:hover {
+    background: #2a1010;
+    border-color: #5a2020;
+  }
+  .ts-add-btn {
+    margin-top: 10px;
+    background: transparent;
+    border: 1px dashed #444;
+    color: #38bdf8;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background .15s, border-color .15s;
+  }
+  .ts-add-btn:hover {
+    background: #0d2030;
+    border-color: #38bdf8;
+  }
 
   .empty-state {
     text-align: center; padding: 60px 20px; color: #666;
@@ -272,13 +433,13 @@
     <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
 
     <div class="player-wrap paused" id="playerWrap">
-      <!-- Без crossorigin! Иначе браузер режет CORS-несовместимые ссылки -->
       <video id="mainVideo" preload="metadata"></video>
 
       <div class="controls">
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-bg">
             <div class="progress-fill" id="progressFill"></div>
+            <div id="tsMarkersLayer"></div>
           </div>
           <div class="progress-thumb" id="progressThumb"></div>
           <div class="time-tooltip" id="timeTooltip">0:00</div>
@@ -315,6 +476,15 @@
 
     <h1 class="player-title" id="playerTitle"></h1>
     <div class="player-meta" id="playerMeta"></div>
+
+    <!-- Блок таймкодов под плеером -->
+    <div class="timestamps-block" id="timestampsBlock" style="display:none;">
+      <div class="timestamps-header">
+        <h3>⏱ Таймкоды</h3>
+        <span class="count" id="tsCount"></span>
+      </div>
+      <div class="timestamps-list" id="timestampsList"></div>
+    </div>
   </div>
 
   <!-- АДМИНКА -->
@@ -328,7 +498,7 @@
 
     <div class="field">
       <label>Ссылка на видеофайл</label>
-      <input type="text" id="videoUrl" placeholder="https://cs23.vps-vids.com/vids460352/sexstud28620.mp4?hash=...&ip=...">
+      <input type="text" id="videoUrl" placeholder="https://cs23.vps-vids.com/vids460352/file.mp4?hash=...&ip=...">
       <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
     </div>
 
@@ -336,6 +506,20 @@
       <label>Ссылка на превью (необязательно)</label>
       <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
       <small>Картинка-обложка. Если пусто — превью YouTube или чёрный фон</small>
+    </div>
+
+    <!-- ТАЙМКОДЫ -->
+    <div class="field">
+      <label>Таймкоды (необязательно)</label>
+      <div class="ts-admin-block">
+        <div class="ts-admin-header">
+          <span>Формат: <b>MM:СС</b> + название категории</span>
+          <span id="tsCounter">0 шт.</span>
+        </div>
+        <div class="ts-admin-list" id="tsAdminList"></div>
+        <button class="ts-add-btn" onclick="addTsRow()">+ Добавить таймкод</button>
+      </div>
+      <small>Появятся под плеером как кликабельные кнопки. Также отобразятся жёлтыми маркерами на прогресс-баре.</small>
     </div>
 
     <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
@@ -391,6 +575,24 @@ function fmtTime(s) {
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
+// Парсит "MM:SS" или "HH:MM:SS" или "M:SS" в секунды
+function parseTime(str) {
+  if (!str) return null;
+  const s = String(str).trim();
+  const parts = s.split(':').map(p => parseInt(p, 10));
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 1) return parts[0]; // просто секунды
+  return null;
+}
+
+// Проверка, что строка похожа на время
+function isValidTime(str) {
+  return /^\d{1,2}:\d{2}(:\d{2})?$/.test(String(str || '').trim()) ||
+         /^\d+$/.test(String(str || '').trim());
+}
+
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -441,6 +643,11 @@ window.showAdmin = function() {
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.add('active');
   document.getElementById('mainVideo').pause();
+
+  // Если список таймкодов пуст — добавим одну пустую строку для удобства
+  if (document.getElementById('tsAdminList').children.length === 0) {
+    addTsRow();
+  }
 };
 
 // ===== Список видео =====
@@ -471,8 +678,12 @@ onValue(videosRef, (snapshot) => {
       thumbStyle = `background-image: url('https://img.youtube.com/vi/${ytId}/hqdefault.jpg')`;
     }
 
+    const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
+    const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
+
     card.innerHTML = `
       <div class="video-thumb" style="${thumbStyle}">
+        ${tsBadge}
         <div class="play-overlay">▶</div>
       </div>
       <div class="video-info">
@@ -494,6 +705,10 @@ onValue(videosRef, (snapshot) => {
 const mainVideo = document.getElementById('mainVideo');
 const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
+const tsMarkersLayer = document.getElementById('tsMarkersLayer');
+
+// Текущие таймкоды открытого видео
+let currentTimestamps = [];
 
 function playVideo(v) {
   document.getElementById('libraryView').classList.add('hidden');
@@ -503,16 +718,19 @@ function playVideo(v) {
   document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
   window.scrollTo({top:0, behavior:'smooth'});
 
+  // Сохраняем таймкоды текущего видео
+  currentTimestamps = Array.isArray(v.timestamps) ? v.timestamps : [];
+  renderTimestampsBlock(currentTimestamps);
+  renderTsMarkers(currentTimestamps);
+
   const ytId = getYouTubeId(v.url);
 
-  // Убираем прошлый iframe и очищаем video
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
   mainVideo.pause();
   mainVideo.removeAttribute('src');
   mainVideo.querySelectorAll('source').forEach(s => s.remove());
 
   if (ytId) {
-    // YouTube через iframe
     mainVideo.style.display = 'none';
     document.querySelector('.controls').style.display = 'none';
 
@@ -522,8 +740,10 @@ function playVideo(v) {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     playerWrap.insertBefore(iframe, playerWrap.firstChild);
+
+    // Для YouTube таймкоды не сможем отрисовать на прогресс-баре (нет API без библиотеки),
+    // но кнопки-чипы всё равно работают через перезагрузку iframe с ?start=
   } else {
-    // Прямой MP4 — через <source>, БЕЗ crossorigin, чтобы работали ссылки с vps-vids.com
     mainVideo.style.display = 'block';
     document.querySelector('.controls').style.display = 'block';
 
@@ -533,13 +753,81 @@ function playVideo(v) {
     mainVideo.appendChild(src);
 
     mainVideo.load();
-
-    // Пытаемся запустить (браузер может заблокировать autoplay со звуком)
-    mainVideo.play().catch(() => {
-      // Показываем плеер, но без звука — пользователь нажмёт play сам
-    });
+    mainVideo.play().catch(() => {});
   }
 }
+
+// Отрисовка блока таймкодов под плеером
+function renderTimestampsBlock(timestamps) {
+  const block = document.getElementById('timestampsBlock');
+  const list = document.getElementById('timestampsList');
+  const countEl = document.getElementById('tsCount');
+
+  list.innerHTML = '';
+
+  if (!timestamps || timestamps.length === 0) {
+    block.style.display = 'none';
+    return;
+  }
+
+  block.style.display = 'block';
+  countEl.textContent = `${timestamps.length} шт.`;
+
+  timestamps.forEach(ts => {
+    const seconds = parseTime(ts.time);
+    const chip = document.createElement('button');
+    chip.className = 'ts-chip';
+    chip.innerHTML = `<span class="ts-time">${escapeHtml(ts.time)}</span> ${escapeHtml(ts.label)}`;
+    chip.onclick = () => {
+      const ytId = getYouTubeId(document.querySelector('.player-view iframe')?.src || '');
+      if (ytId) {
+        // YouTube — перезагружаем iframe с параметром start
+        const iframe = document.querySelector('.player-view iframe');
+        iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&start=${seconds}`;
+      } else if (mainVideo) {
+        mainVideo.currentTime = seconds;
+        mainVideo.play();
+        // Плавно проскроллим к плееру
+        document.getElementById('playerWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    list.appendChild(chip);
+  });
+}
+
+// Отрисовка жёлтых маркеров на прогресс-баре
+function renderTsMarkers(timestamps) {
+  tsMarkersLayer.innerHTML = '';
+  if (!timestamps || timestamps.length === 0) return;
+
+  const dur = mainVideo.duration;
+  if (!dur || !isFinite(dur)) {
+    // Если метаданные ещё не загружены — подождём и попробуем снова
+    mainVideo.addEventListener('loadedmetadata', function onMeta() {
+      mainVideo.removeEventListener('loadedmetadata', onMeta);
+      renderTsMarkers(timestamps);
+    }, { once: true });
+    return;
+  }
+
+  timestamps.forEach(ts => {
+    const sec = parseTime(ts.time);
+    if (sec === null) return;
+    const pct = Math.min(100, Math.max(0, (sec / dur) * 100));
+    const marker = document.createElement('div');
+    marker.className = 'ts-marker';
+    marker.style.left = pct + '%';
+    marker.title = `${ts.time} — ${ts.label}`;
+    tsMarkersLayer.appendChild(marker);
+  });
+}
+
+// Обновляем маркеры при смене видео (метаданные могут прийти с задержкой)
+mainVideo.addEventListener('loadedmetadata', () => {
+  if (currentTimestamps.length > 0) {
+    renderTsMarkers(currentTimestamps);
+  }
+});
 
 // ===== Кастомные контролы =====
 const playBtn = document.getElementById('playBtn');
@@ -587,7 +875,6 @@ mainVideo.onloadedmetadata = () => {
   durTimeEl.textContent = fmtTime(mainVideo.duration);
 };
 mainVideo.onerror = () => {
-  // Не показываем ошибку, если нет src (мы просто очистили плеер)
   if (!mainVideo.currentSrc && !mainVideo.querySelector('source')) return;
   showToast('Не удалось воспроизвести видео. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
@@ -643,7 +930,7 @@ speedBtn.onclick = () => {
 // Горячие клавиши
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (document.querySelector('.player-view iframe')) return;
   switch (e.key) {
     case ' ': e.preventDefault(); playBtn.click(); break;
@@ -656,6 +943,65 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ===== АДМИНКА: динамические строки таймкодов =====
+window.addTsRow = function(time = '', label = '') {
+  const list = document.getElementById('tsAdminList');
+  const row = document.createElement('div');
+  row.className = 'ts-admin-row';
+  row.innerHTML = `
+    <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeHtml(time)}">
+    <input type="text" class="ts-input-label" placeholder="Что происходит (напр. поцелуи)" value="${escapeHtml(label)}">
+    <button class="ts-remove-btn" title="Удалить">✕</button>
+  `;
+  row.querySelector('.ts-remove-btn').onclick = () => {
+    row.remove();
+    updateTsCounter();
+  };
+  // Авто-форматирование времени при вводе
+  const timeInput = row.querySelector('.ts-input-time');
+  timeInput.addEventListener('blur', () => {
+    const val = timeInput.value.trim();
+    if (!val) return;
+    const sec = parseTime(val);
+    if (sec !== null && !val.includes(':')) {
+      timeInput.value = fmtTime(sec);
+    }
+  });
+  list.appendChild(row);
+  updateTsCounter();
+  if (!time && !label) {
+    // Автофокус на новую строку
+    setTimeout(() => timeInput.focus(), 30);
+  }
+};
+
+function updateTsCounter() {
+  const count = document.getElementById('tsAdminList').children.length;
+  document.getElementById('tsCounter').textContent = `${count} шт.`;
+}
+
+// Собрать таймкоды из формы админки
+function collectTimestampsFromForm() {
+  const rows = document.getElementById('tsAdminList').children;
+  const result = [];
+  for (const row of rows) {
+    const time = row.querySelector('.ts-input-time').value.trim();
+    const label = row.querySelector('.ts-input-label').value.trim();
+    if (!time && !label) continue; // пропускаем пустые
+    if (!time || !label) return { error: 'Заполните и время, и название таймкода (или удалите пустую строку)' };
+    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}". Используй ММ:СС` };
+    result.push({ time, label });
+  }
+  return { data: result };
+}
+
+// Очистить форму таймкодов
+function clearTsForm() {
+  const list = document.getElementById('tsAdminList');
+  list.innerHTML = '';
+  updateTsCounter();
+}
+
 // ===== Админка: добавление видео =====
 window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
@@ -665,6 +1011,11 @@ window.addVideo = async function() {
   if (!title) return showToast('Введите название', true);
   if (!url) return showToast('Введите ссылку на видео', true);
   if (!/^https?:\/\//i.test(url)) return showToast('Ссылка должна начинаться с http:// или https://', true);
+
+  // Собираем таймкоды
+  const tsResult = collectTimestampsFromForm();
+  if (tsResult.error) return showToast(tsResult.error, true);
+  const timestamps = tsResult.data;
 
   const addBtn = document.getElementById('addBtn');
   addBtn.disabled = true;
@@ -676,12 +1027,17 @@ window.addVideo = async function() {
       title,
       url,
       thumb: thumb || '',
+      timestamps, // массив {time, label}
       createdAt: Date.now()
     });
     showToast('✅ Видео добавлено!');
+
+    // Очистка формы
     document.getElementById('videoTitle').value = '';
     document.getElementById('videoUrl').value = '';
     document.getElementById('videoThumb').value = '';
+    clearTsForm();
+
     setTimeout(showLibrary, 500);
   } catch (err) {
     console.error(err);
