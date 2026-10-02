@@ -2,86 +2,79 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>MyTube — прототип</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #0f0f0f;
     color: #fff;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
+  /* ===== Шапка ===== */
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
+    padding: 12px 20px;
     background: #0f0f0f;
-    border-bottom: 1px solid #272727;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    border-bottom: 1px solid #1f1f1f;
+    position: sticky; top: 0; z-index: 100;
   }
   .logo {
     display: flex; align-items: center; gap: 8px;
-    font-size: 20px; font-weight: 700; cursor: pointer;
+    font-size: 19px; font-weight: 700; cursor: pointer;
   }
   .logo-icon {
-    width: 32px; height: 22px;
-    background: #ff0000;
+    width: 32px; height: 22px; background: #ff0000;
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 12px;
   }
-  .header-btns { display: flex; gap: 10px; }
+  .header-btns { display: flex; gap: 8px; }
   .btn {
     padding: 8px 16px; border-radius: 20px; border: none;
-    background: #272727; color: #fff; cursor: pointer;
-    font-size: 14px; transition: background .2s;
+    background: #1f1f1f; color: #fff; cursor: pointer;
+    font-size: 14px; transition: background .15s;
+    font-family: inherit;
   }
-  .btn:hover { background: #3a3a3a; }
+  .btn:hover { background: #2d2d2d; }
   .btn-primary { background: #ff0000; }
   .btn-primary:hover { background: #cc0000; }
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-secondary { background: #272727; }
   .btn-danger {
-    background: #2a1010;
-    color: #ff6b6b;
+    background: #2a1010; color: #ff6b6b;
     border: 1px solid #5a2020;
   }
   .btn-danger:hover { background: #3a1515; }
-  .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
 
-  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  main { padding: 20px; max-width: 1400px; margin: 0 auto; }
 
+  /* ===== Сетка видео (С миниатюрами) ===== */
   .video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
   }
   .video-card {
-    cursor: pointer; border-radius: 12px; overflow: hidden;
-    transition: transform .2s;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #171717;
+    border: 1px solid #222;
+    transition: transform .15s, border-color .15s;
   }
-  .video-card:hover { transform: translateY(-3px); }
+  .video-card:hover { transform: translateY(-2px); border-color: #333; }
   .video-thumb {
     width: 100%; aspect-ratio: 16/9;
-    background: #111;
-    position: relative; border-radius: 12px; overflow: hidden;
+    background: #111 center/cover no-repeat;
+    position: relative;
     display: flex; align-items: center; justify-content: center;
-    background-size: cover; background-position: center;
+    overflow: hidden;
   }
-  .video-thumb video {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .3s;
-  }
-  .video-thumb video.ready { opacity: 1; }
   .video-thumb .play-overlay {
     width: 60px; height: 60px;
     border-radius: 50%;
@@ -96,166 +89,175 @@
   .video-card:hover .video-thumb .play-overlay { opacity: 1; }
   .video-thumb .ts-badge {
     position: absolute; top: 8px; right: 8px;
-    background: rgba(0,0,0,.75);
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
+    background: rgba(0,0,0,.75); color: #fff;
+    padding: 3px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
     backdrop-filter: blur(4px);
     z-index: 3;
   }
-  .video-info { padding: 10px 4px; }
+  .video-info { padding: 12px 14px 14px; }
   .video-title {
-    font-weight: 600; font-size: 15px; margin-bottom: 4px;
+    font-weight: 600; font-size: 14px; margin-bottom: 4px;
+    line-height: 1.35;
     display: -webkit-box; -webkit-line-clamp: 2;
     -webkit-box-orient: vertical; overflow: hidden;
   }
-  .video-date { font-size: 12px; color: #aaa; }
-  .video-actions {
-    display: flex; gap: 6px; margin-top: 8px;
-  }
+  .video-date { font-size: 12px; color: #888; }
+  .video-actions { display: flex; gap: 6px; margin-top: 10px; }
   .action-btn {
-    background: transparent;
-    border: 1px solid #444;
-    color: #ccc;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background .15s, border-color .15s, color .15s;
+    background: transparent; border: 1px solid #333;
+    color: #ccc; padding: 4px 10px;
+    border-radius: 6px; font-size: 12px;
+    cursor: pointer; transition: all .15s;
+    font-family: inherit;
   }
-  .action-btn:hover { background: #222; color: #fff; }
+  .action-btn:hover { background: #1f1f1f; color: #fff; }
   .action-btn.edit { color: #38bdf8; border-color: #1e4054; }
   .action-btn.edit:hover { background: #0d2030; }
   .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
   .action-btn.delete:hover { background: #2a1010; }
 
+  /* ===== Плеер ===== */
   .player-view { display: none; }
   .player-view.active { display: block; }
   .library-view.hidden { display: none; }
 
   .back-btn {
     background: transparent; border: none; color: #aaa;
-    cursor: pointer; font-size: 14px; margin-bottom: 16px;
-    padding: 6px 0;
+    cursor: pointer; font-size: 14px; margin-bottom: 14px;
+    padding: 6px 0; font-family: inherit;
   }
   .back-btn:hover { color: #fff; }
 
-  .player-title { font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
-  .player-meta { color: #aaa; font-size: 14px; margin-bottom: 20px; }
+  .player-title { font-size: 20px; font-weight: 700; margin: 14px 0 6px; }
+  .player-meta { color: #888; font-size: 13px; margin-bottom: 16px; }
 
-  .timestamps-block {
-    margin-top: 20px;
-    padding: 16px;
-    background: #181818;
-    border-radius: 12px;
-    border: 1px solid #272727;
-  }
-  .timestamps-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  .timestamps-header h3 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .timestamps-header .count {
-    font-size: 12px;
-    color: #888;
-  }
-  .timestamps-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    max-height: 240px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-  .timestamps-list::-webkit-scrollbar { width: 6px; }
-  .timestamps-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-  .ts-chip {
-    background: rgba(255, 0, 0, 0.12);
-    color: #ff6b6b;
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background .15s, color .15s, transform .1s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .ts-chip:hover {
-    background: #ff0000;
-    color: #fff;
-    transform: translateY(-1px);
-  }
-  .ts-chip .ts-time {
-    font-variant-numeric: tabular-nums;
-    opacity: .8;
-    font-weight: 700;
-  }
-
-  /* ===== Плеер ===== */
   .player-wrap {
-    position: relative; width: 100%;
-    background: #000; border-radius: 12px;
-    overflow: hidden; user-select: none;
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    user-select: none;
+    aspect-ratio: 16/9;
+    max-height: 75vh;
   }
   .player-wrap video {
-    width: 100%; display: block;
-    max-height: 70vh; background: #000;
+    width: 100%; height: 100%;
+    display: block;
+    background: #000;
+    object-fit: contain;
   }
+
+  /* Индикатор двойного тапа */
+  .seek-indicator {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,.7);
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+    backdrop-filter: blur(6px);
+    z-index: 15;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-width: 70px;
+  }
+  .seek-indicator.show { opacity: 1; }
+  .seek-indicator.left { left: 8%; }
+  .seek-indicator.right { right: 8%; }
+  .seek-indicator svg { width: 28px; height: 28px; fill: #fff; }
+  .seek-indicator .delta { font-size: 12px; opacity: .9; }
+
+  /* Центральный play/pause */
+  .tap-play {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+    z-index: 14;
+  }
+  .tap-play.show { opacity: 1; }
+  .tap-play .icon {
+    width: 80px; height: 80px;
+    background: rgba(0,0,0,.55);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .tap-play .icon svg { width: 36px; height: 36px; fill: #fff; }
+
+  /* Спиннер */
+  .loading-spinner {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 46px; height: 46px;
+    border: 3px solid rgba(255,255,255,.15);
+    border-top-color: #ff0000;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+    z-index: 13;
+  }
+  .loading-spinner.show { opacity: 1; }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* Контролы */
   .controls {
     position: absolute; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,.85));
-    padding: 40px 16px 12px;
-    opacity: 0; transition: opacity .25s;
+    background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.4) 60%, transparent 100%);
+    padding: 40px 14px 10px;
+    opacity: 0;
+    transition: opacity .25s;
+    z-index: 20;
   }
   .player-wrap:hover .controls,
-  .player-wrap.paused .controls { opacity: 1; }
+  .player-wrap.paused .controls,
+  .player-wrap.show-controls .controls { opacity: 1; }
 
+  /* Прогресс-бар (БЕЗ превью) */
   .progress-wrap {
-    position: relative; height: 18px;
+    position: relative;
+    height: 20px;
     display: flex; align-items: center;
-    cursor: pointer; margin-bottom: 8px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    touch-action: none;
   }
   .progress-bg {
-    width: 100%; height: 5px;
-    background: rgba(255,255,255,.25);
-    border-radius: 3px;
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,.22);
+    border-radius: 2px;
     transition: height .15s;
     position: relative;
-    overflow: visible;
   }
-  .progress-wrap:hover .progress-bg { height: 7px; }
+  .progress-wrap:hover .progress-bg { height: 6px; }
   .progress-fill {
-    position: absolute;
-    top: 0; left: 0;
+    position: absolute; top: 0; left: 0;
     height: 100%; width: 0%;
     background: #ff0000;
-    border-radius: 3px;
+    border-radius: 2px;
   }
   .ts-marker {
-    position: absolute;
-    top: 50%;
+    position: absolute; top: 50%;
     width: 3px; height: 12px;
     background: #ffcc00;
     border-radius: 2px;
     transform: translate(-50%, -50%);
     pointer-events: none;
-    box-shadow: 0 0 4px rgba(255, 204, 0, 0.7);
+    box-shadow: 0 0 4px rgba(255, 204, 0, 0.6);
     z-index: 2;
   }
   .progress-thumb {
     position: absolute;
-    width: 14px; height: 14px;
+    width: 13px; height: 13px;
     background: #ff0000; border-radius: 50%;
     top: 50%;
     transform: translate(-50%, -50%) scale(0);
@@ -265,104 +267,160 @@
   }
   .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1); }
 
-  /* Тултип с превью-кадром */
-  .preview-tooltip {
+  /* Простой тултип со временем (без превью-кадра) */
+  .time-tooltip {
     position: absolute;
-    bottom: 30px;
+    bottom: 24px;
     transform: translateX(-50%);
-    background: #000;
-    border: 2px solid #fff;
-    border-radius: 6px;
-    padding: 0;
+    background: rgba(0,0,0,.9);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
     opacity: 0;
     pointer-events: none;
     white-space: nowrap;
     transition: opacity .15s;
     z-index: 10;
-    box-shadow: 0 4px 20px rgba(0,0,0,.7);
-    overflow: hidden;
-  }
-  .progress-wrap:hover .preview-tooltip { opacity: 1; }
-  .preview-tooltip canvas {
-    display: block;
-    width: 160px;
-    height: 90px;
-    background: #111;
-  }
-  .preview-tooltip .preview-time {
-    text-align: center;
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-    color: #fff;
-    background: rgba(0,0,0,.85);
-    padding: 3px 0;
     font-weight: 600;
   }
+  .progress-wrap:hover .time-tooltip { opacity: 1; }
 
+  /* Нижний ряд управления */
   .ctrl-row {
-    display: flex; align-items: center; gap: 12px; color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #fff;
+    height: 40px;
   }
   .ctrl-btn {
     background: none; border: none; color: #fff;
-    cursor: pointer; padding: 6px;
+    cursor: pointer; padding: 8px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; transition: background .15s;
-    font-size: 18px; line-height: 1;
+    border-radius: 50%;
+    transition: background .15s;
+    flex-shrink: 0;
   }
-  .ctrl-btn:hover { background: rgba(255,255,255,.15); }
-  .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .ctrl-btn:hover { background: rgba(255,255,255,.12); }
+  .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; display: block; }
 
   .time-display {
-    font-size: 13px; font-variant-numeric: tabular-nums;
-    color: #eee; min-width: 100px;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: #ddd;
+    padding: 0 8px;
+    white-space: nowrap;
   }
   .spacer { flex: 1; }
 
-  .volume-wrap { display: flex; align-items: center; gap: 6px; }
+  .volume-wrap {
+    display: flex; align-items: center;
+    position: relative;
+  }
   .volume-slider {
     width: 0; opacity: 0;
-    transition: width .25s, opacity .25s;
+    transition: width .2s, opacity .2s;
     accent-color: #ff0000; cursor: pointer;
+    margin-right: 0;
   }
-  .volume-wrap:hover .volume-slider { width: 80px; opacity: 1; }
+  .volume-wrap:hover .volume-slider,
+  .volume-wrap:focus-within .volume-slider {
+    width: 70px; opacity: 1;
+    margin-right: 6px;
+  }
 
   .speed-btn {
     font-size: 13px; font-weight: 600; color: #fff;
     background: none; border: none; cursor: pointer;
-    padding: 4px 8px; border-radius: 4px;
+    padding: 6px 10px; border-radius: 6px;
+    font-family: inherit;
   }
-  .speed-btn:hover { background: rgba(255,255,255,.15); }
+  .speed-btn:hover { background: rgba(255,255,255,.12); }
+
+  /* Fullscreen — фикс */
+  .player-wrap:fullscreen,
+  .player-wrap:-webkit-full-screen {
+    max-height: none;
+    border-radius: 0;
+    aspect-ratio: auto;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .player-wrap:fullscreen video,
+  .player-wrap:-webkit-full-screen video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .player-wrap:fullscreen .controls,
+  .player-wrap:-webkit-full-screen .controls {
+    padding: 60px 24px 18px;
+  }
+
+  /* ===== Таймкоды под плеером ===== */
+  .timestamps-block {
+    margin-top: 16px;
+    padding: 14px;
+    background: #141414;
+    border-radius: 10px;
+    border: 1px solid #222;
+  }
+  .timestamps-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .timestamps-header h3 { font-size: 14px; font-weight: 600; }
+  .timestamps-header .count { font-size: 12px; color: #888; }
+  .timestamps-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    max-height: 200px; overflow-y: auto;
+  }
+  .timestamps-list::-webkit-scrollbar { width: 5px; }
+  .timestamps-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .ts-chip {
+    background: rgba(255, 0, 0, 0.12);
+    color: #ff8080;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    padding: 5px 11px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit;
+  }
+  .ts-chip:hover {
+    background: #ff0000; color: #fff;
+    transform: translateY(-1px);
+  }
+  .ts-chip .ts-time { font-variant-numeric: tabular-nums; opacity: .85; font-weight: 700; }
 
   /* ===== Админка ===== */
-  .admin-panel {
-    display: none; max-width: 720px; margin: 0 auto;
-  }
+  .admin-panel { display: none; max-width: 720px; margin: 0 auto; }
   .admin-panel.active { display: block; }
   .admin-panel h2 { margin-bottom: 20px; }
 
   .admin-tabs {
-    display: flex;
-    gap: 4px;
-    border-bottom: 1px solid #272727;
-    margin-bottom: 24px;
+    display: flex; gap: 4px;
+    border-bottom: 1px solid #222;
+    margin-bottom: 22px;
+    overflow-x: auto;
   }
   .admin-tab {
-    background: none;
-    border: none;
-    color: #888;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: color .15s, border-color .15s;
-    font-family: inherit;
+    background: none; border: none; color: #888;
+    padding: 10px 16px; font-size: 14px; font-weight: 500;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all .15s; font-family: inherit;
+    white-space: nowrap;
   }
   .admin-tab:hover { color: #ccc; }
-  .admin-tab.active {
-    color: #fff;
-    border-bottom-color: #ff0000;
-  }
+  .admin-tab.active { color: #fff; border-bottom-color: #ff0000; }
   .admin-tab-panel { display: none; }
   .admin-tab-panel.active { display: block; }
 
@@ -370,24 +428,20 @@
   .field label {
     display: block; font-size: 13px; color: #aaa; margin-bottom: 6px;
   }
-  .field input[type="text"],
-  .field textarea {
-    width: 100%; padding: 12px 14px;
-    background: #1a1a1a; border: 1px solid #333;
+  .field input[type="text"] {
+    width: 100%; padding: 11px 14px;
+    background: #141414; border: 1px solid #2a2a2a;
     border-radius: 8px; color: #fff; font-size: 14px;
-    outline: none; transition: border .15s;
-    font-family: inherit;
-    resize: vertical;
+    outline: none; transition: border .15s; font-family: inherit;
   }
-  .field input[type="text"]:focus,
-  .field textarea:focus { border-color: #ff0000; }
+  .field input[type="text"]:focus { border-color: #ff0000; }
   .field small { color: #666; font-size: 12px; display: block; margin-top: 6px; }
 
   .ts-admin-block {
-    border: 1px solid #272727;
+    border: 1px solid #222;
     border-radius: 10px;
     padding: 14px;
-    background: #141414;
+    background: #121212;
   }
   .ts-admin-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -395,126 +449,69 @@
   }
   .ts-admin-header span { font-size: 13px; color: #aaa; }
   .ts-admin-list { display: flex; flex-direction: column; gap: 8px; }
-  .ts-admin-row {
-    display: flex; gap: 8px; align-items: center;
-  }
-  .ts-admin-row input[type="text"] {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
+  .ts-admin-row { display: flex; gap: 8px; align-items: center; }
+  .ts-admin-row input[type="text"] { padding: 10px 12px; font-size: 13px; }
   .ts-admin-row .ts-input-time {
-    flex: 0 0 100px;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    font-weight: 600;
+    flex: 0 0 100px; text-align: center;
+    font-variant-numeric: tabular-nums; font-weight: 600;
   }
-  .ts-admin-row .ts-input-label {
-    flex: 1;
-  }
+  .ts-admin-row .ts-input-label { flex: 1; }
   .ts-admin-row .ts-remove-btn {
-    flex: 0 0 auto;
-    background: transparent;
-    border: 1px solid #444;
-    color: #ff6b6b;
+    flex: 0 0 auto; background: transparent;
+    border: 1px solid #333; color: #ff6b6b;
     width: 36px; height: 36px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
+    border-radius: 8px; cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center;
-    transition: background .15s, border-color .15s;
+    transition: all .15s;
   }
-  .ts-admin-row .ts-remove-btn:hover {
-    background: #2a1010;
-    border-color: #5a2020;
-  }
+  .ts-admin-row .ts-remove-btn:hover { background: #2a1010; border-color: #5a2020; }
   .ts-add-btn {
-    margin-top: 10px;
-    background: transparent;
-    border: 1px dashed #444;
-    color: #38bdf8;
-    padding: 10px;
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: background .15s, border-color .15s;
+    margin-top: 10px; background: transparent;
+    border: 1px dashed #333; color: #38bdf8;
+    padding: 10px; width: 100%; border-radius: 8px;
+    cursor: pointer; font-size: 13px; transition: all .15s;
+    font-family: inherit;
   }
-  .ts-add-btn:hover {
-    background: #0d2030;
-    border-color: #38bdf8;
-  }
+  .ts-add-btn:hover { background: #0d2030; border-color: #38bdf8; }
 
-  .admin-video-list {
-    display: flex; flex-direction: column; gap: 10px;
-  }
+  .admin-video-list { display: flex; flex-direction: column; gap: 10px; }
   .admin-video-item {
     display: flex; gap: 12px; align-items: center;
-    padding: 12px;
-    background: #141414;
-    border: 1px solid #272727;
-    border-radius: 10px;
-    transition: border-color .15s, background .15s;
-    cursor: pointer;
+    padding: 12px; background: #141414;
+    border: 1px solid #222; border-radius: 10px;
+    transition: all .15s; cursor: pointer;
   }
-  .admin-video-item:hover {
-    border-color: #444;
-    background: #181818;
-  }
-  .admin-video-item.editing {
-    border-color: #ff0000;
-    background: #1a0d0d;
-  }
+  .admin-video-item:hover { border-color: #333; background: #181818; }
+  .admin-video-item.editing { border-color: #ff0000; background: #1a0d0d; }
   .admin-video-thumb {
     flex: 0 0 100px;
     width: 100px;
     aspect-ratio: 16/9;
     background: #000 center/cover no-repeat;
     border-radius: 6px;
-    overflow: hidden;
-    position: relative;
   }
-  .admin-video-info {
-    flex: 1; min-width: 0;
-  }
+  .admin-video-info { flex: 1; min-width: 0; }
   .admin-video-title {
     font-weight: 600; font-size: 14px; margin-bottom: 4px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .admin-video-meta {
-    font-size: 12px; color: #888;
-    display: flex; gap: 10px; flex-wrap: wrap;
-  }
+  .admin-video-meta { font-size: 12px; color: #888; display: flex; gap: 10px; }
   .admin-video-meta .badge {
-    background: rgba(255,0,0,.15);
-    color: #ff6b6b;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 11px;
+    background: rgba(255,0,0,.15); color: #ff6b6b;
+    padding: 1px 6px; border-radius: 4px; font-size: 11px;
   }
-  .admin-video-actions {
-    display: flex; gap: 6px; flex: 0 0 auto;
-  }
+  .admin-video-actions { display: flex; gap: 6px; flex: 0 0 auto; }
 
   .edit-section {
-    margin-top: 20px;
-    padding: 20px;
-    background: #0d1520;
-    border: 1px solid #1e4054;
+    margin-top: 20px; padding: 20px;
+    background: #0d1520; border: 1px solid #1e4054;
     border-radius: 12px;
   }
   .edit-section h3 {
-    color: #38bdf8;
-    font-size: 15px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
+    color: #38bdf8; font-size: 15px; margin-bottom: 16px;
   }
-  .edit-section .btn-row {
-    display: flex; gap: 10px; margin-top: 20px;
-  }
-  .edit-section .btn-row .btn {
-    flex: 1;
-    padding: 12px;
-  }
+  .edit-section .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .edit-section .btn-row .btn { flex: 1; padding: 12px; }
 
   .empty-state {
     text-align: center; padding: 60px 20px; color: #666;
@@ -523,15 +520,29 @@
 
   .toast {
     position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(100px);
+    transform: translateX(-50%) translateY(120px);
     background: #222; color: #fff;
     padding: 12px 20px; border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0,0,0,.5);
     transition: transform .3s; z-index: 1000;
     border-left: 4px solid #4caf50;
+    max-width: 90vw;
+    font-size: 14px;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { border-left-color: #f44336; }
+
+  @media (max-width: 600px) {
+    main { padding: 14px; }
+    .video-grid { grid-template-columns: 1fr; gap: 12px; }
+    header { padding: 10px 14px; }
+    .btn { padding: 7px 12px; font-size: 13px; }
+    .player-title { font-size: 17px; }
+    .ctrl-row { gap: 2px; }
+    .ctrl-btn { padding: 6px; }
+    .ctrl-btn svg { width: 20px; height: 20px; }
+    .time-display { font-size: 12px; padding: 0 4px; }
+  }
 </style>
 </head>
 <body>
@@ -548,41 +559,49 @@
 </header>
 
 <main>
+  <!-- БИБЛИОТЕКА -->
   <div class="library-view" id="libraryView">
-    <h2 style="margin-bottom:20px;">Все видео</h2>
+    <h2 style="margin-bottom:18px; font-size:20px;">Все видео</h2>
     <div class="video-grid" id="videoGrid"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
       <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
     </div>
   </div>
 
+  <!-- ПРОСМОТР -->
   <div class="player-view" id="playerView">
     <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
 
     <div class="player-wrap paused" id="playerWrap">
-      <video id="mainVideo" preload="metadata"></video>
+      <video id="mainVideo" preload="auto" playsinline webkit-playsinline></video>
 
-      <div class="controls">
+      <div class="seek-indicator left" id="seekBack">
+        <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+        <span class="delta">−10с</span>
+      </div>
+      <div class="seek-indicator right" id="seekFwd">
+        <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zM20 18V6l-8.5 6 8.5 6z"/></svg>
+        <span class="delta">+10с</span>
+      </div>
+
+      <div class="tap-play" id="tapPlay">
+        <div class="icon" id="tapPlayIcon"></div>
+      </div>
+
+      <div class="loading-spinner" id="loadingSpinner"></div>
+
+      <div class="controls" id="controls">
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-bg">
             <div class="progress-fill" id="progressFill"></div>
             <div id="tsMarkersLayer"></div>
           </div>
           <div class="progress-thumb" id="progressThumb"></div>
-          <div class="preview-tooltip" id="previewTooltip">
-            <canvas id="previewCanvas" width="160" height="90"></canvas>
-            <div class="preview-time" id="previewTime">0:00</div>
-          </div>
+          <div class="time-tooltip" id="timeTooltip">0:00</div>
         </div>
 
         <div class="ctrl-row">
           <button class="ctrl-btn" id="playBtn" title="Play/Pause"></button>
-          <button class="ctrl-btn" id="backBtn" title="-10 сек">
-            <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z"/></svg>
-          </button>
-          <button class="ctrl-btn" id="fwdBtn" title="+10 сек">
-            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
-          </button>
 
           <div class="time-display">
             <span id="curTime">0:00</span> / <span id="durTime">0:00</span>
@@ -616,11 +635,12 @@
     </div>
   </div>
 
+  <!-- АДМИНКА -->
   <div class="admin-panel" id="adminPanel">
     <h2>⚙ Админка</h2>
 
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="add" onclick="switchAdminTab('add')">➕ Добавить видео</button>
+      <button class="admin-tab active" data-tab="add" onclick="switchAdminTab('add')">➕ Добавить</button>
       <button class="admin-tab" data-tab="manage" onclick="switchAdminTab('manage')">📝 Редактировать</button>
       <button class="admin-tab" data-tab="danger" onclick="switchAdminTab('danger')">⚠ Опасная зона</button>
     </div>
@@ -640,14 +660,14 @@
       <div class="field">
         <label>Ссылка на превью (необязательно)</label>
         <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
-        <small>Если пусто — превью автоматически сгенерируется из середины видео 🎬</small>
+        <small>Если пусто — превью автоматически сгенерируется из середины видео</small>
       </div>
 
       <div class="field">
         <label>Таймкоды (необязательно)</label>
         <div class="ts-admin-block">
           <div class="ts-admin-header">
-            <span>Формат: <b>MM:СС</b> + название категории</span>
+            <span>Формат: <b>MM:СС</b> + название</span>
             <span id="tsCounter">0 шт.</span>
           </div>
           <div class="ts-admin-list" id="tsAdminList"></div>
@@ -655,7 +675,7 @@
         </div>
       </div>
 
-      <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
+      <button class="btn btn-primary" style="width:100%; padding:14px; font-size:15px;" id="addBtn" onclick="addVideo()">
         Добавить видео
       </button>
     </div>
@@ -684,14 +704,14 @@
 
         <div class="field">
           <label>Ссылка на превью</label>
-          <input type="text" id="editThumb" placeholder="Оставьте пустым, чтобы убрать">
+          <input type="text" id="editThumb" placeholder="Оставьте пустым, чтобы сгенерировать из середины">
         </div>
 
         <div class="field">
           <label>Таймкоды</label>
           <div class="ts-admin-block">
             <div class="ts-admin-header">
-              <span>Формат: <b>MM:СС</b> + название категории</span>
+              <span>Формат: <b>MM:СС</b> + название</span>
               <span id="editTsCounter">0 шт.</span>
             </div>
             <div class="ts-admin-list" id="editTsList"></div>
@@ -700,15 +720,15 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-secondary" onclick="cancelEdit()">Отмена</button>
-          <button class="btn btn-primary" id="saveEditBtn" onclick="saveEdit()">💾 Сохранить изменения</button>
+          <button class="btn" onclick="cancelEdit()">Отмена</button>
+          <button class="btn btn-primary" id="saveEditBtn" onclick="saveEdit()">💾 Сохранить</button>
         </div>
       </div>
     </div>
 
     <div class="admin-tab-panel" id="tab-danger">
-      <h2 style="color:#ff6b6b; font-size:18px; margin-bottom:16px;">⚠ Опасная зона</h2>
-      <button class="btn btn-danger" style="width:100%; padding:14px; font-size:16px;" id="deleteAllBtn" onclick="deleteAllVideos()">
+      <h2 style="color:#ff6b6b; font-size:17px; margin-bottom:14px;">⚠ Опасная зона</h2>
+      <button class="btn btn-danger" style="width:100%; padding:14px; font-size:15px;" id="deleteAllBtn" onclick="deleteAllVideos()">
         🗑 Удалить все видео
       </button>
       <small style="display:block; color:#666; font-size:12px; margin-top:10px; text-align:center;">
@@ -720,7 +740,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -796,8 +815,7 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-// ===== Генерация превью из СЕРЕДИНЫ видео =====
-// Кэш сгенерированных кадров: url -> dataURL
+// ===== Генерация превью из середины видео (для карточек) =====
 const thumbCache = new Map();
 
 function generateMidThumbnail(url) {
@@ -839,7 +857,6 @@ function generateMidThumbnail(url) {
         clearTimeout(timeout);
         finish(dataUrl);
       } catch (e) {
-        console.warn('generateMidThumbnail:', e);
         clearTimeout(timeout);
         finish(null);
       }
@@ -912,7 +929,6 @@ onValue(videosRef, (snapshot) => {
       const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
       const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
 
-      // Явно заданное превью
       let explicitThumb = '';
       if (v.thumb) explicitThumb = v.thumb;
       else if (ytId) explicitThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
@@ -922,7 +938,7 @@ onValue(videosRef, (snapshot) => {
         : '';
 
       card.innerHTML = `
-        <div class="video-thumb" style="${thumbStyle}" data-video-url="${escapeAttr(v.url)}">
+        <div class="video-thumb" style="${thumbStyle}">
           ${tsBadge}
           <div class="play-overlay">▶</div>
         </div>
@@ -936,25 +952,12 @@ onValue(videosRef, (snapshot) => {
         </div>
       `;
 
-      // Если нет явного превью и это не YouTube — генерируем кадр из середины
+      // Генерируем превью из середины, если нет явного
       if (!explicitThumb && v.url) {
         const thumbEl = card.querySelector('.video-thumb');
         generateMidThumbnail(v.url).then(dataUrl => {
           if (dataUrl) {
             thumbEl.style.backgroundImage = `url('${dataUrl}')`;
-          } else {
-            // fallback: если CORS не дал — покажем первый кадр через <video>
-            const vid = document.createElement('video');
-            vid.src = v.url + (v.url.includes('#') ? '' : '#t=0.5');
-            vid.muted = true;
-            vid.preload = 'metadata';
-            vid.playsInline = true;
-            vid.addEventListener('loadeddata', () => {
-              try { vid.currentTime = (vid.duration || 0) / 2; } catch (e) {}
-              thumbEl.appendChild(vid);
-              setTimeout(() => vid.classList.add('ready'), 100);
-            }, { once: true });
-            vid.addEventListener('seeked', () => vid.classList.add('ready'), { once: true });
           }
         });
       }
@@ -975,7 +978,6 @@ onValue(videosRef, (snapshot) => {
   renderAdminVideoList(list);
 });
 
-// Список видео в админке
 function renderAdminVideoList(list) {
   const container = document.getElementById('adminVideoList');
   const empty = document.getElementById('adminEmptyState');
@@ -1000,7 +1002,7 @@ function renderAdminVideoList(list) {
     const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
 
     item.innerHTML = `
-      <div class="admin-video-thumb" style="${thumbStyle}" data-video-url="${escapeAttr(v.url)}"></div>
+      <div class="admin-video-thumb" style="${thumbStyle}"></div>
       <div class="admin-video-info">
         <div class="admin-video-title">${escapeHtml(v.title)}</div>
         <div class="admin-video-meta">
@@ -1014,7 +1016,6 @@ function renderAdminVideoList(list) {
       </div>
     `;
 
-    // Автогенерация превью из середины
     if (!v.thumb && !ytId && v.url) {
       const thumbEl = item.querySelector('.admin-video-thumb');
       generateMidThumbnail(v.url).then(dataUrl => {
@@ -1109,7 +1110,7 @@ window.saveEdit = async function() {
     showToast('Ошибка: ' + err.message, true);
   } finally {
     btn.disabled = false;
-    btn.textContent = '💾 Сохранить изменения';
+    btn.textContent = '💾 Сохранить';
   }
 };
 
@@ -1146,8 +1147,8 @@ function collectTimestampsFromForm() {
     const time = row.querySelector('.ts-input-time').value.trim();
     const label = row.querySelector('.ts-input-label').value.trim();
     if (!time && !label) continue;
-    if (!time || !label) return { error: 'Заполните и время, и название таймкода (или удалите пустую строку)' };
-    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}". Используй ММ:СС` };
+    if (!time || !label) return { error: 'Заполните и время, и название таймкода' };
+    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}"` };
     result.push({ time, label });
   }
   return { data: result };
@@ -1232,10 +1233,10 @@ function playVideo(v) {
     document.querySelector('.controls').style.display = 'none';
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
-    iframe.style.cssText = 'width:100%; height:70vh; display:block; border:0; background:#000;';
+    iframe.style.cssText = 'width:100%; height:100%; display:block; border:0; background:#000; position:absolute; inset:0;';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    playerWrap.insertBefore(iframe, playerWrap.firstChild);
+    playerWrap.appendChild(iframe);
   } else {
     mainVideo.style.display = 'block';
     document.querySelector('.controls').style.display = 'block';
@@ -1246,9 +1247,6 @@ function playVideo(v) {
     mainVideo.appendChild(src);
     mainVideo.load();
     mainVideo.play().catch(() => {});
-
-    // Готовим preview для наведения на прогресс-бар
-    setupPreviewForVideo(v.url);
   }
 }
 
@@ -1280,7 +1278,6 @@ function renderTimestampsBlock(timestamps) {
       if (mainVideo) {
         mainVideo.currentTime = seconds;
         mainVideo.play();
-        document.getElementById('playerWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     };
     list.appendChild(chip);
@@ -1314,109 +1311,23 @@ mainVideo.addEventListener('loadedmetadata', () => {
   if (currentTimestamps.length > 0) renderTsMarkers(currentTimestamps);
 });
 
-// ===== P R E V I E W   К А Д Р   П Р И   Н А В Е Д Е Н И И =====
-const previewTooltip = document.getElementById('previewTooltip');
-const previewCanvas = document.getElementById('previewCanvas');
-const previewTimeEl = document.getElementById('previewTime');
-const previewCtx = previewCanvas.getContext('2d');
-
-const hiddenPreviewVideo = document.createElement('video');
-hiddenPreviewVideo.muted = true;
-hiddenPreviewVideo.playsInline = true;
-hiddenPreviewVideo.preload = 'auto';
-hiddenPreviewVideo.crossOrigin = 'anonymous';
-
-let previewVideoReady = false;
-let previewSeeking = false;
-let previewPending = null; // { time, x } — что показать после seeked
-let previewCORSBlocked = false;
-
-function setupPreviewForVideo(url) {
-  previewVideoReady = false;
-  previewSeeking = false;
-  previewPending = null;
-  previewCORSBlocked = false;
-
-  hiddenPreviewVideo.src = url;
-  hiddenPreviewVideo.load();
-
-  hiddenPreviewVideo.addEventListener('loadedmetadata', () => {
-    previewVideoReady = true;
-  }, { once: true });
-
-  hiddenPreviewVideo.addEventListener('error', () => {
-    previewVideoReady = false;
-  }, { once: true });
-}
-
-hiddenPreviewVideo.addEventListener('seeked', () => {
-  previewSeeking = false;
-
-  try {
-    previewCtx.drawImage(hiddenPreviewVideo, 0, 0, previewCanvas.width, previewCanvas.height);
-  } catch (e) {
-    // CORS запретил отрисовку — рисуем заглушку
-    previewCORSBlocked = true;
-    previewCtx.fillStyle = '#111';
-    previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
-    previewCtx.fillStyle = '#555';
-    previewCtx.font = '14px sans-serif';
-    previewCtx.textAlign = 'center';
-    previewCtx.fillText('нет превью', previewCanvas.width / 2, previewCanvas.height / 2 + 5);
-  }
-
-  // Если во время seek пришёл новый запрос — обработаем его
-  if (previewPending) {
-    const next = previewPending;
-    previewPending = null;
-    requestPreviewFrameAt(next.time);
-  }
-});
-
-function requestPreviewFrameAt(time) {
-  if (!previewVideoReady) {
-    // Попробуем ещё раз, когда загрузятся метаданные
-    hiddenPreviewVideo.addEventListener('loadedmetadata', () => {
-      previewVideoReady = true;
-      requestPreviewFrameAt(time);
-    }, { once: true });
-    return;
-  }
-
-  if (previewCORSBlocked) return;
-
-  // Округляем время до 0.5 сек — экономит seek-и
-  const rounded = Math.round(time * 2) / 2;
-
-  if (previewSeeking) {
-    previewPending = { time: rounded };
-    return;
-  }
-
-  previewSeeking = true;
-  previewPending = { time: rounded };
-
-  try {
-    hiddenPreviewVideo.currentTime = rounded;
-  } catch (e) {
-    previewSeeking = false;
-    previewPending = null;
-  }
-}
-
-// ===== КАСТОМНЫЕ КОНТРОЛЫ =====
+// ===== Контролы =====
 const playBtn = document.getElementById('playBtn');
-const backBtn10 = document.getElementById('backBtn');
-const fwdBtn10 = document.getElementById('fwdBtn');
 const curTimeEl = document.getElementById('curTime');
 const durTimeEl = document.getElementById('durTime');
 const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
 const progressThumb = document.getElementById('progressThumb');
+const timeTooltip = document.getElementById('timeTooltip');
 const muteBtn = document.getElementById('muteBtn');
 const volumeSlider = document.getElementById('volumeSlider');
 const fullBtn = document.getElementById('fullBtn');
 const speedBtn = document.getElementById('speedBtn');
+const loadingSpinner = document.getElementById('loadingSpinner');
+const tapPlay = document.getElementById('tapPlay');
+const tapPlayIcon = document.getElementById('tapPlayIcon');
+const seekBack = document.getElementById('seekBack');
+const seekFwd = document.getElementById('seekFwd');
 
 const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -1432,9 +1343,6 @@ mainVideo.onplay = updatePlayIcon;
 mainVideo.onpause = updatePlayIcon;
 updatePlayIcon();
 
-backBtn10.onclick = () => { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); };
-fwdBtn10.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); };
-
 mainVideo.ontimeupdate = () => {
   const cur = mainVideo.currentTime;
   const dur = mainVideo.duration || 0;
@@ -1445,12 +1353,18 @@ mainVideo.ontimeupdate = () => {
   progressThumb.style.left = pct + '%';
 };
 mainVideo.onloadedmetadata = () => { durTimeEl.textContent = fmtTime(mainVideo.duration); };
+
+// Индикатор загрузки
+mainVideo.addEventListener('waiting', () => loadingSpinner.classList.add('show'));
+mainVideo.addEventListener('playing', () => loadingSpinner.classList.remove('show'));
+mainVideo.addEventListener('canplay', () => loadingSpinner.classList.remove('show'));
+
 mainVideo.onerror = () => {
   if (!mainVideo.currentSrc && !mainVideo.querySelector('source')) return;
   showToast('Не удалось воспроизвести. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
 
-// Прогресс-бар: клик, drag, hover + превью-кадр
+// Прогресс-бар — клик и drag
 function seekFromEvent(e) {
   const rect = progressWrap.getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
@@ -1459,28 +1373,86 @@ function seekFromEvent(e) {
 }
 progressWrap.addEventListener('click', seekFromEvent);
 
+// Простой тултип со временем (без превью-кадра)
 progressWrap.addEventListener('mousemove', (e) => {
   const rect = progressWrap.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const ratio = Math.max(0, Math.min(1, x / rect.width));
-
-  // Ставим тултип по X, но ограничиваем краями, чтобы не уезжал
-  const tooltipHalf = 80; // половина ширины тултипа (~160px)
-  const xPx = ratio * rect.width;
-  const clampedX = Math.max(tooltipHalf, Math.min(rect.width - tooltipHalf, xPx));
-  previewTooltip.style.left = clampedX + 'px';
-
-  if (mainVideo.duration) {
-    const hoverTime = ratio * mainVideo.duration;
-    previewTimeEl.textContent = fmtTime(hoverTime);
-    requestPreviewFrameAt(hoverTime);
-  }
+  timeTooltip.style.left = (ratio * 100) + '%';
+  if (mainVideo.duration) timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
 });
 
 let dragging = false;
 progressWrap.addEventListener('mousedown', (e) => { dragging = true; seekFromEvent(e); });
 window.addEventListener('mousemove', (e) => { if (dragging) seekFromEvent(e); });
 window.addEventListener('mouseup', () => { dragging = false; });
+
+// ===== ДВОЙНОЙ ТАП для перемотки =====
+let lastTapTime = 0;
+let lastTapX = 0;
+const DOUBLE_TAP_DELAY = 300;
+const SEEK_AMOUNT = 10;
+
+function handlePlayerTap(e) {
+  // Игнорируем клики по контролам
+  if (e.target.closest('.controls')) return;
+
+  const now = Date.now();
+  const rect = playerWrap.getBoundingClientRect();
+  const x = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+  const width = rect.width;
+  const xRatio = x / width;
+
+  // Проверяем двойной тап
+  if (now - lastTapTime < DOUBLE_TAP_DELAY) {
+    // Это двойной тап
+    if (xRatio < 0.4) {
+      // Левые 40% — назад
+      mainVideo.currentTime = Math.max(0, mainVideo.currentTime - SEEK_AMOUNT);
+      showSeekIndicator('back');
+    } else if (xRatio > 0.6) {
+      // Правые 40% — вперёд
+      mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + SEEK_AMOUNT);
+      showSeekIndicator('fwd');
+    } else {
+      // Центр — play/pause
+      togglePlayWithIcon();
+    }
+    lastTapTime = 0;
+    return;
+  }
+
+  // Это одиночный тап — ждём 300мс, чтобы проверить, не двойной ли
+  lastTapTime = now;
+  lastTapX = xRatio;
+
+  setTimeout(() => {
+    if (Date.now() - lastTapTime >= DOUBLE_TAP_DELAY) {
+      // Был одиночный тап — показываем/скрываем контролы
+      playerWrap.classList.toggle('show-controls');
+    }
+  }, DOUBLE_TAP_DELAY + 10);
+}
+
+function showSeekIndicator(direction) {
+  const el = direction === 'back' ? seekBack : seekFwd;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 600);
+}
+
+function togglePlayWithIcon() {
+  if (mainVideo.paused) {
+    mainVideo.play();
+    tapPlayIcon.innerHTML = ICON_PLAY;
+  } else {
+    mainVideo.pause();
+    tapPlayIcon.innerHTML = ICON_PAUSE;
+  }
+  tapPlay.classList.add('show');
+  setTimeout(() => tapPlay.classList.remove('show'), 500);
+}
+
+playerWrap.addEventListener('click', handlePlayerTap);
 
 // Громкость
 function updateVolumeIcon() {
@@ -1495,9 +1467,18 @@ volumeSlider.oninput = () => {
 updateVolumeIcon();
 
 // Fullscreen
-fullBtn.onclick = () => {
-  if (!document.fullscreenElement) playerWrap.requestFullscreen();
-  else document.exitFullscreen();
+fullBtn.onclick = async () => {
+  try {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (playerWrap.requestFullscreen) await playerWrap.requestFullscreen();
+      else if (playerWrap.webkitRequestFullscreen) playerWrap.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) await document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  } catch (err) {
+    console.warn('Fullscreen error:', err);
+  }
 };
 
 // Скорость
@@ -1509,15 +1490,15 @@ speedBtn.onclick = () => {
   speedBtn.textContent = speeds[speedIdx] + 'x';
 };
 
-// Горячие клавиши
+// Клавиатура
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (document.querySelector('.player-view iframe')) return;
   switch (e.key) {
     case ' ': e.preventDefault(); playBtn.click(); break;
-    case 'ArrowLeft': backBtn10.click(); break;
-    case 'ArrowRight': fwdBtn10.click(); break;
+    case 'ArrowLeft': mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); break;
+    case 'ArrowRight': mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); break;
     case 'ArrowUp': mainVideo.volume = Math.min(1, mainVideo.volume + 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
     case 'ArrowDown': mainVideo.volume = Math.max(0, mainVideo.volume - 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
     case 'm': muteBtn.click(); break;
@@ -1565,7 +1546,6 @@ window.addVideo = async function() {
   }
 };
 
-// Удаление
 async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
