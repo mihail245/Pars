@@ -1,1 +1,796 @@
-hui
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyTube — прототип</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  /* ===== Шапка ===== */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #0f0f0f;
+    border-bottom: 1px solid #272727;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .logo-icon {
+    width: 32px; height: 22px;
+    background: #ff0000;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px;
+  }
+  .header-btns { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #272727;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background .2s;
+  }
+  .btn:hover { background: #3a3a3a; }
+  .btn-primary { background: #ff0000; }
+  .btn-primary:hover { background: #cc0000; }
+
+  /* ===== Контент ===== */
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .video-card {
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .2s;
+  }
+  .video-card:hover { transform: translateY(-3px); }
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .video-thumb video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .video-thumb::after {
+    content: '▶';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,.9);
+    font-size: 40px;
+    background: rgba(0,0,0,.15);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .video-card:hover .video-thumb::after { opacity: 1; }
+  .video-info { padding: 10px 4px; }
+  .video-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .video-date { font-size: 12px; color: #aaa; }
+  .delete-btn {
+    margin-top: 6px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #ff6b6b;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .delete-btn:hover { background: #2a1010; }
+
+  /* ===== Просмотр видео ===== */
+  .player-view { display: none; }
+  .player-view.active { display: block; }
+  .library-view.hidden { display: none; }
+
+  .back-btn {
+    background: transparent; border: none; color: #aaa;
+    cursor: pointer; font-size: 14px; margin-bottom: 16px;
+    padding: 6px 0;
+  }
+  .back-btn:hover { color: #fff; }
+
+  .player-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+  }
+  .player-meta { color: #aaa; font-size: 14px; margin-bottom: 20px; }
+
+  /* ===== Кастомный плеер ===== */
+  .player-wrap {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    user-select: none;
+  }
+  .player-wrap video {
+    width: 100%;
+    display: block;
+    max-height: 70vh;
+    background: #000;
+  }
+  .controls {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,.85));
+    padding: 40px 16px 12px;
+    opacity: 0;
+    transition: opacity .25s;
+  }
+  .player-wrap:hover .controls,
+  .player-wrap.paused .controls { opacity: 1; }
+
+  /* Прогресс-бар с превью таймкода */
+  .progress-wrap {
+    position: relative;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .progress-bg {
+    width: 100%;
+    height: 5px;
+    background: rgba(255,255,255,.25);
+    border-radius: 3px;
+    overflow: hidden;
+    transition: height .15s;
+  }
+  .progress-wrap:hover .progress-bg { height: 7px; }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #ff0000;
+    border-radius: 3px;
+  }
+  .progress-thumb {
+    position: absolute;
+    width: 14px; height: 14px;
+    background: #ff0000;
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform .15s;
+    pointer-events: none;
+  }
+  .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1); }
+
+  .time-tooltip {
+    position: absolute;
+    bottom: 24px;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,.9);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .progress-wrap:hover .time-tooltip { opacity: 1; }
+
+  /* Нижний ряд управления */
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+  }
+  .ctrl-btn {
+    background: none; border: none; color: #fff;
+    cursor: pointer; padding: 6px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    transition: background .15s;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .ctrl-btn:hover { background: rgba(255,255,255,.15); }
+  .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; }
+
+  .time-display {
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: #eee;
+    min-width: 100px;
+  }
+  .spacer { flex: 1; }
+
+  .volume-wrap {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .volume-slider {
+    width: 0;
+    opacity: 0;
+    transition: width .25s, opacity .25s;
+    accent-color: #ff0000;
+    cursor: pointer;
+  }
+  .volume-wrap:hover .volume-slider { width: 80px; opacity: 1; }
+
+  .speed-btn {
+    font-size: 13px; font-weight: 600; color: #fff;
+    background: none; border: none; cursor: pointer;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,.15); }
+
+  /* ===== Админка ===== */
+  .admin-panel {
+    display: none;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .admin-panel.active { display: block; }
+  .admin-panel h2 { margin-bottom: 20px; }
+
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block; font-size: 13px; color: #aaa; margin-bottom: 6px;
+  }
+  .field input[type="text"],
+  .field input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border .15s;
+  }
+  .field input:focus { border-color: #ff0000; }
+
+  .file-drop {
+    border: 2px dashed #333;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    color: #888;
+  }
+  .file-drop:hover { border-color: #ff0000; background: #1a1010; }
+  .file-drop.has-file { border-color: #4caf50; background: #0f1a0f; color: #4caf50; }
+  .file-drop input { display: none; }
+
+  .progress-upload {
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-top: 12px;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-upload.active { display: block; }
+  .progress-upload-fill {
+    height: 100%; width: 0%;
+    background: #ff0000;
+    transition: width .3s;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #222;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    transition: transform .3s;
+    z-index: 1000;
+    border-left: 4px solid #4caf50;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { border-left-color: #f44336; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showLibrary()">
+    <div class="logo-icon">▶</div>
+    <span>MyTube</span>
+  </div>
+  <div class="header-btns">
+    <button class="btn" onclick="showLibrary()">Главная</button>
+    <button class="btn btn-primary" onclick="showAdmin()">⚙ Админка</button>
+  </div>
+</header>
+
+<main>
+  <!-- БИБЛИОТЕКА -->
+  <div class="library-view" id="libraryView">
+    <h2 style="margin-bottom:20px;">Все видео</h2>
+    <div class="video-grid" id="videoGrid"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <p>Пока нет видео. Зайдите в админку и загрузите первое 🎬</p>
+    </div>
+  </div>
+
+  <!-- ПРОСМОТР -->
+  <div class="player-view" id="playerView">
+    <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
+
+    <div class="player-wrap paused" id="playerWrap">
+      <video id="mainVideo" preload="metadata"></video>
+
+      <div class="controls">
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bg">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-thumb" id="progressThumb"></div>
+          <div class="time-tooltip" id="timeTooltip">0:00</div>
+        </div>
+
+        <div class="ctrl-row">
+          <button class="ctrl-btn" id="playBtn" title="Play/Pause"></button>
+          <button class="ctrl-btn" id="backBtn" title="-10 сек">
+            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" transform="scale(-1,1) translate(-24,0)"/></svg>
+          </button>
+          <button class="ctrl-btn" id="fwdBtn" title="+10 сек">
+            <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+          </button>
+
+          <div class="time-display">
+            <span id="curTime">0:00</span> / <span id="durTime">0:00</span>
+          </div>
+
+          <div class="spacer"></div>
+
+          <button class="speed-btn" id="speedBtn">1x</button>
+
+          <div class="volume-wrap">
+            <button class="ctrl-btn" id="muteBtn"></button>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+          </div>
+
+          <button class="ctrl-btn" id="fullBtn" title="Полный экран">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="player-title" id="playerTitle"></h1>
+    <div class="player-meta" id="playerMeta"></div>
+  </div>
+
+  <!-- АДМИНКА -->
+  <div class="admin-panel" id="adminPanel">
+    <h2>⚙ Загрузка видео</h2>
+
+    <div class="field">
+      <label>Название видео</label>
+      <input type="text" id="videoTitle" placeholder="Например: Мой первый влог">
+    </div>
+
+    <div class="field">
+      <label>Видеофайл</label>
+      <div class="file-drop" id="fileDrop">
+        <input type="file" id="videoFile" accept="video/*">
+        <div id="fileDropText">📁 Нажмите или перетащите видео сюда<br><small>MP4, WebM, MOV</small></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="uploadBtn" onclick="uploadVideo()">
+      Загрузить видео
+    </button>
+
+    <div class="progress-upload" id="uploadProgress">
+      <div class="progress-upload-fill" id="uploadProgressFill"></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getDatabase, ref as dbRef, push, set, onValue, remove, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCaNedHxv1aybxGcUR-mU9TkMuLf2toQG4",
+  authDomain: "dnevnik-d4846.firebaseapp.com",
+  databaseURL: "https://dnevnik-d4846-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "dnevnik-d4846",
+  storageBucket: "dnevnik-d4846.firebasestorage.app",
+  messagingSenderId: "879922990092",
+  appId: "1:879922990092:web:78262b08cd5437dbfc3229"
+};
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const db = getDatabase(app);
+
+// ===== Утилиты =====
+function fmtTime(s) {
+  if (!isFinite(s) || s < 0) s = 0;
+  s = Math.floor(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ===== Навигация =====
+window.showLibrary = function() {
+  document.getElementById('libraryView').classList.remove('hidden');
+  document.getElementById('playerView').classList.remove('active');
+  document.getElementById('adminPanel').classList.remove('active');
+  const v = document.getElementById('mainVideo');
+  v.pause();
+  v.removeAttribute('src');
+  v.load();
+};
+
+window.showAdmin = function() {
+  document.getElementById('libraryView').classList.add('hidden');
+  document.getElementById('playerView').classList.remove('active');
+  document.getElementById('adminPanel').classList.add('active');
+  const v = document.getElementById('mainVideo');
+  v.pause();
+};
+
+// ===== Загрузка списка видео =====
+const videoGrid = document.getElementById('videoGrid');
+const emptyState = document.getElementById('emptyState');
+const videosRef = dbRef(db, 'videos');
+
+onValue(videosRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  const list = Object.entries(data).map(([id, v]) => ({ id, ...v }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  videoGrid.innerHTML = '';
+  if (list.length === 0) {
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  list.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.innerHTML = `
+      <div class="video-thumb">
+        <video src="${v.url}#t=0.5" preload="metadata" muted></video>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${escapeHtml(v.title)}</div>
+        <div class="video-date">${fmtDate(v.createdAt)}</div>
+        <button class="delete-btn" data-id="${v.id}">Удалить</button>
+      </div>
+    `;
+    card.querySelector('.video-thumb').onclick = () => playVideo(v);
+    card.querySelector('.delete-btn').onclick = (e) => {
+      e.stopPropagation();
+      deleteVideo(v);
+    };
+    videoGrid.appendChild(card);
+  });
+});
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+// ===== Воспроизведение =====
+const mainVideo = document.getElementById('mainVideo');
+const playerView = document.getElementById('playerView');
+const playerWrap = document.getElementById('playerWrap');
+
+function playVideo(v) {
+  document.getElementById('libraryView').classList.add('hidden');
+  document.getElementById('adminPanel').classList.remove('active');
+  playerView.classList.add('active');
+  document.getElementById('playerTitle').textContent = v.title;
+  document.getElementById('playerMeta').textContent = `Загружено: ${fmtDate(v.createdAt)}`;
+  mainVideo.src = v.url;
+  mainVideo.play().catch(()=>{});
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ===== Кастомные контролы =====
+const playBtn = document.getElementById('playBtn');
+const backBtn10 = document.getElementById('backBtn');
+const fwdBtn10 = document.getElementById('fwdBtn');
+const curTimeEl = document.getElementById('curTime');
+const durTimeEl = document.getElementById('durTime');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressThumb = document.getElementById('progressThumb');
+const timeTooltip = document.getElementById('timeTooltip');
+const muteBtn = document.getElementById('muteBtn');
+const volumeSlider = document.getElementById('volumeSlider');
+const fullBtn = document.getElementById('fullBtn');
+const speedBtn = document.getElementById('speedBtn');
+
+const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+const ICON_VOL = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
+
+function updatePlayIcon() {
+  playBtn.innerHTML = mainVideo.paused ? ICON_PLAY : ICON_PAUSE;
+  playerWrap.classList.toggle('paused', mainVideo.paused);
+}
+
+playBtn.onclick = () => mainVideo.paused ? mainVideo.play() : mainVideo.pause();
+mainVideo.onplay = updatePlayIcon;
+mainVideo.onpause = updatePlayIcon;
+updatePlayIcon();
+
+backBtn10.onclick = () => { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); };
+fwdBtn10.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration, mainVideo.currentTime + 10); };
+
+mainVideo.ontimeupdate = () => {
+  const cur = mainVideo.currentTime;
+  const dur = mainVideo.duration || 0;
+  curTimeEl.textContent = fmtTime(cur);
+  durTimeEl.textContent = fmtTime(dur);
+  const pct = dur ? (cur / dur) * 100 : 0;
+  progressFill.style.width = pct + '%';
+  progressThumb.style.left = pct + '%';
+};
+mainVideo.onloadedmetadata = () => {
+  durTimeEl.textContent = fmtTime(mainVideo.duration);
+};
+
+// Прогресс-бар
+function seekFromEvent(e) {
+  const rect = progressWrap.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const ratio = Math.max(0, Math.min(1, x / rect.width));
+  if (mainVideo.duration) mainVideo.currentTime = ratio * mainVideo.duration;
+}
+progressWrap.addEventListener('click', seekFromEvent);
+progressWrap.addEventListener('mousemove', (e) => {
+  const rect = progressWrap.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const ratio = Math.max(0, Math.min(1, x / rect.width));
+  timeTooltip.style.left = (ratio * 100) + '%';
+  if (mainVideo.duration) timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
+});
+
+// Drag-перемотка
+let dragging = false;
+progressWrap.addEventListener('mousedown', (e) => { dragging = true; seekFromEvent(e); });
+window.addEventListener('mousemove', (e) => { if (dragging) seekFromEvent(e); });
+window.addEventListener('mouseup', () => { dragging = false; });
+
+// Громкость
+function updateVolumeIcon() {
+  muteBtn.innerHTML = (mainVideo.muted || mainVideo.volume === 0) ? ICON_MUTE : ICON_VOL;
+}
+muteBtn.onclick = () => { mainVideo.muted = !mainVideo.muted; updateVolumeIcon(); };
+volumeSlider.oninput = () => {
+  mainVideo.volume = parseFloat(volumeSlider.value);
+  mainVideo.muted = mainVideo.volume === 0;
+  updateVolumeIcon();
+};
+updateVolumeIcon();
+
+// Fullscreen
+fullBtn.onclick = () => {
+  if (!document.fullscreenElement) playerWrap.requestFullscreen();
+  else document.exitFullscreen();
+};
+
+// Скорость
+const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+let speedIdx = 2;
+speedBtn.onclick = () => {
+  speedIdx = (speedIdx + 1) % speeds.length;
+  mainVideo.playbackRate = speeds[speedIdx];
+  speedBtn.textContent = speeds[speedIdx] + 'x';
+};
+
+// Горячие клавиши
+document.addEventListener('keydown', (e) => {
+  if (!playerView.classList.contains('active')) return;
+  if (e.target.tagName === 'INPUT') return;
+  switch (e.key) {
+    case ' ': e.preventDefault(); playBtn.click(); break;
+    case 'ArrowLeft': backBtn10.click(); break;
+    case 'ArrowRight': fwdBtn10.click(); break;
+    case 'ArrowUp': mainVideo.volume = Math.min(1, mainVideo.volume + 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
+    case 'ArrowDown': mainVideo.volume = Math.max(0, mainVideo.volume - 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
+    case 'm': muteBtn.click(); break;
+    case 'f': fullBtn.click(); break;
+  }
+});
+
+// ===== Админка: загрузка файла =====
+const fileDrop = document.getElementById('fileDrop');
+const videoFileInput = document.getElementById('videoFile');
+const fileDropText = document.getElementById('fileDropText');
+
+fileDrop.onclick = () => videoFileInput.click();
+fileDrop.ondragover = (e) => { e.preventDefault(); fileDrop.style.borderColor = '#ff0000'; };
+fileDrop.ondragleave = () => { fileDrop.style.borderColor = '#333'; };
+fileDrop.ondrop = (e) => {
+  e.preventDefault();
+  fileDrop.style.borderColor = '#333';
+  if (e.dataTransfer.files[0]) {
+    videoFileInput.files = e.dataTransfer.files;
+    onFileSelected();
+  }
+};
+videoFileInput.onchange = onFileSelected;
+
+function onFileSelected() {
+  const f = videoFileInput.files[0];
+  if (!f) return;
+  fileDrop.classList.add('has-file');
+  const sizeMB = (f.size / 1024 / 1024).toFixed(1);
+  fileDropText.innerHTML = `✅ ${f.name}<br><small>${sizeMB} МБ</small>`;
+}
+
+// Загрузка
+window.uploadVideo = async function() {
+  const title = document.getElementById('videoTitle').value.trim();
+  const file = videoFileInput.files[0];
+
+  if (!title) return showToast('Введите название', true);
+  if (!file) return showToast('Выберите файл', true);
+
+  const uploadBtn = document.getElementById('uploadBtn');
+  const progBox = document.getElementById('uploadProgress');
+  const progFill = document.getElementById('uploadProgressFill');
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Загрузка...';
+  progBox.classList.add('active');
+  progFill.style.width = '0%';
+
+  try {
+    const fileName = `videos/${Date.now()}_${file.name.replace(/[^\w.-]/g, '_')}`;
+    const storageRef = sRef(storage, fileName);
+    const task = uploadBytesResumable(storageRef, file);
+
+    task.on('state_changed',
+      (snap) => {
+        const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+        progFill.style.width = pct + '%';
+      },
+      (err) => {
+        console.error(err);
+        showToast('Ошибка загрузки: ' + err.message, true);
+        resetUpload();
+      },
+      async () => {
+        const url = await getDownloadURL(task.snapshot.ref);
+        const newRef = push(videosRef);
+        await set(newRef, {
+          title,
+          url,
+          storagePath: fileName,
+          createdAt: Date.now()
+        });
+        showToast('✅ Видео загружено!');
+        resetUpload();
+        // Очистка формы
+        document.getElementById('videoTitle').value = '';
+        videoFileInput.value = '';
+        fileDrop.classList.remove('has-file');
+        fileDropText.innerHTML = '📁 Нажмите или перетащите видео сюда<br><small>MP4, WebM, MOV</small>';
+        setTimeout(showLibrary, 800);
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    showToast('Ошибка: ' + err.message, true);
+    resetUpload();
+  }
+
+  function resetUpload() {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = 'Загрузить видео';
+    setTimeout(() => {
+      progBox.classList.remove('active');
+      progFill.style.width = '0%';
+    }, 500);
+  }
+};
+
+// Удаление
+async function deleteVideo(v) {
+  if (!confirm(`Удалить "${v.title}"?`)) return;
+  try {
+    if (v.storagePath) {
+      try { await deleteObject(sRef(storage, v.storagePath)); }
+      catch (e) { console.warn('Storage delete failed:', e); }
+    }
+    await remove(dbRef(db, 'videos/' + v.id));
+    showToast('Видео удалено');
+  } catch (err) {
+    showToast('Ошибка удаления: ' + err.message, true);
+  }
+}
+</script>
+
+</body>
+</html>
