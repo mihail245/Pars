@@ -18,7 +18,7 @@
   header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     padding: 12px 20px;
     background: #0f0f0f;
     border-bottom: 1px solid #1f1f1f;
@@ -27,6 +27,7 @@
   .logo {
     display: flex; align-items: center; gap: 8px;
     font-size: 19px; font-weight: 700; cursor: pointer;
+    flex-shrink: 0;
   }
   .logo-icon {
     width: 32px; height: 22px; background: #ff0000;
@@ -34,7 +35,35 @@
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 12px;
   }
-  .header-btns { display: flex; gap: 8px; }
+  .search-box {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+    margin: 0 auto;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 9px 36px 9px 14px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border .15s;
+    font-family: inherit;
+  }
+  .search-box input:focus { border-color: #ff0000; }
+  .search-box::after {
+    content: '🔍';
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 14px;
+    opacity: .6;
+  }
+  .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
   .btn {
     padding: 8px 16px; border-radius: 20px; border: none;
     background: #1f1f1f; color: #fff; cursor: pointer;
@@ -53,7 +82,37 @@
 
   main { padding: 20px; max-width: 1400px; margin: 0 auto; }
 
-  /* ===== Сетка видео (С миниатюрами) ===== */
+  /* Панель фильтров */
+  .filters-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .filters-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    background: #1a1a1a;
+    border: 1px solid #222;
+    color: #ccc;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .filter-chip:hover { background: #222; color: #fff; }
+  .filter-chip.active {
+    background: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
+  }
+
+  /* ===== Сетка видео ===== */
   .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -66,6 +125,7 @@
     background: #171717;
     border: 1px solid #222;
     transition: transform .15s, border-color .15s;
+    position: relative;
   }
   .video-card:hover { transform: translateY(-2px); border-color: #333; }
   .video-thumb {
@@ -88,12 +148,40 @@
   }
   .video-card:hover .video-thumb .play-overlay { opacity: 1; }
   .video-thumb .ts-badge {
-    position: absolute; top: 8px; right: 8px;
+    position: absolute; top: 8px; left: 8px;
     background: rgba(0,0,0,.75); color: #fff;
     padding: 3px 8px; border-radius: 4px;
     font-size: 11px; font-weight: 600;
     backdrop-filter: blur(4px);
     z-index: 3;
+  }
+  .video-thumb .fav-btn {
+    position: absolute; top: 8px; right: 8px;
+    width: 32px; height: 32px;
+    background: rgba(0,0,0,.7);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 4;
+    backdrop-filter: blur(4px);
+    transition: all .15s;
+  }
+  .video-thumb .fav-btn:hover { background: rgba(255,0,0,.7); transform: scale(1.1); }
+  .video-thumb .fav-btn.active { background: #ff0000; }
+  /* Прогресс просмотра на карточке */
+  .video-thumb .watch-progress {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: rgba(255,255,255,.15);
+    z-index: 4;
+  }
+  .video-thumb .watch-progress-fill {
+    height: 100%;
+    background: #ff0000;
+    width: 0%;
   }
   .video-info { padding: 12px 14px 14px; }
   .video-title {
@@ -103,6 +191,15 @@
     -webkit-box-orient: vertical; overflow: hidden;
   }
   .video-date { font-size: 12px; color: #888; }
+  .video-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .video-tag {
+    background: #1a1a1a;
+    color: #a0a0a0;
+    border: 1px solid #222;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
   .video-actions { display: flex; gap: 6px; margin-top: 10px; }
   .action-btn {
     background: transparent; border: 1px solid #333;
@@ -147,6 +244,15 @@
     display: block;
     background: #000;
     object-fit: contain;
+  }
+  /* Оверлей яркости */
+  .brightness-overlay {
+    position: absolute; inset: 0;
+    background: #000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 5;
   }
 
   /* Индикатор двойного тапа */
@@ -222,7 +328,7 @@
   .player-wrap.paused .controls,
   .player-wrap.show-controls .controls { opacity: 1; }
 
-  /* Прогресс-бар (БЕЗ превью) */
+  /* Прогресс-бар */
   .progress-wrap {
     position: relative;
     height: 20px;
@@ -237,13 +343,24 @@
     border-radius: 2px;
     transition: height .15s;
     position: relative;
+    overflow: visible;
   }
-  .progress-wrap:hover .progress-bg { height: 6px; }
+  .progress-wrap:hover .progress-bg,
+  .progress-wrap.dragging .progress-bg { height: 6px; }
+  /* Буфер */
+  .progress-buffer {
+    position: absolute; top: 0; left: 0;
+    height: 100%;
+    background: rgba(255,255,255,.35);
+    border-radius: 2px;
+    width: 0%;
+  }
   .progress-fill {
     position: absolute; top: 0; left: 0;
     height: 100%; width: 0%;
     background: #ff0000;
     border-radius: 2px;
+    z-index: 2;
   }
   .ts-marker {
     position: absolute; top: 50%;
@@ -253,21 +370,27 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
     box-shadow: 0 0 4px rgba(255, 204, 0, 0.6);
-    z-index: 2;
+    z-index: 3;
   }
   .progress-thumb {
     position: absolute;
-    width: 13px; height: 13px;
+    width: 14px; height: 14px;
     background: #ff0000; border-radius: 50%;
     top: 50%;
     transform: translate(-50%, -50%) scale(0);
     transition: transform .15s;
     pointer-events: none;
-    z-index: 3;
+    z-index: 4;
+    box-shadow: 0 0 0 3px rgba(255,0,0,.2);
   }
-  .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1); }
+  .progress-wrap:hover .progress-thumb,
+  .progress-wrap.dragging .progress-thumb {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .progress-wrap.dragging .progress-thumb {
+    box-shadow: 0 0 0 6px rgba(255,0,0,.3);
+  }
 
-  /* Простой тултип со временем (без превью-кадра) */
   .time-tooltip {
     position: absolute;
     bottom: 24px;
@@ -285,9 +408,9 @@
     z-index: 10;
     font-weight: 600;
   }
-  .progress-wrap:hover .time-tooltip { opacity: 1; }
+  .progress-wrap:hover .time-tooltip,
+  .progress-wrap.dragging .time-tooltip { opacity: 1; }
 
-  /* Нижний ряд управления */
   .ctrl-row {
     display: flex;
     align-items: center;
@@ -302,6 +425,7 @@
     border-radius: 50%;
     transition: background .15s;
     flex-shrink: 0;
+    position: relative;
   }
   .ctrl-btn:hover { background: rgba(255,255,255,.12); }
   .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; display: block; }
@@ -323,12 +447,80 @@
     width: 0; opacity: 0;
     transition: width .2s, opacity .2s;
     accent-color: #ff0000; cursor: pointer;
-    margin-right: 0;
   }
   .volume-wrap:hover .volume-slider,
   .volume-wrap:focus-within .volume-slider {
     width: 70px; opacity: 1;
-    margin-right: 6px;
+    margin: 0 6px;
+  }
+
+  /* Меню скорости */
+  .speed-menu {
+    position: absolute;
+    bottom: 60px;
+    right: 60px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 120px;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.6);
+    z-index: 30;
+  }
+  .speed-menu.show { display: block; }
+  .speed-menu-item {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #ddd;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    transition: background .1s;
+  }
+  .speed-menu-item:hover { background: #2a2a2a; color: #fff; }
+  .speed-menu-item.active { color: #ff4d4d; font-weight: 700; }
+
+  /* Меню настроек */
+  .settings-menu {
+    position: absolute;
+    bottom: 60px;
+    right: 90px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 200px;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.6);
+    z-index: 30;
+  }
+  .settings-menu.show { display: block; }
+  .settings-title {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin: 4px 0 6px;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .settings-row input[type="range"] {
+    flex: 1;
+    accent-color: #ff0000;
+    cursor: pointer;
+  }
+  .settings-row .value {
+    min-width: 36px;
+    text-align: right;
+    color: #aaa;
+    font-size: 12px;
   }
 
   .speed-btn {
@@ -339,7 +531,7 @@
   }
   .speed-btn:hover { background: rgba(255,255,255,.12); }
 
-  /* Fullscreen — фикс */
+  /* Fullscreen */
   .player-wrap:fullscreen,
   .player-wrap:-webkit-full-screen {
     max-height: none;
@@ -360,6 +552,39 @@
   .player-wrap:fullscreen .controls,
   .player-wrap:-webkit-full-screen .controls {
     padding: 60px 24px 18px;
+  }
+
+  /* Панель прогресс просмотра в плеере */
+  .resume-toast {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,.9);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+    z-index: 25;
+    backdrop-filter: blur(6px);
+  }
+  .resume-toast.show { opacity: 1; pointer-events: auto; }
+  .resume-toast button {
+    background: #ff0000;
+    border: none;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
   }
 
   /* ===== Таймкоды под плеером ===== */
@@ -535,13 +760,16 @@
   @media (max-width: 600px) {
     main { padding: 14px; }
     .video-grid { grid-template-columns: 1fr; gap: 12px; }
-    header { padding: 10px 14px; }
+    header { padding: 10px 14px; flex-wrap: wrap; }
+    .search-box { order: 3; flex-basis: 100%; margin-top: 8px; }
     .btn { padding: 7px 12px; font-size: 13px; }
     .player-title { font-size: 17px; }
     .ctrl-row { gap: 2px; }
     .ctrl-btn { padding: 6px; }
     .ctrl-btn svg { width: 20px; height: 20px; }
     .time-display { font-size: 12px; padding: 0 4px; }
+    .speed-menu { right: 20px; }
+    .settings-menu { right: 20px; left: 20px; }
   }
 </style>
 </head>
@@ -552,28 +780,31 @@
     <div class="logo-icon">▶</div>
     <span>MyTube</span>
   </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Поиск видео...">
+  </div>
   <div class="header-btns">
     <button class="btn" onclick="showLibrary()">Главная</button>
+    <button class="btn" id="favoritesBtn" onclick="toggleFavoritesFilter()">★ Избранное</button>
     <button class="btn btn-primary" onclick="showAdmin()">⚙ Админка</button>
   </div>
 </header>
 
 <main>
-  <!-- БИБЛИОТЕКА -->
   <div class="library-view" id="libraryView">
-    <h2 style="margin-bottom:18px; font-size:20px;">Все видео</h2>
+    <div class="filters-bar" id="filtersBar"></div>
     <div class="video-grid" id="videoGrid"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
       <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
     </div>
   </div>
 
-  <!-- ПРОСМОТР -->
   <div class="player-view" id="playerView">
     <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
 
     <div class="player-wrap paused" id="playerWrap">
       <video id="mainVideo" preload="auto" playsinline webkit-playsinline></video>
+      <div class="brightness-overlay" id="brightnessOverlay"></div>
 
       <div class="seek-indicator left" id="seekBack">
         <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
@@ -590,9 +821,35 @@
 
       <div class="loading-spinner" id="loadingSpinner"></div>
 
+      <div class="resume-toast" id="resumeToast">
+        <span>Продолжить с <span id="resumeTime">0:00</span>?</span>
+        <button onclick="resumeFromSaved()">Да</button>
+        <button onclick="hideResumeToast()" style="background:#333;">Нет</button>
+      </div>
+
+      <!-- Меню скорости -->
+      <div class="speed-menu" id="speedMenu"></div>
+
+      <!-- Меню настроек -->
+      <div class="settings-menu" id="settingsMenu">
+        <div class="settings-title">Яркость</div>
+        <div class="settings-row">
+          <span>☀</span>
+          <input type="range" id="brightnessSlider" min="0" max="100" value="100">
+          <span class="value" id="brightnessVal">100%</span>
+        </div>
+        <div class="settings-title">Громкость</div>
+        <div class="settings-row">
+          <span>🔊</span>
+          <input type="range" id="volumeSlider2" min="0" max="100" value="100">
+          <span class="value" id="volumeVal">100%</span>
+        </div>
+      </div>
+
       <div class="controls" id="controls">
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-bg">
+            <div class="progress-buffer" id="progressBuffer"></div>
             <div class="progress-fill" id="progressFill"></div>
             <div id="tsMarkersLayer"></div>
           </div>
@@ -616,6 +873,14 @@
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
           </div>
 
+          <button class="ctrl-btn" id="settingsBtn" title="Настройки">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </button>
+
+          <button class="ctrl-btn" id="pipBtn" title="Картинка в картинке">
+            <svg viewBox="0 0 24 24"><path d="M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>
+          </button>
+
           <button class="ctrl-btn" id="fullBtn" title="Полный экран">
             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
           </button>
@@ -625,6 +890,7 @@
 
     <h1 class="player-title" id="playerTitle"></h1>
     <div class="player-meta" id="playerMeta"></div>
+    <div class="video-tags" id="playerTags" style="margin-top:10px;"></div>
 
     <div class="timestamps-block" id="timestampsBlock" style="display:none;">
       <div class="timestamps-header">
@@ -635,7 +901,6 @@
     </div>
   </div>
 
-  <!-- АДМИНКА -->
   <div class="admin-panel" id="adminPanel">
     <h2>⚙ Админка</h2>
 
@@ -654,17 +919,20 @@
       <div class="field">
         <label>Ссылка на видеофайл</label>
         <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4">
-        <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
       </div>
 
       <div class="field">
         <label>Ссылка на превью (необязательно)</label>
-        <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
-        <small>Если пусто — превью автоматически сгенерируется из середины видео</small>
+        <input type="text" id="videoThumb" placeholder="Если пусто — сгенерируется из середины видео">
       </div>
 
       <div class="field">
-        <label>Таймкоды (необязательно)</label>
+        <label>Теги (через запятую)</label>
+        <input type="text" id="videoTags" placeholder="например: спорт, музыка, влог">
+      </div>
+
+      <div class="field">
+        <label>Таймкоды</label>
         <div class="ts-admin-block">
           <div class="ts-admin-header">
             <span>Формат: <b>MM:СС</b> + название</span>
@@ -704,7 +972,12 @@
 
         <div class="field">
           <label>Ссылка на превью</label>
-          <input type="text" id="editThumb" placeholder="Оставьте пустым, чтобы сгенерировать из середины">
+          <input type="text" id="editThumb">
+        </div>
+
+        <div class="field">
+          <label>Теги (через запятую)</label>
+          <input type="text" id="editTags">
         </div>
 
         <div class="field">
@@ -732,7 +1005,7 @@
         🗑 Удалить все видео
       </button>
       <small style="display:block; color:#666; font-size:12px; margin-top:10px; text-align:center;">
-        Это действие необратимо. Все ссылки на видео будут удалены из базы.
+        Это действие необратимо.
       </small>
     </div>
   </div>
@@ -761,6 +1034,8 @@ const db = getDatabase(app);
 const videosRef = dbRef(db, 'videos');
 
 const ADMIN_PASSWORD = 'admin123';
+const RESUME_THRESHOLD = 5;   // если смотрел >5 сек — сохраняем позицию
+const RESUME_COMPLETE = 0.95; // если смотрел >95% — сбрасываем позицию
 
 // ===== Утилиты =====
 function fmtTime(s) {
@@ -815,7 +1090,7 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-// ===== Генерация превью из середины видео (для карточек) =====
+// ===== Генерация превью из середины =====
 const thumbCache = new Map();
 
 function generateMidThumbnail(url) {
@@ -842,15 +1117,13 @@ function generateMidThumbnail(url) {
     video.addEventListener('loadedmetadata', () => {
       const mid = (video.duration || 0) / 2;
       if (!isFinite(mid) || mid <= 0) return finish(null);
-      try { video.currentTime = mid; }
-      catch (e) { finish(null); }
+      try { video.currentTime = mid; } catch (e) { finish(null); }
     }, { once: true });
 
     video.addEventListener('seeked', () => {
       try {
         const c = document.createElement('canvas');
-        c.width = 480;
-        c.height = 270;
+        c.width = 480; c.height = 270;
         const ctx = c.getContext('2d');
         ctx.drawImage(video, 0, 0, c.width, c.height);
         const dataUrl = c.toDataURL('image/jpeg', 0.75);
@@ -869,17 +1142,72 @@ function generateMidThumbnail(url) {
   });
 }
 
+// ===== LocalStorage: избранное, прогресс просмотра, фильтры =====
+function getFavorites() {
+  try { return JSON.parse(localStorage.getItem('mytube_favs') || '[]'); }
+  catch { return []; }
+}
+function setFavorites(arr) {
+  localStorage.setItem('mytube_favs', JSON.stringify(arr));
+}
+function isFavorite(id) { return getFavorites().includes(id); }
+function toggleFavorite(id) {
+  const favs = getFavorites();
+  const idx = favs.indexOf(id);
+  if (idx === -1) favs.push(id);
+  else favs.splice(idx, 1);
+  setFavorites(favs);
+  return isFavorite(id);
+}
+
+function getWatchProgress(id) {
+  try {
+    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
+    return all[id] || null;
+  } catch { return null; }
+}
+function setWatchProgress(id, time, duration) {
+  try {
+    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
+    if (!duration || time / duration > RESUME_COMPLETE) {
+      delete all[id];
+    } else if (time > RESUME_THRESHOLD) {
+      all[id] = { time, duration, updatedAt: Date.now() };
+    }
+    localStorage.setItem('mytube_progress', JSON.stringify(all));
+  } catch (e) {}
+}
+function clearWatchProgress(id) {
+  try {
+    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
+    delete all[id];
+    localStorage.setItem('mytube_progress', JSON.stringify(all));
+  } catch (e) {}
+}
+
+// ===== State =====
+let allVideos = [];
+let activeTagFilter = '__all__';
+let showFavoritesOnly = false;
+let searchQuery = '';
+
 // ===== Навигация =====
 window.showLibrary = function() {
   document.getElementById('libraryView').classList.remove('hidden');
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.remove('active');
   const v = document.getElementById('mainVideo');
+  // Сохраняем прогресс перед выходом
+  if (currentVideo && v.duration) {
+    setWatchProgress(currentVideo.id, v.currentTime, v.duration);
+  }
   v.pause();
   v.removeAttribute('src');
   v.querySelectorAll('source').forEach(s => s.remove());
   v.load();
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
+  hideResumeToast();
+  currentVideo = null;
 };
 
 window.showAdmin = function() {
@@ -904,78 +1232,169 @@ window.switchAdminTab = function(tabName) {
   });
 };
 
-// ===== Список видео =====
-const videoGrid = document.getElementById('videoGrid');
-const emptyState = document.getElementById('emptyState');
-let allVideos = [];
+// ===== Поиск =====
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value.toLowerCase().trim();
+  renderVideoGrid();
+});
 
-onValue(videosRef, (snapshot) => {
-  const data = snapshot.val() || {};
-  const list = Object.entries(data).map(([id, v]) => ({ id, ...v }))
-    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-  allVideos = list;
+// ===== Фильтры по тегам =====
+function renderFiltersBar() {
+  const bar = document.getElementById('filtersBar');
+  const tags = new Set();
+  allVideos.forEach(v => {
+    if (Array.isArray(v.tags)) v.tags.forEach(t => tags.add(t));
+  });
 
-  videoGrid.innerHTML = '';
-  if (list.length === 0) {
-    emptyState.style.display = 'block';
-  } else {
-    emptyState.style.display = 'none';
+  const sortedTags = Array.from(tags).sort();
+  bar.innerHTML = '';
 
-    list.forEach(v => {
-      const card = document.createElement('div');
-      card.className = 'video-card';
+  const allChip = document.createElement('button');
+  allChip.className = 'filter-chip' + (activeTagFilter === '__all__' ? ' active' : '');
+  allChip.textContent = 'Все';
+  allChip.onclick = () => { activeTagFilter = '__all__'; renderFiltersBar(); renderVideoGrid(); };
+  bar.appendChild(allChip);
 
-      const ytId = getYouTubeId(v.url);
-      const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
-      const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
+  sortedTags.forEach(tag => {
+    const chip = document.createElement('button');
+    chip.className = 'filter-chip' + (activeTagFilter === tag ? ' active' : '');
+    chip.textContent = tag;
+    chip.onclick = () => { activeTagFilter = tag; renderFiltersBar(); renderVideoGrid(); };
+    bar.appendChild(chip);
+  });
 
-      let explicitThumb = '';
-      if (v.thumb) explicitThumb = v.thumb;
-      else if (ytId) explicitThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  bar.style.display = (sortedTags.length === 0 && !showFavoritesOnly) ? 'none' : 'flex';
+}
 
-      const thumbStyle = explicitThumb
-        ? `background-image: url('${escapeAttr(explicitThumb)}')`
-        : '';
+// ===== Избранное =====
+window.toggleFavoritesFilter = function() {
+  showFavoritesOnly = !showFavoritesOnly;
+  document.getElementById('favoritesBtn').classList.toggle('btn-primary', showFavoritesOnly);
+  renderVideoGrid();
+};
 
-      card.innerHTML = `
-        <div class="video-thumb" style="${thumbStyle}">
-          ${tsBadge}
-          <div class="play-overlay">▶</div>
-        </div>
-        <div class="video-info">
-          <div class="video-title">${escapeHtml(v.title)}</div>
-          <div class="video-date">${fmtDate(v.createdAt)}</div>
-          <div class="video-actions">
-            <button class="action-btn edit">✎ Изменить</button>
-            <button class="action-btn delete">Удалить</button>
-          </div>
-        </div>
-      `;
+// ===== Рендер сетки =====
+function renderVideoGrid() {
+  const videoGrid = document.getElementById('videoGrid');
+  const emptyState = document.getElementById('emptyState');
 
-      // Генерируем превью из середины, если нет явного
-      if (!explicitThumb && v.url) {
-        const thumbEl = card.querySelector('.video-thumb');
-        generateMidThumbnail(v.url).then(dataUrl => {
-          if (dataUrl) {
-            thumbEl.style.backgroundImage = `url('${dataUrl}')`;
-          }
-        });
-      }
+  let list = allVideos.slice();
 
-      card.querySelector('.video-thumb').onclick = () => playVideo(v);
-      card.querySelector('.action-btn.edit').onclick = (e) => {
-        e.stopPropagation();
-        quickEdit(v);
-      };
-      card.querySelector('.action-btn.delete').onclick = (e) => {
-        e.stopPropagation();
-        deleteVideo(v);
-      };
-      videoGrid.appendChild(card);
-    });
+  if (showFavoritesOnly) {
+    list = list.filter(v => isFavorite(v.id));
   }
 
-  renderAdminVideoList(list);
+  if (activeTagFilter !== '__all__') {
+    list = list.filter(v => Array.isArray(v.tags) && v.tags.includes(activeTagFilter));
+  }
+
+  if (searchQuery) {
+    list = list.filter(v =>
+      (v.title || '').toLowerCase().includes(searchQuery) ||
+      (Array.isArray(v.tags) && v.tags.some(t => t.toLowerCase().includes(searchQuery)))
+    );
+  }
+
+  videoGrid.innerHTML = '';
+
+  if (list.length === 0) {
+    emptyState.style.display = 'block';
+    emptyState.querySelector('p').textContent = searchQuery
+      ? 'Ничего не найдено по запросу'
+      : showFavoritesOnly
+        ? 'В избранном пока нет видео'
+        : 'Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  list.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+
+    const ytId = getYouTubeId(v.url);
+    const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
+    const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
+
+    let explicitThumb = '';
+    if (v.thumb) explicitThumb = v.thumb;
+    else if (ytId) explicitThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+    const thumbStyle = explicitThumb
+      ? `background-image: url('${escapeAttr(explicitThumb)}')`
+      : '';
+
+    const fav = isFavorite(v.id);
+    const progress = getWatchProgress(v.id);
+    const progressPct = progress && progress.duration
+      ? Math.min(100, (progress.time / progress.duration) * 100)
+      : 0;
+
+    const tagsHtml = Array.isArray(v.tags) && v.tags.length > 0
+      ? `<div class="video-tags">${v.tags.map(t => `<span class="video-tag">${escapeHtml(t)}</span>`).join('')}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="video-thumb" style="${thumbStyle}">
+        ${tsBadge}
+        <button class="fav-btn ${fav ? 'active' : ''}" title="В избранное">★</button>
+        <div class="play-overlay">▶</div>
+        ${progressPct > 0 ? `<div class="watch-progress"><div class="watch-progress-fill" style="width:${progressPct}%"></div></div>` : ''}
+      </div>
+      <div class="video-info">
+        <div class="video-title">${escapeHtml(v.title)}</div>
+        <div class="video-date">${fmtDate(v.createdAt)}</div>
+        ${tagsHtml}
+        <div class="video-actions">
+          <button class="action-btn edit">✎ Изменить</button>
+          <button class="action-btn delete">Удалить</button>
+        </div>
+      </div>
+    `;
+
+    if (!explicitThumb && v.url) {
+      const thumbEl = card.querySelector('.video-thumb');
+      generateMidThumbnail(v.url).then(dataUrl => {
+        if (dataUrl) thumbEl.style.backgroundImage = `url('${dataUrl}')`;
+      });
+    }
+
+    card.querySelector('.video-thumb').onclick = (e) => {
+      if (e.target.closest('.fav-btn')) return;
+      playVideo(v);
+    };
+
+    const favBtn = card.querySelector('.fav-btn');
+    favBtn.onclick = (e) => {
+      e.stopPropagation();
+      const now = toggleFavorite(v.id);
+      favBtn.classList.toggle('active', now);
+      showToast(now ? '⭐ Добавлено в избранное' : 'Убрано из избранного');
+      if (showFavoritesOnly) renderVideoGrid();
+    };
+
+    card.querySelector('.action-btn.edit').onclick = (e) => {
+      e.stopPropagation();
+      quickEdit(v);
+    };
+    card.querySelector('.action-btn.delete').onclick = (e) => {
+      e.stopPropagation();
+      deleteVideo(v);
+    };
+
+    videoGrid.appendChild(card);
+  });
+}
+
+// ===== Firebase =====
+onValue(videosRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  allVideos = Object.entries(data).map(([id, v]) => ({ id, ...v }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  renderFiltersBar();
+  renderVideoGrid();
+  renderAdminVideoList(allVideos);
 });
 
 function renderAdminVideoList(list) {
@@ -1023,14 +1442,8 @@ function renderAdminVideoList(list) {
       });
     }
 
-    item.querySelector('[data-action="edit"]').onclick = (e) => {
-      e.stopPropagation();
-      startEdit(v);
-    };
-    item.querySelector('[data-action="delete"]').onclick = (e) => {
-      e.stopPropagation();
-      deleteVideo(v);
-    };
+    item.querySelector('[data-action="edit"]').onclick = (e) => { e.stopPropagation(); startEdit(v); };
+    item.querySelector('[data-action="delete"]').onclick = (e) => { e.stopPropagation(); deleteVideo(v); };
     item.onclick = () => startEdit(v);
     container.appendChild(item);
   });
@@ -1061,6 +1474,7 @@ function startEdit(v) {
   document.getElementById('editTitle').value = v.title || '';
   document.getElementById('editUrl').value = v.url || '';
   document.getElementById('editThumb').value = v.thumb || '';
+  document.getElementById('editTags').value = Array.isArray(v.tags) ? v.tags.join(', ') : '';
   document.getElementById('editVideoName').textContent = v.title || '';
 
   clearEditTsList();
@@ -1085,6 +1499,8 @@ window.saveEdit = async function() {
   const title = document.getElementById('editTitle').value.trim();
   const url = document.getElementById('editUrl').value.trim();
   const thumb = document.getElementById('editThumb').value.trim();
+  const tagsRaw = document.getElementById('editTags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
   if (!title) return showToast('Введите название', true);
   if (!url) return showToast('Введите ссылку', true);
@@ -1101,12 +1517,12 @@ window.saveEdit = async function() {
     await update(dbRef(db, 'videos/' + editingVideo.id), {
       title, url,
       thumb: thumb || '',
+      tags,
       timestamps: tsResult.data,
     });
     showToast('✅ Изменения сохранены');
     cancelEdit();
   } catch (err) {
-    console.error(err);
     showToast('Ошибка: ' + err.message, true);
   } finally {
     btn.disabled = false;
@@ -1114,7 +1530,7 @@ window.saveEdit = async function() {
   }
 };
 
-// ===== Таймкоды формы добавления =====
+// ===== Таймкоды =====
 window.addTsRow = function(time = '', label = '') {
   const list = document.getElementById('tsAdminList');
   const row = document.createElement('div');
@@ -1122,7 +1538,7 @@ window.addTsRow = function(time = '', label = '') {
   row.innerHTML = `
     <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeAttr(time)}">
     <input type="text" class="ts-input-label" placeholder="Что происходит" value="${escapeAttr(label)}">
-    <button class="ts-remove-btn" title="Удалить">✕</button>
+    <button class="ts-remove-btn">✕</button>
   `;
   row.querySelector('.ts-remove-btn').onclick = () => { row.remove(); updateTsCounter(); };
   const timeInput = row.querySelector('.ts-input-time');
@@ -1148,7 +1564,7 @@ function collectTimestampsFromForm() {
     const label = row.querySelector('.ts-input-label').value.trim();
     if (!time && !label) continue;
     if (!time || !label) return { error: 'Заполните и время, и название таймкода' };
-    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}"` };
+    if (!isValidTime(time)) return { error: `Неверный формат: "${time}"` };
     result.push({ time, label });
   }
   return { data: result };
@@ -1158,7 +1574,6 @@ function clearTsForm() {
   updateTsCounter();
 }
 
-// ===== Таймкоды формы редактирования =====
 window.addEditTsRow = function(time = '', label = '') {
   const list = document.getElementById('editTsList');
   const row = document.createElement('div');
@@ -1166,7 +1581,7 @@ window.addEditTsRow = function(time = '', label = '') {
   row.innerHTML = `
     <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeAttr(time)}">
     <input type="text" class="ts-input-label" placeholder="Что происходит" value="${escapeAttr(label)}">
-    <button class="ts-remove-btn" title="Удалить">✕</button>
+    <button class="ts-remove-btn">✕</button>
   `;
   row.querySelector('.ts-remove-btn').onclick = () => { row.remove(); updateEditTsCounter(); };
   const timeInput = row.querySelector('.ts-input-time');
@@ -1191,7 +1606,7 @@ function collectEditTimestamps() {
     const label = row.querySelector('.ts-input-label').value.trim();
     if (!time && !label) continue;
     if (!time || !label) return { error: 'Заполните и время, и название таймкода' };
-    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}"` };
+    if (!isValidTime(time)) return { error: `Неверный формат: "${time}"` };
     result.push({ time, label });
   }
   return { data: result };
@@ -1201,25 +1616,38 @@ function clearEditTsList() {
   updateEditTsCounter();
 }
 
-// ===== Воспроизведение =====
+// ===== Плеер =====
 const mainVideo = document.getElementById('mainVideo');
 const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
 const tsMarkersLayer = document.getElementById('tsMarkersLayer');
+const brightnessOverlay = document.getElementById('brightnessOverlay');
 
+let currentVideo = null;
 let currentTimestamps = [];
+let pendingResumeTime = null;
 
 function playVideo(v) {
+  currentVideo = v;
+
   document.getElementById('libraryView').classList.add('hidden');
   document.getElementById('adminPanel').classList.remove('active');
   playerView.classList.add('active');
   document.getElementById('playerTitle').textContent = v.title;
   document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
+
+  // Теги под плеером
+  const tagsEl = document.getElementById('playerTags');
+  if (Array.isArray(v.tags) && v.tags.length > 0) {
+    tagsEl.innerHTML = v.tags.map(t => `<span class="video-tag">${escapeHtml(t)}</span>`).join('');
+  } else {
+    tagsEl.innerHTML = '';
+  }
+
   window.scrollTo({top:0, behavior:'smooth'});
 
   currentTimestamps = Array.isArray(v.timestamps) ? v.timestamps : [];
   renderTimestampsBlock(currentTimestamps);
-  renderTsMarkers(currentTimestamps);
 
   const ytId = getYouTubeId(v.url);
 
@@ -1237,18 +1665,47 @@ function playVideo(v) {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     playerWrap.appendChild(iframe);
-  } else {
-    mainVideo.style.display = 'block';
-    document.querySelector('.controls').style.display = 'block';
-
-    const src = document.createElement('source');
-    src.src = v.url;
-    src.type = 'video/mp4';
-    mainVideo.appendChild(src);
-    mainVideo.load();
-    mainVideo.play().catch(() => {});
+    return;
   }
+
+  mainVideo.style.display = 'block';
+  document.querySelector('.controls').style.display = 'block';
+
+  // Проверяем прогресс просмотра
+  const saved = getWatchProgress(v.id);
+  pendingResumeTime = saved && saved.time > RESUME_THRESHOLD ? saved.time : null;
+
+  const src = document.createElement('source');
+  src.src = v.url;
+  src.type = 'video/mp4';
+  mainVideo.appendChild(src);
+  mainVideo.load();
+
+  mainVideo.addEventListener('loadedmetadata', () => {
+    if (pendingResumeTime) {
+      showResumeToast(pendingResumeTime);
+    }
+  }, { once: true });
+
+  mainVideo.play().catch(() => {});
 }
+
+function showResumeToast(time) {
+  const toast = document.getElementById('resumeToast');
+  document.getElementById('resumeTime').textContent = fmtTime(time);
+  toast.classList.add('show');
+  setTimeout(() => { if (toast.classList.contains('show')) hideResumeToast(); }, 6000);
+}
+window.hideResumeToast = function() {
+  document.getElementById('resumeToast').classList.remove('show');
+};
+window.resumeFromSaved = function() {
+  if (pendingResumeTime) {
+    mainVideo.currentTime = pendingResumeTime;
+    mainVideo.play();
+  }
+  hideResumeToast();
+};
 
 function renderTimestampsBlock(timestamps) {
   const block = document.getElementById('timestampsBlock');
@@ -1317,17 +1774,22 @@ const curTimeEl = document.getElementById('curTime');
 const durTimeEl = document.getElementById('durTime');
 const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
+const progressBuffer = document.getElementById('progressBuffer');
 const progressThumb = document.getElementById('progressThumb');
 const timeTooltip = document.getElementById('timeTooltip');
 const muteBtn = document.getElementById('muteBtn');
 const volumeSlider = document.getElementById('volumeSlider');
 const fullBtn = document.getElementById('fullBtn');
 const speedBtn = document.getElementById('speedBtn');
+const pipBtn = document.getElementById('pipBtn');
+const settingsBtn = document.getElementById('settingsBtn');
 const loadingSpinner = document.getElementById('loadingSpinner');
 const tapPlay = document.getElementById('tapPlay');
 const tapPlayIcon = document.getElementById('tapPlayIcon');
 const seekBack = document.getElementById('seekBack');
 const seekFwd = document.getElementById('seekFwd');
+const speedMenu = document.getElementById('speedMenu');
+const settingsMenu = document.getElementById('settingsMenu');
 
 const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -1351,30 +1813,115 @@ mainVideo.ontimeupdate = () => {
   const pct = dur ? (cur / dur) * 100 : 0;
   progressFill.style.width = pct + '%';
   progressThumb.style.left = pct + '%';
+
+  // Автосохранение прогресса раз в 5 сек
+  if (currentVideo && Math.floor(cur) % 5 === 0) {
+    setWatchProgress(currentVideo.id, cur, dur);
+  }
 };
+
+// Буфер
+mainVideo.addEventListener('progress', () => {
+  if (mainVideo.buffered.length > 0 && mainVideo.duration) {
+    const end = mainVideo.buffered.end(mainVideo.buffered.length - 1);
+    progressBuffer.style.width = (end / mainVideo.duration * 100) + '%';
+  }
+});
+
 mainVideo.onloadedmetadata = () => { durTimeEl.textContent = fmtTime(mainVideo.duration); };
 
-// Индикатор загрузки
 mainVideo.addEventListener('waiting', () => loadingSpinner.classList.add('show'));
 mainVideo.addEventListener('playing', () => loadingSpinner.classList.remove('show'));
 mainVideo.addEventListener('canplay', () => loadingSpinner.classList.remove('show'));
+
+// Автовоспроизведение следующего
+mainVideo.addEventListener('ended', () => {
+  if (currentVideo) {
+    clearWatchProgress(currentVideo.id);
+    // Найти следующее видео
+    const idx = allVideos.findIndex(x => x.id === currentVideo.id);
+    if (idx >= 0 && idx < allVideos.length - 1) {
+      const next = allVideos[idx + 1];
+      showToast('▶ Следующее видео через 3 сек...');
+      setTimeout(() => {
+        if (currentVideo && currentVideo.id !== next.id) playVideo(next);
+      }, 3000);
+    }
+  }
+});
 
 mainVideo.onerror = () => {
   if (!mainVideo.currentSrc && !mainVideo.querySelector('source')) return;
   showToast('Не удалось воспроизвести. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
 
-// Прогресс-бар — клик и drag
-function seekFromEvent(e) {
-  const rect = progressWrap.getBoundingClientRect();
-  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-  const ratio = Math.max(0, Math.min(1, x / rect.width));
-  if (mainVideo.duration) mainVideo.currentTime = ratio * mainVideo.duration;
-}
-progressWrap.addEventListener('click', seekFromEvent);
+// ===== DRAG прогресс-бара =====
+let dragging = false;
+let wasPlayingBeforeDrag = false;
 
-// Простой тултип со временем (без превью-кадра)
+function getRatioFromEvent(e) {
+  const rect = progressWrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const x = clientX - rect.left;
+  return Math.max(0, Math.min(1, x / rect.width));
+}
+
+function updateProgressVisual(ratio) {
+  const pct = ratio * 100;
+  progressFill.style.width = pct + '%';
+  progressThumb.style.left = pct + '%';
+  if (mainVideo.duration) {
+    curTimeEl.textContent = fmtTime(ratio * mainVideo.duration);
+    timeTooltip.style.left = pct + '%';
+    timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
+  }
+}
+
+function applySeekFromRatio(ratio) {
+  if (!mainVideo.duration) return;
+  mainVideo.currentTime = ratio * mainVideo.duration;
+}
+
+function startDrag(e) {
+  if (e.button !== undefined && e.button !== 0) return;
+  dragging = true;
+  wasPlayingBeforeDrag = !mainVideo.paused;
+  document.body.style.cursor = 'grabbing';
+  playerWrap.classList.add('show-controls');
+  progressWrap.classList.add('dragging');
+  const ratio = getRatioFromEvent(e);
+  updateProgressVisual(ratio);
+  applySeekFromRatio(ratio);
+  e.preventDefault();
+}
+
+function moveDrag(e) {
+  if (!dragging) return;
+  const ratio = getRatioFromEvent(e);
+  updateProgressVisual(ratio);
+  applySeekFromRatio(ratio);
+  if (e.cancelable) e.preventDefault();
+}
+
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  document.body.style.cursor = '';
+  progressWrap.classList.remove('dragging');
+  if (wasPlayingBeforeDrag) mainVideo.play().catch(() => {});
+}
+
+progressWrap.addEventListener('mousedown', startDrag);
+window.addEventListener('mousemove', moveDrag);
+window.addEventListener('mouseup', endDrag);
+
+progressWrap.addEventListener('touchstart', startDrag, { passive: false });
+window.addEventListener('touchmove', moveDrag, { passive: false });
+window.addEventListener('touchend', endDrag);
+window.addEventListener('touchcancel', endDrag);
+
 progressWrap.addEventListener('mousemove', (e) => {
+  if (dragging) return;
   const rect = progressWrap.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const ratio = Math.max(0, Math.min(1, x / rect.width));
@@ -1382,53 +1929,39 @@ progressWrap.addEventListener('mousemove', (e) => {
   if (mainVideo.duration) timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
 });
 
-let dragging = false;
-progressWrap.addEventListener('mousedown', (e) => { dragging = true; seekFromEvent(e); });
-window.addEventListener('mousemove', (e) => { if (dragging) seekFromEvent(e); });
-window.addEventListener('mouseup', () => { dragging = false; });
-
-// ===== ДВОЙНОЙ ТАП для перемотки =====
+// ===== Двойной тап =====
 let lastTapTime = 0;
-let lastTapX = 0;
 const DOUBLE_TAP_DELAY = 300;
 const SEEK_AMOUNT = 10;
 
 function handlePlayerTap(e) {
-  // Игнорируем клики по контролам
   if (e.target.closest('.controls')) return;
+  if (e.target.closest('.resume-toast')) return;
+  if (e.target.closest('.speed-menu')) return;
+  if (e.target.closest('.settings-menu')) return;
 
   const now = Date.now();
   const rect = playerWrap.getBoundingClientRect();
   const x = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - rect.left;
-  const width = rect.width;
-  const xRatio = x / width;
+  const xRatio = x / rect.width;
 
-  // Проверяем двойной тап
   if (now - lastTapTime < DOUBLE_TAP_DELAY) {
-    // Это двойной тап
     if (xRatio < 0.4) {
-      // Левые 40% — назад
       mainVideo.currentTime = Math.max(0, mainVideo.currentTime - SEEK_AMOUNT);
       showSeekIndicator('back');
     } else if (xRatio > 0.6) {
-      // Правые 40% — вперёд
       mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + SEEK_AMOUNT);
       showSeekIndicator('fwd');
     } else {
-      // Центр — play/pause
       togglePlayWithIcon();
     }
     lastTapTime = 0;
     return;
   }
 
-  // Это одиночный тап — ждём 300мс, чтобы проверить, не двойной ли
   lastTapTime = now;
-  lastTapX = xRatio;
-
   setTimeout(() => {
     if (Date.now() - lastTapTime >= DOUBLE_TAP_DELAY) {
-      // Был одиночный тап — показываем/скрываем контролы
       playerWrap.classList.toggle('show-controls');
     }
   }, DOUBLE_TAP_DELAY + 10);
@@ -1454,7 +1987,7 @@ function togglePlayWithIcon() {
 
 playerWrap.addEventListener('click', handlePlayerTap);
 
-// Громкость
+// ===== Громкость =====
 function updateVolumeIcon() {
   muteBtn.innerHTML = (mainVideo.muted || mainVideo.volume === 0) ? ICON_MUTE : ICON_VOL;
 }
@@ -1463,10 +1996,12 @@ volumeSlider.oninput = () => {
   mainVideo.volume = parseFloat(volumeSlider.value);
   mainVideo.muted = mainVideo.volume === 0;
   updateVolumeIcon();
+  document.getElementById('volumeSlider2').value = mainVideo.volume * 100;
+  document.getElementById('volumeVal').textContent = Math.round(mainVideo.volume * 100) + '%';
 };
 updateVolumeIcon();
 
-// Fullscreen
+// ===== Fullscreen =====
 fullBtn.onclick = async () => {
   try {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -1476,44 +2011,139 @@ fullBtn.onclick = async () => {
       if (document.exitFullscreen) await document.exitFullscreen();
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
+  } catch (err) {}
+};
+
+// ===== PiP =====
+pipBtn.onclick = async () => {
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else if (document.pictureInPictureEnabled) {
+      await mainVideo.requestPictureInPicture();
+    } else {
+      showToast('PiP не поддерживается браузером', true);
+    }
   } catch (err) {
-    console.warn('Fullscreen error:', err);
+    showToast('Ошибка PiP: ' + err.message, true);
   }
 };
 
-// Скорость
+// ===== Меню скорости =====
 const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
-let speedIdx = 2;
-speedBtn.onclick = () => {
-  speedIdx = (speedIdx + 1) % speeds.length;
-  mainVideo.playbackRate = speeds[speedIdx];
-  speedBtn.textContent = speeds[speedIdx] + 'x';
+let currentSpeed = 1;
+
+function renderSpeedMenu() {
+  speedMenu.innerHTML = speeds.map(s => `
+    <div class="speed-menu-item ${s === currentSpeed ? 'active' : ''}" data-speed="${s}">
+      <span>${s}x</span>
+      ${s === currentSpeed ? '<span>✓</span>' : ''}
+    </div>
+  `).join('');
+  speedMenu.querySelectorAll('.speed-menu-item').forEach(el => {
+    el.onclick = () => {
+      currentSpeed = parseFloat(el.dataset.speed);
+      mainVideo.playbackRate = currentSpeed;
+      speedBtn.textContent = currentSpeed + 'x';
+      renderSpeedMenu();
+      speedMenu.classList.remove('show');
+    };
+  });
+}
+
+speedBtn.onclick = (e) => {
+  e.stopPropagation();
+  renderSpeedMenu();
+  speedMenu.classList.toggle('show');
+  settingsMenu.classList.remove('show');
 };
 
-// Клавиатура
+// ===== Меню настроек =====
+settingsBtn.onclick = (e) => {
+  e.stopPropagation();
+  settingsMenu.classList.toggle('show');
+  speedMenu.classList.remove('show');
+};
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.speed-menu') && !e.target.closest('#speedBtn')) {
+    speedMenu.classList.remove('show');
+  }
+  if (!e.target.closest('.settings-menu') && !e.target.closest('#settingsBtn')) {
+    settingsMenu.classList.remove('show');
+  }
+});
+
+// Яркость
+document.getElementById('brightnessSlider').addEventListener('input', (e) => {
+  const val = parseInt(e.target.value);
+  document.getElementById('brightnessVal').textContent = val + '%';
+  brightnessOverlay.style.opacity = (100 - val) / 100 * 0.8;
+});
+
+// Громкость 2
+document.getElementById('volumeSlider2').addEventListener('input', (e) => {
+  const val = parseInt(e.target.value);
+  document.getElementById('volumeVal').textContent = val + '%';
+  mainVideo.volume = val / 100;
+  mainVideo.muted = mainVideo.volume === 0;
+  volumeSlider.value = mainVideo.volume;
+  updateVolumeIcon();
+});
+
+// ===== Клавиатура =====
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (document.querySelector('.player-view iframe')) return;
-  switch (e.key) {
-    case ' ': e.preventDefault(); playBtn.click(); break;
-    case 'ArrowLeft': mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); break;
-    case 'ArrowRight': mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); break;
-    case 'ArrowUp': mainVideo.volume = Math.min(1, mainVideo.volume + 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
-    case 'ArrowDown': mainVideo.volume = Math.max(0, mainVideo.volume - 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); break;
-    case 'm': muteBtn.click(); break;
-    case 'f': fullBtn.click(); break;
+
+  if (e.key === ' ') { e.preventDefault(); playBtn.click(); return; }
+  if (e.key === 'ArrowLeft') { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); return; }
+  if (e.key === 'ArrowRight') { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); return; }
+  if (e.key === 'ArrowUp') {
+    mainVideo.volume = Math.min(1, mainVideo.volume + 0.1);
+    volumeSlider.value = mainVideo.volume;
+    document.getElementById('volumeSlider2').value = mainVideo.volume * 100;
+    document.getElementById('volumeVal').textContent = Math.round(mainVideo.volume * 100) + '%';
+    updateVolumeIcon();
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    mainVideo.volume = Math.max(0, mainVideo.volume - 0.1);
+    volumeSlider.value = mainVideo.volume;
+    document.getElementById('volumeSlider2').value = mainVideo.volume * 100;
+    document.getElementById('volumeVal').textContent = Math.round(mainVideo.volume * 100) + '%';
+    updateVolumeIcon();
+    return;
+  }
+  if (e.key === 'm' || e.key === 'M' || e.key === 'ь') { muteBtn.click(); return; }
+  if (e.key === 'f' || e.key === 'F' || e.key === 'а') { fullBtn.click(); return; }
+  if (e.key === 'p' || e.key === 'P' || e.key === 'з') { pipBtn.click(); return; }
+
+  // Цифры 0-9 — переход в % от длительности
+  if (/^[0-9]$/.test(e.key)) {
+    const pct = parseInt(e.key) / 10;
+    if (mainVideo.duration) mainVideo.currentTime = mainVideo.duration * pct;
   }
 });
 
-// ===== Админка: добавить =====
+// ===== Сохранение прогресса перед уходом =====
+window.addEventListener('beforeunload', () => {
+  if (currentVideo && mainVideo.duration) {
+    setWatchProgress(currentVideo.id, mainVideo.currentTime, mainVideo.duration);
+  }
+});
+
+// ===== Админка =====
 window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
   const url = document.getElementById('videoUrl').value.trim();
   const thumb = document.getElementById('videoThumb').value.trim();
+  const tagsRaw = document.getElementById('videoTags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
   if (!title) return showToast('Введите название', true);
-  if (!url) return showToast('Введите ссылку на видео', true);
+  if (!url) return showToast('Введите ссылку', true);
   if (!/^https?:\/\//i.test(url)) return showToast('Ссылка должна начинаться с http:// или https://', true);
 
   const tsResult = collectTimestampsFromForm();
@@ -1528,6 +2158,7 @@ window.addVideo = async function() {
     await set(newRef, {
       title, url,
       thumb: thumb || '',
+      tags,
       timestamps: tsResult.data,
       createdAt: Date.now()
     });
@@ -1535,10 +2166,10 @@ window.addVideo = async function() {
     document.getElementById('videoTitle').value = '';
     document.getElementById('videoUrl').value = '';
     document.getElementById('videoThumb').value = '';
+    document.getElementById('videoTags').value = '';
     clearTsForm();
     addTsRow();
   } catch (err) {
-    console.error(err);
     showToast('Ошибка: ' + err.message, true);
   } finally {
     addBtn.disabled = false;
@@ -1550,6 +2181,7 @@ async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
     await remove(dbRef(db, 'videos/' + v.id));
+    clearWatchProgress(v.id);
     showToast('Видео удалено');
   } catch (err) {
     showToast('Ошибка удаления: ' + err.message, true);
@@ -1557,16 +2189,16 @@ async function deleteVideo(v) {
 }
 
 window.deleteAllVideos = async function() {
-  if (!confirm('⚠️ Удалить ВСЕ видео? Это действие необратимо.')) return;
-  if (!confirm('Точно уверены? Восстановить будет невозможно.')) return;
+  if (!confirm('⚠️ Удалить ВСЕ видео?')) return;
+  if (!confirm('Точно уверены?')) return;
   const btn = document.getElementById('deleteAllBtn');
   btn.disabled = true;
   btn.textContent = 'Удаление...';
   try {
     await remove(videosRef);
+    localStorage.removeItem('mytube_progress');
     showToast('✅ Все видео удалены');
   } catch (err) {
-    console.error(err);
     showToast('Ошибка: ' + err.message, true);
   } finally {
     btn.disabled = false;
@@ -1576,7 +2208,8 @@ window.deleteAllVideos = async function() {
 
 // Инициализация
 addTsRow();
+renderSpeedMenu();
 </script>
 
 </body>
-</html>
+ </html>
