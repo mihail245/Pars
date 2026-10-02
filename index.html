@@ -46,6 +46,7 @@
   .btn-primary { background: #ff0000; }
   .btn-primary:hover { background: #cc0000; }
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-secondary { background: #272727; }
   .btn-danger {
     background: #2a1010;
     color: #ff6b6b;
@@ -53,9 +54,6 @@
   }
   .btn-danger:hover { background: #3a1515; }
   .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-sm {
-    padding: 6px 12px; font-size: 13px; border-radius: 14px;
-  }
 
   /* ===== Контент ===== */
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
@@ -104,13 +102,24 @@
     -webkit-box-orient: vertical; overflow: hidden;
   }
   .video-date { font-size: 12px; color: #aaa; }
-  .delete-btn {
-    margin-top: 6px; background: transparent;
-    border: 1px solid #444; color: #ff6b6b;
-    padding: 4px 10px; border-radius: 6px;
-    font-size: 12px; cursor: pointer;
+  .video-actions {
+    display: flex; gap: 6px; margin-top: 8px;
   }
-  .delete-btn:hover { background: #2a1010; }
+  .action-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: #ccc;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .action-btn:hover { background: #222; color: #fff; }
+  .action-btn.edit { color: #38bdf8; border-color: #1e4054; }
+  .action-btn.edit:hover { background: #0d2030; }
+  .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
+  .action-btn.delete:hover { background: #2a1010; }
 
   /* ===== Просмотр видео ===== */
   .player-view { display: none; }
@@ -184,11 +193,6 @@
     opacity: .8;
     font-weight: 700;
   }
-  .ts-empty {
-    color: #666;
-    font-size: 13px;
-    font-style: italic;
-  }
 
   /* ===== Кастомный плеер ===== */
   .player-wrap {
@@ -209,7 +213,6 @@
   .player-wrap:hover .controls,
   .player-wrap.paused .controls { opacity: 1; }
 
-  /* Прогресс-бар + маркеры таймкодов */
   .progress-wrap {
     position: relative; height: 18px;
     display: flex; align-items: center;
@@ -231,7 +234,6 @@
     background: #ff0000;
     border-radius: 3px;
   }
-  /* Маркеры таймкодов на прогресс-баре */
   .ts-marker {
     position: absolute;
     top: 50%;
@@ -267,7 +269,6 @@
   }
   .progress-wrap:hover .time-tooltip { opacity: 1; }
 
-  /* Нижний ряд управления */
   .ctrl-row {
     display: flex; align-items: center; gap: 12px; color: #fff;
   }
@@ -308,6 +309,33 @@
   }
   .admin-panel.active { display: block; }
   .admin-panel h2 { margin-bottom: 20px; }
+
+  /* Вкладки админки */
+  .admin-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid #272727;
+    margin-bottom: 24px;
+  }
+  .admin-tab {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+    font-family: inherit;
+  }
+  .admin-tab:hover { color: #ccc; }
+  .admin-tab.active {
+    color: #fff;
+    border-bottom-color: #ff0000;
+  }
+  .admin-tab-panel { display: none; }
+  .admin-tab-panel.active { display: block; }
 
   .field { margin-bottom: 16px; }
   .field label {
@@ -388,9 +416,82 @@
     border-color: #38bdf8;
   }
 
+  /* Список видео в админке (для редактирования) */
+  .admin-video-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .admin-video-item {
+    display: flex; gap: 12px; align-items: center;
+    padding: 12px;
+    background: #141414;
+    border: 1px solid #272727;
+    border-radius: 10px;
+    transition: border-color .15s, background .15s;
+    cursor: pointer;
+  }
+  .admin-video-item:hover {
+    border-color: #444;
+    background: #181818;
+  }
+  .admin-video-item.editing {
+    border-color: #ff0000;
+    background: #1a0d0d;
+  }
+  .admin-video-thumb {
+    flex: 0 0 100px;
+    width: 100px;
+    aspect-ratio: 16/9;
+    background: #000 center/cover no-repeat;
+    border-radius: 6px;
+  }
+  .admin-video-info {
+    flex: 1; min-width: 0;
+  }
+  .admin-video-title {
+    font-weight: 600; font-size: 14px; margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .admin-video-meta {
+    font-size: 12px; color: #888;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .admin-video-meta .badge {
+    background: rgba(255,0,0,.15);
+    color: #ff6b6b;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+  .admin-video-actions {
+    display: flex; gap: 6px; flex: 0 0 auto;
+  }
+
+  /* Секция редактирования */
+  .edit-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #0d1520;
+    border: 1px solid #1e4054;
+    border-radius: 12px;
+  }
+  .edit-section h3 {
+    color: #38bdf8;
+    font-size: 15px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .edit-section .btn-row {
+    display: flex; gap: 10px; margin-top: 20px;
+  }
+  .edit-section .btn-row .btn {
+    flex: 1;
+    padding: 12px;
+  }
+
   .empty-state {
     text-align: center; padding: 60px 20px; color: #666;
   }
+  .empty-state.small { padding: 30px 20px; font-size: 14px; }
 
   .toast {
     position: fixed; bottom: 24px; left: 50%;
@@ -477,7 +578,6 @@
     <h1 class="player-title" id="playerTitle"></h1>
     <div class="player-meta" id="playerMeta"></div>
 
-    <!-- Блок таймкодов под плеером -->
     <div class="timestamps-block" id="timestampsBlock" style="display:none;">
       <div class="timestamps-header">
         <h3>⏱ Таймкоды</h3>
@@ -489,52 +589,110 @@
 
   <!-- АДМИНКА -->
   <div class="admin-panel" id="adminPanel">
-    <h2>⚙ Добавить видео</h2>
+    <h2>⚙ Админка</h2>
 
-    <div class="field">
-      <label>Название видео</label>
-      <input type="text" id="videoTitle" placeholder="Например: Мой первый влог">
+    <!-- Вкладки -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="add" onclick="switchAdminTab('add')">➕ Добавить видео</button>
+      <button class="admin-tab" data-tab="manage" onclick="switchAdminTab('manage')">📝 Редактировать</button>
+      <button class="admin-tab" data-tab="danger" onclick="switchAdminTab('danger')">⚠ Опасная зона</button>
     </div>
 
-    <div class="field">
-      <label>Ссылка на видеофайл</label>
-      <input type="text" id="videoUrl" placeholder="https://cs23.vps-vids.com/vids460352/file.mp4?hash=...&ip=...">
-      <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
-    </div>
-
-    <div class="field">
-      <label>Ссылка на превью (необязательно)</label>
-      <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
-      <small>Картинка-обложка. Если пусто — превью YouTube или чёрный фон</small>
-    </div>
-
-    <!-- ТАЙМКОДЫ -->
-    <div class="field">
-      <label>Таймкоды (необязательно)</label>
-      <div class="ts-admin-block">
-        <div class="ts-admin-header">
-          <span>Формат: <b>MM:СС</b> + название категории</span>
-          <span id="tsCounter">0 шт.</span>
-        </div>
-        <div class="ts-admin-list" id="tsAdminList"></div>
-        <button class="ts-add-btn" onclick="addTsRow()">+ Добавить таймкод</button>
+    <!-- ВКЛАДКА: ДОБАВИТЬ -->
+    <div class="admin-tab-panel active" id="tab-add">
+      <div class="field">
+        <label>Название видео</label>
+        <input type="text" id="videoTitle" placeholder="Например: Мой первый влог">
       </div>
-      <small>Появятся под плеером как кликабельные кнопки. Также отобразятся жёлтыми маркерами на прогресс-баре.</small>
+
+      <div class="field">
+        <label>Ссылка на видеофайл</label>
+        <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4">
+        <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
+      </div>
+
+      <div class="field">
+        <label>Ссылка на превью (необязательно)</label>
+        <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
+        <small>Картинка-обложка. Если пусто — превью YouTube или чёрный фон</small>
+      </div>
+
+      <div class="field">
+        <label>Таймкоды (необязательно)</label>
+        <div class="ts-admin-block">
+          <div class="ts-admin-header">
+            <span>Формат: <b>MM:СС</b> + название категории</span>
+            <span id="tsCounter">0 шт.</span>
+          </div>
+          <div class="ts-admin-list" id="tsAdminList"></div>
+          <button class="ts-add-btn" onclick="addTsRow()">+ Добавить таймкод</button>
+        </div>
+        <small>Появятся под плеером как кликабельные кнопки и жёлтыми маркерами на прогресс-баре.</small>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
+        Добавить видео
+      </button>
     </div>
 
-    <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
-      Добавить видео
-    </button>
+    <!-- ВКЛАДКА: РЕДАКТИРОВАТЬ -->
+    <div class="admin-tab-panel" id="tab-manage">
+      <div class="field">
+        <label>Выберите видео для редактирования</label>
+        <div class="admin-video-list" id="adminVideoList"></div>
+        <div class="empty-state small" id="adminEmptyState" style="display:none;">
+          Пока нет видео для редактирования
+        </div>
+      </div>
 
-    <hr style="border:none; border-top:1px solid #272727; margin:32px 0 24px;">
+      <!-- Секция редактирования (скрыта, пока не выбрано видео) -->
+      <div class="edit-section" id="editSection" style="display:none;">
+        <h3>✏️ Редактирование: <span id="editVideoName"></span></h3>
 
-    <h2 style="color:#ff6b6b;">⚠ Опасная зона</h2>
-    <button class="btn btn-danger" style="width:100%; padding:14px; font-size:16px;" id="deleteAllBtn" onclick="deleteAllVideos()">
-      🗑 Удалить все видео
-    </button>
-    <small style="display:block; color:#666; font-size:12px; margin-top:10px; text-align:center;">
-      Это действие необратимо. Все ссылки на видео будут удалены из базы.
-    </small>
+        <div class="field">
+          <label>Название</label>
+          <input type="text" id="editTitle">
+        </div>
+
+        <div class="field">
+          <label>Ссылка на видеофайл</label>
+          <input type="text" id="editUrl">
+        </div>
+
+        <div class="field">
+          <label>Ссылка на превью</label>
+          <input type="text" id="editThumb" placeholder="Оставьте пустым, чтобы убрать">
+        </div>
+
+        <div class="field">
+          <label>Таймкоды</label>
+          <div class="ts-admin-block">
+            <div class="ts-admin-header">
+              <span>Формат: <b>MM:СС</b> + название категории</span>
+              <span id="editTsCounter">0 шт.</span>
+            </div>
+            <div class="ts-admin-list" id="editTsList"></div>
+            <button class="ts-add-btn" onclick="addEditTsRow()">+ Добавить таймкод</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="cancelEdit()">Отмена</button>
+          <button class="btn btn-primary" id="saveEditBtn" onclick="saveEdit()">💾 Сохранить изменения</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА: ОПАСНАЯ ЗОНА -->
+    <div class="admin-tab-panel" id="tab-danger">
+      <h2 style="color:#ff6b6b; font-size:18px; margin-bottom:16px;">⚠ Опасная зона</h2>
+      <button class="btn btn-danger" style="width:100%; padding:14px; font-size:16px;" id="deleteAllBtn" onclick="deleteAllVideos()">
+        🗑 Удалить все видео
+      </button>
+      <small style="display:block; color:#666; font-size:12px; margin-top:10px; text-align:center;">
+        Это действие необратимо. Все ссылки на видео будут удалены из базы.
+      </small>
+    </div>
   </div>
 </main>
 
@@ -544,7 +702,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getDatabase, ref as dbRef, push, set, onValue, remove
+  getDatabase, ref as dbRef, push, set, onValue, remove, update, get
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -575,7 +733,6 @@ function fmtTime(s) {
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-// Парсит "MM:SS" или "HH:MM:SS" или "M:SS" в секунды
 function parseTime(str) {
   if (!str) return null;
   const s = String(str).trim();
@@ -583,11 +740,10 @@ function parseTime(str) {
   if (parts.some(isNaN)) return null;
   if (parts.length === 2) return parts[0] * 60 + parts[1];
   if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 1) return parts[0]; // просто секунды
+  if (parts.length === 1) return parts[0];
   return null;
 }
 
-// Проверка, что строка похожа на время
 function isValidTime(str) {
   return /^\d{1,2}:\d{2}(:\d{2})?$/.test(String(str || '').trim()) ||
          /^\d+$/.test(String(str || '').trim());
@@ -612,7 +768,10 @@ function escapeHtml(s) {
   })[c]);
 }
 
-// Достать ID видео из YouTube-ссылки
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/`/g, '&#96;');
+}
+
 function getYouTubeId(url) {
   if (!url) return null;
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
@@ -644,62 +803,330 @@ window.showAdmin = function() {
   document.getElementById('adminPanel').classList.add('active');
   document.getElementById('mainVideo').pause();
 
-  // Если список таймкодов пуст — добавим одну пустую строку для удобства
   if (document.getElementById('tsAdminList').children.length === 0) {
     addTsRow();
   }
 };
 
-// ===== Список видео =====
+// Переключение вкладок админки
+window.switchAdminTab = function(tabName) {
+  document.querySelectorAll('.admin-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.admin-tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + tabName);
+  });
+};
+
+// ===== Список видео (главная) =====
 const videoGrid = document.getElementById('videoGrid');
 const emptyState = document.getElementById('emptyState');
+
+let allVideos = []; // кэш для списка в админке
 
 onValue(videosRef, (snapshot) => {
   const data = snapshot.val() || {};
   const list = Object.entries(data).map(([id, v]) => ({ id, ...v }))
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
+  allVideos = list;
+
+  // ===== Главная =====
   videoGrid.innerHTML = '';
   if (list.length === 0) {
     emptyState.style.display = 'block';
+  } else {
+    emptyState.style.display = 'none';
+
+    list.forEach(v => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+
+      let thumbStyle = '';
+      const ytId = getYouTubeId(v.url);
+      if (v.thumb) {
+        thumbStyle = `background-image: url('${escapeAttr(v.thumb)}')`;
+      } else if (ytId) {
+        thumbStyle = `background-image: url('https://img.youtube.com/vi/${ytId}/hqdefault.jpg')`;
+      }
+
+      const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
+      const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
+
+      card.innerHTML = `
+        <div class="video-thumb" style="${thumbStyle}">
+          ${tsBadge}
+          <div class="play-overlay">▶</div>
+        </div>
+        <div class="video-info">
+          <div class="video-title">${escapeHtml(v.title)}</div>
+          <div class="video-date">${fmtDate(v.createdAt)}</div>
+          <div class="video-actions">
+            <button class="action-btn edit" data-id="${v.id}">✎ Изменить</button>
+            <button class="action-btn delete" data-id="${v.id}">Удалить</button>
+          </div>
+        </div>
+      `;
+      card.querySelector('.video-thumb').onclick = () => playVideo(v);
+      card.querySelector('.action-btn.edit').onclick = (e) => {
+        e.stopPropagation();
+        quickEdit(v);
+      };
+      card.querySelector('.action-btn.delete').onclick = (e) => {
+        e.stopPropagation();
+        deleteVideo(v);
+      };
+      videoGrid.appendChild(card);
+    });
+  }
+
+  // ===== Список в админке (редактирование) =====
+  renderAdminVideoList(list);
+});
+
+// ===== Список видео в админке =====
+function renderAdminVideoList(list) {
+  const container = document.getElementById('adminVideoList');
+  const empty = document.getElementById('adminEmptyState');
+  container.innerHTML = '';
+
+  if (list.length === 0) {
+    empty.style.display = 'block';
     return;
   }
-  emptyState.style.display = 'none';
+  empty.style.display = 'none';
 
   list.forEach(v => {
-    const card = document.createElement('div');
-    card.className = 'video-card';
+    const item = document.createElement('div');
+    item.className = 'admin-video-item';
+    item.dataset.id = v.id;
 
     let thumbStyle = '';
     const ytId = getYouTubeId(v.url);
-    if (v.thumb) {
-      thumbStyle = `background-image: url('${escapeHtml(v.thumb)}')`;
-    } else if (ytId) {
-      thumbStyle = `background-image: url('https://img.youtube.com/vi/${ytId}/hqdefault.jpg')`;
-    }
+    if (v.thumb) thumbStyle = `background-image: url('${escapeAttr(v.thumb)}')`;
+    else if (ytId) thumbStyle = `background-image: url('https://img.youtube.com/vi/${ytId}/mqdefault.jpg')`;
 
     const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
-    const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
 
-    card.innerHTML = `
-      <div class="video-thumb" style="${thumbStyle}">
-        ${tsBadge}
-        <div class="play-overlay">▶</div>
+    item.innerHTML = `
+      <div class="admin-video-thumb" style="${thumbStyle}"></div>
+      <div class="admin-video-info">
+        <div class="admin-video-title">${escapeHtml(v.title)}</div>
+        <div class="admin-video-meta">
+          <span>${fmtDate(v.createdAt)}</span>
+          ${tsCount > 0 ? `<span class="badge">⏱ ${tsCount}</span>` : ''}
+        </div>
       </div>
-      <div class="video-info">
-        <div class="video-title">${escapeHtml(v.title)}</div>
-        <div class="video-date">${fmtDate(v.createdAt)}</div>
-        <button class="delete-btn" data-id="${v.id}">Удалить</button>
+      <div class="admin-video-actions">
+        <button class="action-btn edit" data-action="edit" data-id="${v.id}">✎</button>
+        <button class="action-btn delete" data-action="delete" data-id="${v.id}">✕</button>
       </div>
     `;
-    card.querySelector('.video-thumb').onclick = () => playVideo(v);
-    card.querySelector('.delete-btn').onclick = (e) => {
+    item.querySelector('[data-action="edit"]').onclick = (e) => {
+      e.stopPropagation();
+      startEdit(v);
+    };
+    item.querySelector('[data-action="delete"]').onclick = (e) => {
       e.stopPropagation();
       deleteVideo(v);
     };
-    videoGrid.appendChild(card);
+    item.onclick = () => startEdit(v);
+    container.appendChild(item);
   });
-});
+}
+
+// ===== Редактирование =====
+let editingVideo = null; // объект редактируемого видео
+
+// Быстрое редактирование из карточки на главной
+function quickEdit(v) {
+  const pass = prompt('Введите пароль администратора:');
+  if (pass !== ADMIN_PASSWORD) {
+    if (pass !== null) showToast('Неверный пароль', true);
+    return;
+  }
+  document.getElementById('libraryView').classList.add('hidden');
+  document.getElementById('playerView').classList.remove('active');
+  document.getElementById('adminPanel').classList.add('active');
+  document.getElementById('mainVideo').pause();
+
+  // Переключаем на вкладку управления
+  switchAdminTab('manage');
+  startEdit(v);
+}
+
+function startEdit(v) {
+  editingVideo = v;
+
+  // Подсвечиваем элемент в списке
+  document.querySelectorAll('.admin-video-item').forEach(el => {
+    el.classList.toggle('editing', el.dataset.id === v.id);
+  });
+
+  // Заполняем форму
+  document.getElementById('editTitle').value = v.title || '';
+  document.getElementById('editUrl').value = v.url || '';
+  document.getElementById('editThumb').value = v.thumb || '';
+  document.getElementById('editVideoName').textContent = v.title || '';
+
+  // Таймкоды
+  clearEditTsList();
+  if (Array.isArray(v.timestamps) && v.timestamps.length > 0) {
+    v.timestamps.forEach(ts => addEditTsRow(ts.time, ts.label));
+  } else {
+    addEditTsRow();
+  }
+
+  // Показываем секцию
+  document.getElementById('editSection').style.display = 'block';
+  document.getElementById('editSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+window.cancelEdit = function() {
+  editingVideo = null;
+  document.getElementById('editSection').style.display = 'none';
+  document.querySelectorAll('.admin-video-item').forEach(el => el.classList.remove('editing'));
+};
+
+// Сохранение изменений
+window.saveEdit = async function() {
+  if (!editingVideo) return;
+
+  const title = document.getElementById('editTitle').value.trim();
+  const url = document.getElementById('editUrl').value.trim();
+  const thumb = document.getElementById('editThumb').value.trim();
+
+  if (!title) return showToast('Введите название', true);
+  if (!url) return showToast('Введите ссылку', true);
+  if (!/^https?:\/\//i.test(url)) return showToast('Ссылка должна начинаться с http:// или https://', true);
+
+  const tsResult = collectEditTimestamps();
+  if (tsResult.error) return showToast(tsResult.error, true);
+
+  const btn = document.getElementById('saveEditBtn');
+  btn.disabled = true;
+  btn.textContent = 'Сохранение...';
+
+  try {
+    await update(dbRef(db, 'videos/' + editingVideo.id), {
+      title,
+      url,
+      thumb: thumb || '',
+      timestamps: tsResult.data,
+    });
+    showToast('✅ Изменения сохранены');
+    cancelEdit();
+  } catch (err) {
+    console.error(err);
+    showToast('Ошибка: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Сохранить изменения';
+  }
+};
+
+// ===== Таймкоды в форме добавления =====
+window.addTsRow = function(time = '', label = '') {
+  const list = document.getElementById('tsAdminList');
+  const row = document.createElement('div');
+  row.className = 'ts-admin-row';
+  row.innerHTML = `
+    <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeAttr(time)}">
+    <input type="text" class="ts-input-label" placeholder="Что происходит (напр. поцелуи)" value="${escapeAttr(label)}">
+    <button class="ts-remove-btn" title="Удалить">✕</button>
+  `;
+  row.querySelector('.ts-remove-btn').onclick = () => {
+    row.remove();
+    updateTsCounter();
+  };
+  const timeInput = row.querySelector('.ts-input-time');
+  timeInput.addEventListener('blur', () => {
+    const val = timeInput.value.trim();
+    if (!val) return;
+    const sec = parseTime(val);
+    if (sec !== null && !val.includes(':')) {
+      timeInput.value = fmtTime(sec);
+    }
+  });
+  list.appendChild(row);
+  updateTsCounter();
+  if (!time && !label) setTimeout(() => timeInput.focus(), 30);
+};
+
+function updateTsCounter() {
+  const count = document.getElementById('tsAdminList').children.length;
+  document.getElementById('tsCounter').textContent = `${count} шт.`;
+}
+
+function collectTimestampsFromForm() {
+  const rows = document.getElementById('tsAdminList').children;
+  const result = [];
+  for (const row of rows) {
+    const time = row.querySelector('.ts-input-time').value.trim();
+    const label = row.querySelector('.ts-input-label').value.trim();
+    if (!time && !label) continue;
+    if (!time || !label) return { error: 'Заполните и время, и название таймкода (или удалите пустую строку)' };
+    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}". Используй ММ:СС` };
+    result.push({ time, label });
+  }
+  return { data: result };
+}
+
+function clearTsForm() {
+  document.getElementById('tsAdminList').innerHTML = '';
+  updateTsCounter();
+}
+
+// ===== Таймкоды в форме редактирования =====
+window.addEditTsRow = function(time = '', label = '') {
+  const list = document.getElementById('editTsList');
+  const row = document.createElement('div');
+  row.className = 'ts-admin-row';
+  row.innerHTML = `
+    <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeAttr(time)}">
+    <input type="text" class="ts-input-label" placeholder="Что происходит" value="${escapeAttr(label)}">
+    <button class="ts-remove-btn" title="Удалить">✕</button>
+  `;
+  row.querySelector('.ts-remove-btn').onclick = () => {
+    row.remove();
+    updateEditTsCounter();
+  };
+  const timeInput = row.querySelector('.ts-input-time');
+  timeInput.addEventListener('blur', () => {
+    const val = timeInput.value.trim();
+    if (!val) return;
+    const sec = parseTime(val);
+    if (sec !== null && !val.includes(':')) {
+      timeInput.value = fmtTime(sec);
+    }
+  });
+  list.appendChild(row);
+  updateEditTsCounter();
+};
+
+function updateEditTsCounter() {
+  const count = document.getElementById('editTsList').children.length;
+  document.getElementById('editTsCounter').textContent = `${count} шт.`;
+}
+
+function collectEditTimestamps() {
+  const rows = document.getElementById('editTsList').children;
+  const result = [];
+  for (const row of rows) {
+    const time = row.querySelector('.ts-input-time').value.trim();
+    const label = row.querySelector('.ts-input-label').value.trim();
+    if (!time && !label) continue;
+    if (!time || !label) return { error: 'Заполните и время, и название таймкода (или удалите пустую строку)' };
+    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}". Используй ММ:СС` };
+    result.push({ time, label });
+  }
+  return { data: result };
+}
+
+function clearEditTsList() {
+  document.getElementById('editTsList').innerHTML = '';
+  updateEditTsCounter();
+}
 
 // ===== Воспроизведение =====
 const mainVideo = document.getElementById('mainVideo');
@@ -707,7 +1134,6 @@ const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
 const tsMarkersLayer = document.getElementById('tsMarkersLayer');
 
-// Текущие таймкоды открытого видео
 let currentTimestamps = [];
 
 function playVideo(v) {
@@ -718,7 +1144,6 @@ function playVideo(v) {
   document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
   window.scrollTo({top:0, behavior:'smooth'});
 
-  // Сохраняем таймкоды текущего видео
   currentTimestamps = Array.isArray(v.timestamps) ? v.timestamps : [];
   renderTimestampsBlock(currentTimestamps);
   renderTsMarkers(currentTimestamps);
@@ -740,9 +1165,6 @@ function playVideo(v) {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     playerWrap.insertBefore(iframe, playerWrap.firstChild);
-
-    // Для YouTube таймкоды не сможем отрисовать на прогресс-баре (нет API без библиотеки),
-    // но кнопки-чипы всё равно работают через перезагрузку iframe с ?start=
   } else {
     mainVideo.style.display = 'block';
     document.querySelector('.controls').style.display = 'block';
@@ -757,7 +1179,6 @@ function playVideo(v) {
   }
 }
 
-// Отрисовка блока таймкодов под плеером
 function renderTimestampsBlock(timestamps) {
   const block = document.getElementById('timestampsBlock');
   const list = document.getElementById('timestampsList');
@@ -779,15 +1200,17 @@ function renderTimestampsBlock(timestamps) {
     chip.className = 'ts-chip';
     chip.innerHTML = `<span class="ts-time">${escapeHtml(ts.time)}</span> ${escapeHtml(ts.label)}`;
     chip.onclick = () => {
-      const ytId = getYouTubeId(document.querySelector('.player-view iframe')?.src || '');
-      if (ytId) {
-        // YouTube — перезагружаем iframe с параметром start
-        const iframe = document.querySelector('.player-view iframe');
-        iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&start=${seconds}`;
-      } else if (mainVideo) {
+      const iframe = document.querySelector('.player-view iframe');
+      if (iframe) {
+        const ytId = getYouTubeId(iframe.src);
+        if (ytId) {
+          iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&start=${seconds}`;
+          return;
+        }
+      }
+      if (mainVideo) {
         mainVideo.currentTime = seconds;
         mainVideo.play();
-        // Плавно проскроллим к плееру
         document.getElementById('playerWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     };
@@ -795,14 +1218,12 @@ function renderTimestampsBlock(timestamps) {
   });
 }
 
-// Отрисовка жёлтых маркеров на прогресс-баре
 function renderTsMarkers(timestamps) {
   tsMarkersLayer.innerHTML = '';
   if (!timestamps || timestamps.length === 0) return;
 
   const dur = mainVideo.duration;
   if (!dur || !isFinite(dur)) {
-    // Если метаданные ещё не загружены — подождём и попробуем снова
     mainVideo.addEventListener('loadedmetadata', function onMeta() {
       mainVideo.removeEventListener('loadedmetadata', onMeta);
       renderTsMarkers(timestamps);
@@ -822,7 +1243,6 @@ function renderTsMarkers(timestamps) {
   });
 }
 
-// Обновляем маркеры при смене видео (метаданные могут прийти с задержкой)
 mainVideo.addEventListener('loadedmetadata', () => {
   if (currentTimestamps.length > 0) {
     renderTsMarkers(currentTimestamps);
@@ -879,7 +1299,6 @@ mainVideo.onerror = () => {
   showToast('Не удалось воспроизвести видео. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
 
-// Прогресс-бар
 function seekFromEvent(e) {
   const rect = progressWrap.getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
@@ -900,7 +1319,6 @@ progressWrap.addEventListener('mousedown', (e) => { dragging = true; seekFromEve
 window.addEventListener('mousemove', (e) => { if (dragging) seekFromEvent(e); });
 window.addEventListener('mouseup', () => { dragging = false; });
 
-// Громкость
 function updateVolumeIcon() {
   muteBtn.innerHTML = (mainVideo.muted || mainVideo.volume === 0) ? ICON_MUTE : ICON_VOL;
 }
@@ -912,13 +1330,11 @@ volumeSlider.oninput = () => {
 };
 updateVolumeIcon();
 
-// Fullscreen
 fullBtn.onclick = () => {
   if (!document.fullscreenElement) playerWrap.requestFullscreen();
   else document.exitFullscreen();
 };
 
-// Скорость
 const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 let speedIdx = 2;
 speedBtn.onclick = () => {
@@ -927,7 +1343,6 @@ speedBtn.onclick = () => {
   speedBtn.textContent = speeds[speedIdx] + 'x';
 };
 
-// Горячие клавиши
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -943,66 +1358,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ===== АДМИНКА: динамические строки таймкодов =====
-window.addTsRow = function(time = '', label = '') {
-  const list = document.getElementById('tsAdminList');
-  const row = document.createElement('div');
-  row.className = 'ts-admin-row';
-  row.innerHTML = `
-    <input type="text" class="ts-input-time" placeholder="00:00" value="${escapeHtml(time)}">
-    <input type="text" class="ts-input-label" placeholder="Что происходит (напр. поцелуи)" value="${escapeHtml(label)}">
-    <button class="ts-remove-btn" title="Удалить">✕</button>
-  `;
-  row.querySelector('.ts-remove-btn').onclick = () => {
-    row.remove();
-    updateTsCounter();
-  };
-  // Авто-форматирование времени при вводе
-  const timeInput = row.querySelector('.ts-input-time');
-  timeInput.addEventListener('blur', () => {
-    const val = timeInput.value.trim();
-    if (!val) return;
-    const sec = parseTime(val);
-    if (sec !== null && !val.includes(':')) {
-      timeInput.value = fmtTime(sec);
-    }
-  });
-  list.appendChild(row);
-  updateTsCounter();
-  if (!time && !label) {
-    // Автофокус на новую строку
-    setTimeout(() => timeInput.focus(), 30);
-  }
-};
-
-function updateTsCounter() {
-  const count = document.getElementById('tsAdminList').children.length;
-  document.getElementById('tsCounter').textContent = `${count} шт.`;
-}
-
-// Собрать таймкоды из формы админки
-function collectTimestampsFromForm() {
-  const rows = document.getElementById('tsAdminList').children;
-  const result = [];
-  for (const row of rows) {
-    const time = row.querySelector('.ts-input-time').value.trim();
-    const label = row.querySelector('.ts-input-label').value.trim();
-    if (!time && !label) continue; // пропускаем пустые
-    if (!time || !label) return { error: 'Заполните и время, и название таймкода (или удалите пустую строку)' };
-    if (!isValidTime(time)) return { error: `Неверный формат времени: "${time}". Используй ММ:СС` };
-    result.push({ time, label });
-  }
-  return { data: result };
-}
-
-// Очистить форму таймкодов
-function clearTsForm() {
-  const list = document.getElementById('tsAdminList');
-  list.innerHTML = '';
-  updateTsCounter();
-}
-
-// ===== Админка: добавление видео =====
+// ===== Админка: добавление =====
 window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
   const url = document.getElementById('videoUrl').value.trim();
@@ -1012,7 +1368,6 @@ window.addVideo = async function() {
   if (!url) return showToast('Введите ссылку на видео', true);
   if (!/^https?:\/\//i.test(url)) return showToast('Ссылка должна начинаться с http:// или https://', true);
 
-  // Собираем таймкоды
   const tsResult = collectTimestampsFromForm();
   if (tsResult.error) return showToast(tsResult.error, true);
   const timestamps = tsResult.data;
@@ -1027,18 +1382,16 @@ window.addVideo = async function() {
       title,
       url,
       thumb: thumb || '',
-      timestamps, // массив {time, label}
+      timestamps,
       createdAt: Date.now()
     });
     showToast('✅ Видео добавлено!');
 
-    // Очистка формы
     document.getElementById('videoTitle').value = '';
     document.getElementById('videoUrl').value = '';
     document.getElementById('videoThumb').value = '';
     clearTsForm();
-
-    setTimeout(showLibrary, 500);
+    addTsRow();
   } catch (err) {
     console.error(err);
     showToast('Ошибка: ' + err.message, true);
@@ -1048,7 +1401,7 @@ window.addVideo = async function() {
   }
 };
 
-// Удаление одного видео
+// ===== Удаление =====
 async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
@@ -1059,7 +1412,6 @@ async function deleteVideo(v) {
   }
 }
 
-// Удалить ВСЕ видео
 window.deleteAllVideos = async function() {
   if (!confirm('⚠️ Удалить ВСЕ видео? Это действие необратимо.')) return;
   if (!confirm('Точно уверены? Восстановить будет невозможно.')) return;
@@ -1079,6 +1431,9 @@ window.deleteAllVideos = async function() {
     btn.textContent = '🗑 Удалить все видео';
   }
 };
+
+// Инициализация: добавим одну строку таймкода при загрузке
+addTsRow();
 </script>
 
 </body>
