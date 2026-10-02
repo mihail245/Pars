@@ -272,7 +272,8 @@
     <button class="back-btn" onclick="showLibrary()">← Назад к списку</button>
 
     <div class="player-wrap paused" id="playerWrap">
-      <video id="mainVideo" preload="metadata" crossorigin="anonymous"></video>
+      <!-- Без crossorigin! Иначе браузер режет CORS-несовместимые ссылки -->
+      <video id="mainVideo" preload="metadata"></video>
 
       <div class="controls">
         <div class="progress-wrap" id="progressWrap">
@@ -327,7 +328,7 @@
 
     <div class="field">
       <label>Ссылка на видеофайл</label>
-      <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4">
+      <input type="text" id="videoUrl" placeholder="https://cs23.vps-vids.com/vids460352/sexstud28620.mp4?hash=...&ip=...">
       <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
     </div>
 
@@ -424,12 +425,12 @@ window.showLibrary = function() {
   const v = document.getElementById('mainVideo');
   v.pause();
   v.removeAttribute('src');
+  v.querySelectorAll('source').forEach(s => s.remove());
   v.load();
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
 };
 
 window.showAdmin = function() {
-  // Запрос пароля
   const pass = prompt('Введите пароль администратора:');
   if (pass !== ADMIN_PASSWORD) {
     if (pass !== null) showToast('Неверный пароль', true);
@@ -504,11 +505,17 @@ function playVideo(v) {
 
   const ytId = getYouTubeId(v.url);
 
+  // Убираем прошлый iframe и очищаем video
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
+  mainVideo.pause();
+  mainVideo.removeAttribute('src');
+  mainVideo.querySelectorAll('source').forEach(s => s.remove());
 
   if (ytId) {
+    // YouTube через iframe
     mainVideo.style.display = 'none';
     document.querySelector('.controls').style.display = 'none';
+
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
     iframe.style.cssText = 'width:100%; height:70vh; display:block; border:0; background:#000;';
@@ -516,12 +523,20 @@ function playVideo(v) {
     iframe.allowFullscreen = true;
     playerWrap.insertBefore(iframe, playerWrap.firstChild);
   } else {
+    // Прямой MP4 — через <source>, БЕЗ crossorigin, чтобы работали ссылки с vps-vids.com
     mainVideo.style.display = 'block';
     document.querySelector('.controls').style.display = 'block';
-    mainVideo.src = v.url;
-    mainVideo.play().catch(err => {
-      console.warn(err);
-      showToast('Не удалось воспроизвести. Проверьте ссылку и CORS.', true);
+
+    const src = document.createElement('source');
+    src.src = v.url;
+    src.type = 'video/mp4';
+    mainVideo.appendChild(src);
+
+    mainVideo.load();
+
+    // Пытаемся запустить (браузер может заблокировать autoplay со звуком)
+    mainVideo.play().catch(() => {
+      // Показываем плеер, но без звука — пользователь нажмёт play сам
     });
   }
 }
@@ -572,7 +587,9 @@ mainVideo.onloadedmetadata = () => {
   durTimeEl.textContent = fmtTime(mainVideo.duration);
 };
 mainVideo.onerror = () => {
-  showToast('Ошибка загрузки видео. Возможно CORS или неверная ссылка.', true);
+  // Не показываем ошибку, если нет src (мы просто очистили плеер)
+  if (!mainVideo.currentSrc && !mainVideo.querySelector('source')) return;
+  showToast('Не удалось воспроизвести видео. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
 
 // Прогресс-бар
