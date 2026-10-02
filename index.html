@@ -171,7 +171,6 @@
   }
   .video-thumb .fav-btn:hover { background: rgba(255,0,0,.7); transform: scale(1.1); }
   .video-thumb .fav-btn.active { background: #ff0000; }
-  /* Прогресс просмотра на карточке */
   .video-thumb .watch-progress {
     position: absolute; bottom: 0; left: 0; right: 0;
     height: 3px;
@@ -245,7 +244,6 @@
     background: #000;
     object-fit: contain;
   }
-  /* Оверлей яркости */
   .brightness-overlay {
     position: absolute; inset: 0;
     background: #000;
@@ -255,7 +253,6 @@
     z-index: 5;
   }
 
-  /* Индикатор двойного тапа */
   .seek-indicator {
     position: absolute;
     top: 50%; transform: translateY(-50%);
@@ -279,7 +276,6 @@
   .seek-indicator svg { width: 28px; height: 28px; fill: #fff; }
   .seek-indicator .delta { font-size: 12px; opacity: .9; }
 
-  /* Центральный play/pause */
   .tap-play {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -298,7 +294,6 @@
   }
   .tap-play .icon svg { width: 36px; height: 36px; fill: #fff; }
 
-  /* Спиннер */
   .loading-spinner {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -315,6 +310,189 @@
   .loading-spinner.show { opacity: 1; }
   @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
+  /* ===== Полоска таймкодов в центре видео ===== */
+  .ts-strip {
+    position: absolute;
+    left: 50%;
+    bottom: 62px;
+    transform: translateX(-50%) translateY(8px);
+    max-width: 92%;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 22;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .ts-strip::-webkit-scrollbar { display: none; }
+  .ts-strip.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .ts-strip-inner {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .ts-thumb {
+    flex: 0 0 auto;
+    width: 96px;
+    background: #111;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color .15s, transform .15s;
+    padding: 0;
+    font-family: inherit;
+    text-align: left;
+  }
+  .ts-thumb:hover {
+    border-color: #ff0000;
+    transform: translateY(-2px);
+  }
+  .ts-thumb.active { border-color: #ff0000; }
+  .ts-thumb-canvas {
+    width: 96px;
+    height: 54px;
+    background: #000 center/cover no-repeat;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .ts-thumb-canvas canvas,
+  .ts-thumb-canvas img {
+    width: 100%; height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .ts-thumb-time {
+    position: absolute;
+    bottom: 3px; right: 3px;
+    background: rgba(0,0,0,.85);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .ts-thumb-label {
+    font-size: 10.5px;
+    color: #ddd;
+    padding: 4px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #171717;
+  }
+
+  /* ===== Боковая панель таймкодов ===== */
+  .ts-side-panel {
+    position: absolute;
+    top: 0; right: 0;
+    width: 280px;
+    height: 100%;
+    background: rgba(15,15,15,.96);
+    backdrop-filter: blur(12px);
+    border-left: 1px solid #2a2a2a;
+    transform: translateX(100%);
+    transition: transform .3s ease;
+    z-index: 26;
+    display: flex;
+    flex-direction: column;
+  }
+  .ts-side-panel.open { transform: translateX(0); }
+  .ts-side-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #242424;
+  }
+  .ts-side-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .ts-side-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  .ts-side-close:hover { background: #222; color: #fff; }
+  .ts-side-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+  .ts-side-list::-webkit-scrollbar { width: 6px; }
+  .ts-side-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .ts-side-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s;
+    align-items: center;
+    font-family: inherit;
+    background: transparent;
+    border: none;
+    color: inherit;
+    width: 100%;
+    text-align: left;
+  }
+  .ts-side-item:hover { background: #1e1e1e; }
+  .ts-side-item.active { background: rgba(255,0,0,.15); }
+  .ts-side-thumb-wrap {
+    flex: 0 0 72px;
+    width: 72px; height: 40px;
+    background: #000;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .ts-side-thumb-wrap canvas,
+  .ts-side-thumb-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .ts-side-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .ts-side-item-label {
+    font-size: 12.5px;
+    color: #eee;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  .ts-side-item-time {
+    font-size: 11px;
+    color: #ff8080;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
   /* Контролы */
   .controls {
     position: absolute; left: 0; right: 0; bottom: 0;
@@ -328,7 +506,6 @@
   .player-wrap.paused .controls,
   .player-wrap.show-controls .controls { opacity: 1; }
 
-  /* Прогресс-бар */
   .progress-wrap {
     position: relative;
     height: 20px;
@@ -347,7 +524,6 @@
   }
   .progress-wrap:hover .progress-bg,
   .progress-wrap.dragging .progress-bg { height: 6px; }
-  /* Буфер */
   .progress-buffer {
     position: absolute; top: 0; left: 0;
     height: 100%;
@@ -428,6 +604,7 @@
     position: relative;
   }
   .ctrl-btn:hover { background: rgba(255,255,255,.12); }
+  .ctrl-btn.active { background: rgba(255,0,0,.3); }
   .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; display: block; }
 
   .time-display {
@@ -454,7 +631,6 @@
     margin: 0 6px;
   }
 
-  /* Меню скорости */
   .speed-menu {
     position: absolute;
     bottom: 60px;
@@ -482,7 +658,6 @@
   .speed-menu-item:hover { background: #2a2a2a; color: #fff; }
   .speed-menu-item.active { color: #ff4d4d; font-weight: 700; }
 
-  /* Меню настроек */
   .settings-menu {
     position: absolute;
     bottom: 60px;
@@ -491,7 +666,7 @@
     border: 1px solid #333;
     border-radius: 10px;
     padding: 10px;
-    min-width: 200px;
+    min-width: 220px;
     display: none;
     box-shadow: 0 8px 24px rgba(0,0,0,.6);
     z-index: 30;
@@ -531,7 +706,6 @@
   }
   .speed-btn:hover { background: rgba(255,255,255,.12); }
 
-  /* Fullscreen */
   .player-wrap:fullscreen,
   .player-wrap:-webkit-full-screen {
     max-height: none;
@@ -554,7 +728,6 @@
     padding: 60px 24px 18px;
   }
 
-  /* Панель прогресс просмотра в плеере */
   .resume-toast {
     position: absolute;
     bottom: 80px;
@@ -587,7 +760,6 @@
     font-family: inherit;
   }
 
-  /* ===== Таймкоды под плеером ===== */
   .timestamps-block {
     margin-top: 16px;
     padding: 14px;
@@ -757,7 +929,7 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { border-left-color: #f44336; }
 
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     main { padding: 14px; }
     .video-grid { grid-template-columns: 1fr; gap: 12px; }
     header { padding: 10px 14px; flex-wrap: wrap; }
@@ -770,6 +942,10 @@
     .time-display { font-size: 12px; padding: 0 4px; }
     .speed-menu { right: 20px; }
     .settings-menu { right: 20px; left: 20px; }
+    .ts-side-panel { width: 240px; }
+    .ts-thumb { width: 80px; }
+    .ts-thumb-canvas { width: 80px; height: 45px; }
+    .ts-strip { bottom: 58px; max-width: 96%; }
   }
 </style>
 </head>
@@ -821,16 +997,28 @@
 
       <div class="loading-spinner" id="loadingSpinner"></div>
 
+      <!-- Полоска таймкодов с миниатюрами (в центре видео) -->
+      <div class="ts-strip" id="tsStrip">
+        <div class="ts-strip-inner" id="tsStripInner"></div>
+      </div>
+
+      <!-- Боковая панель таймкодов -->
+      <div class="ts-side-panel" id="tsSidePanel">
+        <div class="ts-side-header">
+          <h3>⏱ Таймкоды</h3>
+          <button class="ts-side-close" onclick="toggleTsPanel()">✕</button>
+        </div>
+        <div class="ts-side-list" id="tsSideList"></div>
+      </div>
+
       <div class="resume-toast" id="resumeToast">
         <span>Продолжить с <span id="resumeTime">0:00</span>?</span>
         <button onclick="resumeFromSaved()">Да</button>
         <button onclick="hideResumeToast()" style="background:#333;">Нет</button>
       </div>
 
-      <!-- Меню скорости -->
       <div class="speed-menu" id="speedMenu"></div>
 
-      <!-- Меню настроек -->
       <div class="settings-menu" id="settingsMenu">
         <div class="settings-title">Яркость</div>
         <div class="settings-row">
@@ -872,6 +1060,10 @@
             <button class="ctrl-btn" id="muteBtn"></button>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
           </div>
+
+          <button class="ctrl-btn" id="tsBtn" title="Таймкоды">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+          </button>
 
           <button class="ctrl-btn" id="settingsBtn" title="Настройки">
             <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -1034,8 +1226,8 @@ const db = getDatabase(app);
 const videosRef = dbRef(db, 'videos');
 
 const ADMIN_PASSWORD = 'admin123';
-const RESUME_THRESHOLD = 5;   // если смотрел >5 сек — сохраняем позицию
-const RESUME_COMPLETE = 0.95; // если смотрел >95% — сбрасываем позицию
+const RESUME_THRESHOLD = 5;
+const RESUME_COMPLETE = 0.95;
 
 // ===== Утилиты =====
 function fmtTime(s) {
@@ -1090,7 +1282,7 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-// ===== Генерация превью из середины =====
+// ===== Генерация превью из середины (для карточек) =====
 const thumbCache = new Map();
 
 function generateMidThumbnail(url) {
@@ -1117,7 +1309,7 @@ function generateMidThumbnail(url) {
     video.addEventListener('loadedmetadata', () => {
       const mid = (video.duration || 0) / 2;
       if (!isFinite(mid) || mid <= 0) return finish(null);
-      try { video.currentTime = mid; } catch (e) { finish(null); }
+      try { video.currentTime = mid; } catch { finish(null); }
     }, { once: true });
 
     video.addEventListener('seeked', () => {
@@ -1129,7 +1321,7 @@ function generateMidThumbnail(url) {
         const dataUrl = c.toDataURL('image/jpeg', 0.75);
         clearTimeout(timeout);
         finish(dataUrl);
-      } catch (e) {
+      } catch {
         clearTimeout(timeout);
         finish(null);
       }
@@ -1142,7 +1334,7 @@ function generateMidThumbnail(url) {
   });
 }
 
-// ===== LocalStorage: избранное, прогресс просмотра, фильтры =====
+// ===== LocalStorage =====
 function getFavorites() {
   try { return JSON.parse(localStorage.getItem('mytube_favs') || '[]'); }
   catch { return []; }
@@ -1197,7 +1389,6 @@ window.showLibrary = function() {
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.remove('active');
   const v = document.getElementById('mainVideo');
-  // Сохраняем прогресс перед выходом
   if (currentVideo && v.duration) {
     setWatchProgress(currentVideo.id, v.currentTime, v.duration);
   }
@@ -1207,7 +1398,9 @@ window.showLibrary = function() {
   v.load();
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
   hideResumeToast();
+  tsSidePanel.classList.remove('open');
   currentVideo = null;
+  if (tsTrackerInterval) clearInterval(tsTrackerInterval);
 };
 
 window.showAdmin = function() {
@@ -1280,14 +1473,10 @@ function renderVideoGrid() {
 
   let list = allVideos.slice();
 
-  if (showFavoritesOnly) {
-    list = list.filter(v => isFavorite(v.id));
-  }
-
+  if (showFavoritesOnly) list = list.filter(v => isFavorite(v.id));
   if (activeTagFilter !== '__all__') {
     list = list.filter(v => Array.isArray(v.tags) && v.tags.includes(activeTagFilter));
   }
-
   if (searchQuery) {
     list = list.filter(v =>
       (v.title || '').toLowerCase().includes(searchQuery) ||
@@ -1530,7 +1719,7 @@ window.saveEdit = async function() {
   }
 };
 
-// ===== Таймкоды =====
+// ===== Таймкоды формы =====
 window.addTsRow = function(time = '', label = '') {
   const list = document.getElementById('tsAdminList');
   const row = document.createElement('div');
@@ -1622,10 +1811,63 @@ const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
 const tsMarkersLayer = document.getElementById('tsMarkersLayer');
 const brightnessOverlay = document.getElementById('brightnessOverlay');
+const tsStrip = document.getElementById('tsStrip');
+const tsStripInner = document.getElementById('tsStripInner');
+const tsSidePanel = document.getElementById('tsSidePanel');
+const tsSideList = document.getElementById('tsSideList');
 
 let currentVideo = null;
 let currentTimestamps = [];
 let pendingResumeTime = null;
+
+// ===== Кэш кадров =====
+const frameCache = new Map();
+
+function generateFrameAt(videoUrl, seconds) {
+  const key = `${videoUrl}|${seconds}`;
+  if (frameCache.has(key)) return Promise.resolve(frameCache.get(key));
+
+  return new Promise((resolve) => {
+    const v = document.createElement('video');
+    v.src = videoUrl;
+    v.muted = true;
+    v.playsInline = true;
+    v.preload = 'metadata';
+    v.crossOrigin = 'anonymous';
+
+    let resolved = false;
+    const finish = (dataUrl) => {
+      if (resolved) return;
+      resolved = true;
+      if (dataUrl) frameCache.set(key, dataUrl);
+      resolve(dataUrl);
+    };
+
+    const timeout = setTimeout(() => finish(null), 8000);
+
+    v.addEventListener('loadedmetadata', () => {
+      try { v.currentTime = Math.max(0, Math.min(seconds, v.duration - 0.1)); }
+      catch { finish(null); }
+    }, { once: true });
+
+    v.addEventListener('seeked', () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 192; c.height = 108;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+        const dataUrl = c.toDataURL('image/jpeg', 0.7);
+        clearTimeout(timeout);
+        finish(dataUrl);
+      } catch (e) {
+        clearTimeout(timeout);
+        finish(null);
+      }
+    }, { once: true });
+
+    v.addEventListener('error', () => { clearTimeout(timeout); finish(null); }, { once: true });
+  });
+}
 
 function playVideo(v) {
   currentVideo = v;
@@ -1636,7 +1878,6 @@ function playVideo(v) {
   document.getElementById('playerTitle').textContent = v.title;
   document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
 
-  // Теги под плеером
   const tagsEl = document.getElementById('playerTags');
   if (Array.isArray(v.tags) && v.tags.length > 0) {
     tagsEl.innerHTML = v.tags.map(t => `<span class="video-tag">${escapeHtml(t)}</span>`).join('');
@@ -1655,6 +1896,8 @@ function playVideo(v) {
   mainVideo.pause();
   mainVideo.removeAttribute('src');
   mainVideo.querySelectorAll('source').forEach(s => s.remove());
+  tsSidePanel.classList.remove('open');
+  tsBtn.classList.remove('active');
 
   if (ytId) {
     mainVideo.style.display = 'none';
@@ -1671,7 +1914,6 @@ function playVideo(v) {
   mainVideo.style.display = 'block';
   document.querySelector('.controls').style.display = 'block';
 
-  // Проверяем прогресс просмотра
   const saved = getWatchProgress(v.id);
   pendingResumeTime = saved && saved.time > RESUME_THRESHOLD ? saved.time : null;
 
@@ -1682,9 +1924,7 @@ function playVideo(v) {
   mainVideo.load();
 
   mainVideo.addEventListener('loadedmetadata', () => {
-    if (pendingResumeTime) {
-      showResumeToast(pendingResumeTime);
-    }
+    if (pendingResumeTime) showResumeToast(pendingResumeTime);
   }, { once: true });
 
   mainVideo.play().catch(() => {});
@@ -1707,40 +1947,175 @@ window.resumeFromSaved = function() {
   hideResumeToast();
 };
 
+// ===== Рендер таймкодов (3 места) =====
 function renderTimestampsBlock(timestamps) {
   const block = document.getElementById('timestampsBlock');
   const list = document.getElementById('timestampsList');
   const countEl = document.getElementById('tsCount');
   list.innerHTML = '';
+
   if (!timestamps || timestamps.length === 0) {
     block.style.display = 'none';
+    tsStrip.classList.remove('show');
+    tsStripInner.innerHTML = '';
+    tsSideList.innerHTML = '<div style="padding:20px; text-align:center; color:#666; font-size:13px;">Таймкодов нет</div>';
     return;
   }
+
   block.style.display = 'block';
   countEl.textContent = `${timestamps.length} шт.`;
+
+  // 1. Чипсы под плеером
   timestamps.forEach(ts => {
     const seconds = parseTime(ts.time);
     const chip = document.createElement('button');
     chip.className = 'ts-chip';
     chip.innerHTML = `<span class="ts-time">${escapeHtml(ts.time)}</span> ${escapeHtml(ts.label)}`;
-    chip.onclick = () => {
-      const iframe = document.querySelector('.player-view iframe');
-      if (iframe) {
-        const ytId = getYouTubeId(iframe.src);
-        if (ytId) {
-          iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&start=${seconds}`;
-          return;
-        }
-      }
-      if (mainVideo) {
-        mainVideo.currentTime = seconds;
-        mainVideo.play();
-      }
-    };
+    chip.onclick = () => jumpToTimestamp(seconds);
     list.appendChild(chip);
   });
+
+  // 2. Полоска с миниатюрами в центре видео
+  tsStripInner.innerHTML = '';
+  timestamps.forEach((ts, idx) => {
+    const seconds = parseTime(ts.time);
+    const thumb = document.createElement('button');
+    thumb.className = 'ts-thumb';
+    thumb.dataset.index = idx;
+    thumb.innerHTML = `
+      <div class="ts-thumb-canvas">
+        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#444;font-size:14px;">⏳</div>
+        <span class="ts-thumb-time">${escapeHtml(ts.time)}</span>
+      </div>
+      <div class="ts-thumb-label">${escapeHtml(ts.label)}</div>
+    `;
+    thumb.onclick = (e) => {
+      e.stopPropagation();
+      jumpToTimestamp(seconds);
+    };
+    tsStripInner.appendChild(thumb);
+
+    const videoUrl = currentVideo?.url;
+    if (videoUrl && !getYouTubeId(videoUrl) && seconds !== null) {
+      generateFrameAt(videoUrl, seconds).then(dataUrl => {
+        if (!dataUrl) return;
+        const canvasWrap = thumb.querySelector('.ts-thumb-canvas');
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.alt = '';
+        canvasWrap.innerHTML = '';
+        canvasWrap.appendChild(img);
+        const timeTag = document.createElement('span');
+        timeTag.className = 'ts-thumb-time';
+        timeTag.textContent = ts.time;
+        canvasWrap.appendChild(timeTag);
+      });
+    }
+  });
+
+  // 3. Боковая панель
+  tsSideList.innerHTML = '';
+  timestamps.forEach((ts, idx) => {
+    const seconds = parseTime(ts.time);
+    const item = document.createElement('button');
+    item.className = 'ts-side-item';
+    item.dataset.index = idx;
+    item.innerHTML = `
+      <div class="ts-side-thumb-wrap">⏳</div>
+      <div class="ts-side-item-info">
+        <div class="ts-side-item-label">${escapeHtml(ts.label)}</div>
+        <div class="ts-side-item-time">${escapeHtml(ts.time)}</div>
+      </div>
+    `;
+    item.onclick = () => jumpToTimestamp(seconds);
+    tsSideList.appendChild(item);
+
+    const videoUrl = currentVideo?.url;
+    if (videoUrl && !getYouTubeId(videoUrl) && seconds !== null) {
+      generateFrameAt(videoUrl, seconds).then(dataUrl => {
+        if (!dataUrl) return;
+        const wrap = item.querySelector('.ts-side-thumb-wrap');
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.alt = '';
+        wrap.innerHTML = '';
+        wrap.appendChild(img);
+      });
+    }
+  });
+
+  showTsStripTemporarily();
+  startTsTracker();
 }
 
+function jumpToTimestamp(seconds) {
+  if (seconds === null) return;
+  const iframe = document.querySelector('.player-view iframe');
+  if (iframe) {
+    const ytId = getYouTubeId(iframe.src);
+    if (ytId) {
+      iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&start=${seconds}`;
+      return;
+    }
+  }
+  if (mainVideo) {
+    mainVideo.currentTime = seconds;
+    mainVideo.play();
+  }
+}
+
+let tsStripTimer = null;
+function showTsStripTemporarily() {
+  if (!currentTimestamps || currentTimestamps.length === 0) return;
+  tsStrip.classList.add('show');
+  clearTimeout(tsStripTimer);
+  tsStripTimer = setTimeout(() => {
+    if (!playerWrap.matches(':hover')) tsStrip.classList.remove('show');
+  }, 3000);
+}
+
+let tsTrackerInterval = null;
+function startTsTracker() {
+  if (tsTrackerInterval) clearInterval(tsTrackerInterval);
+  tsTrackerInterval = setInterval(() => {
+    if (!currentTimestamps || currentTimestamps.length === 0) return;
+    const cur = mainVideo.currentTime;
+    let activeIdx = -1;
+    currentTimestamps.forEach((ts, i) => {
+      const sec = parseTime(ts.time);
+      if (sec !== null && cur >= sec) activeIdx = i;
+    });
+    document.querySelectorAll('.ts-thumb, .ts-side-item').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.index) === activeIdx);
+    });
+    if (activeIdx >= 0) {
+      const strip = document.querySelector(`.ts-thumb[data-index="${activeIdx}"]`);
+      const side = document.querySelector(`.ts-side-item[data-index="${activeIdx}"]`);
+      if (strip) strip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      if (side && tsSidePanel.classList.contains('open')) {
+        side.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, 500);
+}
+
+// ===== Управление боковой панелью =====
+const tsBtn = document.getElementById('tsBtn');
+function toggleTsPanel() {
+  if (!currentTimestamps || currentTimestamps.length === 0) {
+    showToast('У этого видео нет таймкодов', true);
+    return;
+  }
+  tsSidePanel.classList.toggle('open');
+  tsBtn.classList.toggle('active', tsSidePanel.classList.contains('open'));
+}
+window.toggleTsPanel = toggleTsPanel;
+tsBtn.onclick = (e) => {
+  e.stopPropagation();
+  toggleTsPanel();
+};
+
+// ===== Маркеры таймкодов на прогресс-баре =====
 function renderTsMarkers(timestamps) {
   tsMarkersLayer.innerHTML = '';
   if (!timestamps || timestamps.length === 0) return;
@@ -1814,13 +2189,11 @@ mainVideo.ontimeupdate = () => {
   progressFill.style.width = pct + '%';
   progressThumb.style.left = pct + '%';
 
-  // Автосохранение прогресса раз в 5 сек
   if (currentVideo && Math.floor(cur) % 5 === 0) {
     setWatchProgress(currentVideo.id, cur, dur);
   }
 };
 
-// Буфер
 mainVideo.addEventListener('progress', () => {
   if (mainVideo.buffered.length > 0 && mainVideo.duration) {
     const end = mainVideo.buffered.end(mainVideo.buffered.length - 1);
@@ -1834,11 +2207,9 @@ mainVideo.addEventListener('waiting', () => loadingSpinner.classList.add('show')
 mainVideo.addEventListener('playing', () => loadingSpinner.classList.remove('show'));
 mainVideo.addEventListener('canplay', () => loadingSpinner.classList.remove('show'));
 
-// Автовоспроизведение следующего
 mainVideo.addEventListener('ended', () => {
   if (currentVideo) {
     clearWatchProgress(currentVideo.id);
-    // Найти следующее видео
     const idx = allVideos.findIndex(x => x.id === currentVideo.id);
     if (idx >= 0 && idx < allVideos.length - 1) {
       const next = allVideos[idx + 1];
@@ -1939,6 +2310,8 @@ function handlePlayerTap(e) {
   if (e.target.closest('.resume-toast')) return;
   if (e.target.closest('.speed-menu')) return;
   if (e.target.closest('.settings-menu')) return;
+  if (e.target.closest('.ts-side-panel')) return;
+  if (e.target.closest('.ts-strip')) return;
 
   const now = Date.now();
   const rect = playerWrap.getBoundingClientRect();
@@ -1986,6 +2359,15 @@ function togglePlayWithIcon() {
 }
 
 playerWrap.addEventListener('click', handlePlayerTap);
+
+playerWrap.addEventListener('mouseenter', () => {
+  if (currentTimestamps && currentTimestamps.length > 0) {
+    tsStrip.classList.add('show');
+  }
+});
+playerWrap.addEventListener('mouseleave', () => {
+  if (!dragging) tsStrip.classList.remove('show');
+});
 
 // ===== Громкость =====
 function updateVolumeIcon() {
@@ -2058,7 +2440,6 @@ speedBtn.onclick = (e) => {
   settingsMenu.classList.remove('show');
 };
 
-// ===== Меню настроек =====
 settingsBtn.onclick = (e) => {
   e.stopPropagation();
   settingsMenu.classList.toggle('show');
@@ -2074,14 +2455,12 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Яркость
 document.getElementById('brightnessSlider').addEventListener('input', (e) => {
   const val = parseInt(e.target.value);
   document.getElementById('brightnessVal').textContent = val + '%';
   brightnessOverlay.style.opacity = (100 - val) / 100 * 0.8;
 });
 
-// Громкость 2
 document.getElementById('volumeSlider2').addEventListener('input', (e) => {
   const val = parseInt(e.target.value);
   document.getElementById('volumeVal').textContent = val + '%';
@@ -2119,15 +2498,14 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'm' || e.key === 'M' || e.key === 'ь') { muteBtn.click(); return; }
   if (e.key === 'f' || e.key === 'F' || e.key === 'а') { fullBtn.click(); return; }
   if (e.key === 'p' || e.key === 'P' || e.key === 'з') { pipBtn.click(); return; }
+  if (e.key === 't' || e.key === 'T' || e.key === 'е') { toggleTsPanel(); return; }
 
-  // Цифры 0-9 — переход в % от длительности
   if (/^[0-9]$/.test(e.key)) {
     const pct = parseInt(e.key) / 10;
     if (mainVideo.duration) mainVideo.currentTime = mainVideo.duration * pct;
   }
 });
 
-// ===== Сохранение прогресса перед уходом =====
 window.addEventListener('beforeunload', () => {
   if (currentVideo && mainVideo.duration) {
     setWatchProgress(currentVideo.id, mainVideo.currentTime, mainVideo.duration);
@@ -2212,4 +2590,4 @@ renderSpeedMenu();
 </script>
 
 </body>
- </html>
+</html>
