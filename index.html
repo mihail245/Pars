@@ -45,6 +45,14 @@
   .btn:hover { background: #3a3a3a; }
   .btn-primary { background: #ff0000; }
   .btn-primary:hover { background: #cc0000; }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-danger {
+    background: #2a1010;
+    color: #ff6b6b;
+    border: 1px solid #5a2020;
+  }
+  .btn-danger:hover { background: #3a1515; }
+  .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
 
   /* ===== Контент ===== */
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
@@ -320,18 +328,28 @@
     <div class="field">
       <label>Ссылка на видеофайл</label>
       <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4">
-      <small>Прямая ссылка на MP4/WebM/MOV файл (не YouTube-страница!)</small>
+      <small>Прямая ссылка на MP4/WebM/MOV или ссылка на YouTube</small>
     </div>
 
     <div class="field">
       <label>Ссылка на превью (необязательно)</label>
       <input type="text" id="videoThumb" placeholder="https://example.com/preview.jpg">
-      <small>Картинка-обложка. Если пусто — будет чёрный фон</small>
+      <small>Картинка-обложка. Если пусто — превью YouTube или чёрный фон</small>
     </div>
 
     <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" id="addBtn" onclick="addVideo()">
       Добавить видео
     </button>
+
+    <hr style="border:none; border-top:1px solid #272727; margin:32px 0 24px;">
+
+    <h2 style="color:#ff6b6b;">⚠ Опасная зона</h2>
+    <button class="btn btn-danger" style="width:100%; padding:14px; font-size:16px;" id="deleteAllBtn" onclick="deleteAllVideos()">
+      🗑 Удалить все видео
+    </button>
+    <small style="display:block; color:#666; font-size:12px; margin-top:10px; text-align:center;">
+      Это действие необратимо. Все ссылки на видео будут удалены из базы.
+    </small>
   </div>
 </main>
 
@@ -357,6 +375,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const videosRef = dbRef(db, 'videos');
+
+// ===== НАСТРОЙКИ =====
+const ADMIN_PASSWORD = 'admin123'; // ← поменяй на свой пароль
 
 // ===== Утилиты =====
 function fmtTime(s) {
@@ -388,7 +409,7 @@ function escapeHtml(s) {
   })[c]);
 }
 
-// Достать ID видео из YouTube-ссылки (если пользователь вставил YouTube)
+// Достать ID видео из YouTube-ссылки
 function getYouTubeId(url) {
   if (!url) return null;
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
@@ -408,6 +429,13 @@ window.showLibrary = function() {
 };
 
 window.showAdmin = function() {
+  // Запрос пароля
+  const pass = prompt('Введите пароль администратора:');
+  if (pass !== ADMIN_PASSWORD) {
+    if (pass !== null) showToast('Неверный пароль', true);
+    return;
+  }
+
   document.getElementById('libraryView').classList.add('hidden');
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.add('active');
@@ -434,7 +462,6 @@ onValue(videosRef, (snapshot) => {
     const card = document.createElement('div');
     card.className = 'video-card';
 
-    // Превью: своя картинка или YouTube thumbnail
     let thumbStyle = '';
     const ytId = getYouTubeId(v.url);
     if (v.thumb) {
@@ -477,7 +504,6 @@ function playVideo(v) {
 
   const ytId = getYouTubeId(v.url);
 
-  // Если YouTube-ссылка — встраиваем iframe вместо <video>
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
 
   if (ytId) {
@@ -601,7 +627,7 @@ speedBtn.onclick = () => {
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT') return;
-  if (document.querySelector('.player-view iframe')) return; // для YouTube свои клавиши
+  if (document.querySelector('.player-view iframe')) return;
   switch (e.key) {
     case ' ': e.preventDefault(); playBtn.click(); break;
     case 'ArrowLeft': backBtn10.click(); break;
@@ -649,7 +675,7 @@ window.addVideo = async function() {
   }
 };
 
-// Удаление
+// Удаление одного видео
 async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
@@ -659,6 +685,27 @@ async function deleteVideo(v) {
     showToast('Ошибка удаления: ' + err.message, true);
   }
 }
+
+// Удалить ВСЕ видео
+window.deleteAllVideos = async function() {
+  if (!confirm('⚠️ Удалить ВСЕ видео? Это действие необратимо.')) return;
+  if (!confirm('Точно уверены? Восстановить будет невозможно.')) return;
+
+  const btn = document.getElementById('deleteAllBtn');
+  btn.disabled = true;
+  btn.textContent = 'Удаление...';
+
+  try {
+    await remove(videosRef);
+    showToast('✅ Все видео удалены');
+  } catch (err) {
+    console.error(err);
+    showToast('Ошибка: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🗑 Удалить все видео';
+  }
+};
 </script>
 
 </body>
