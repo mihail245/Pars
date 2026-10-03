@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>YouTube</title>
+<title>MyTube — прототип</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
@@ -17,6 +17,7 @@
   header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding: 12px 20px;
     background: #0f0f0f;
@@ -33,34 +34,6 @@
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 12px;
-  }
-  .search-box {
-    flex: 1;
-    max-width: 500px;
-    position: relative;
-    margin: 0 auto;
-  }
-  .search-box input {
-    width: 100%;
-    padding: 9px 36px 9px 14px;
-    background: #141414;
-    border: 1px solid #222;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: border .15s;
-    font-family: inherit;
-  }
-  .search-box input:focus { border-color: #ff0000; }
-  .search-box::after {
-    content: '🔍';
-    position: absolute;
-    right: 12px; top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 14px;
-    opacity: .6;
   }
   .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
   .btn {
@@ -80,35 +53,6 @@
   .btn-danger:hover { background: #3a1515; }
 
   main { padding: 20px; max-width: 1400px; margin: 0 auto; }
-
-  .filters-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-  }
-  .filters-bar::-webkit-scrollbar { display: none; }
-  .filter-chip {
-    background: #1a1a1a;
-    border: 1px solid #222;
-    color: #ccc;
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all .15s;
-    white-space: nowrap;
-    font-family: inherit;
-    flex-shrink: 0;
-  }
-  .filter-chip:hover { background: #222; color: #fff; }
-  .filter-chip.active {
-    background: #ff0000;
-    border-color: #ff0000;
-    color: #fff;
-  }
 
   .video-grid {
     display: grid;
@@ -144,41 +88,6 @@
     position: relative;
   }
   .video-card:hover .video-thumb .play-overlay { opacity: 1; }
-  .video-thumb .ts-badge {
-    position: absolute; top: 8px; left: 8px;
-    background: rgba(0,0,0,.75); color: #fff;
-    padding: 3px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 600;
-    backdrop-filter: blur(4px);
-    z-index: 3;
-  }
-  .video-thumb .fav-btn {
-    position: absolute; top: 8px; right: 8px;
-    width: 32px; height: 32px;
-    background: rgba(0,0,0,.7);
-    border: none;
-    border-radius: 50%;
-    color: #fff;
-    cursor: pointer;
-    font-size: 15px;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 4;
-    backdrop-filter: blur(4px);
-    transition: all .15s;
-  }
-  .video-thumb .fav-btn:hover { background: rgba(255,0,0,.7); transform: scale(1.1); }
-  .video-thumb .fav-btn.active { background: #ff0000; }
-  .video-thumb .watch-progress {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: rgba(255,255,255,.15);
-    z-index: 4;
-  }
-  .video-thumb .watch-progress-fill {
-    height: 100%;
-    background: #ff0000;
-    width: 0%;
-  }
   .video-info { padding: 12px 14px 14px; }
   .video-title {
     font-weight: 600; font-size: 14px; margin-bottom: 4px;
@@ -187,15 +96,6 @@
     -webkit-box-orient: vertical; overflow: hidden;
   }
   .video-date { font-size: 12px; color: #888; }
-  .video-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-  .video-tag {
-    background: #1a1a1a;
-    color: #a0a0a0;
-    border: 1px solid #222;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-  }
   .video-actions { display: flex; gap: 6px; margin-top: 10px; }
   .action-btn {
     background: transparent; border: 1px solid #333;
@@ -770,38 +670,6 @@
     padding: 60px 24px 18px;
   }
 
-  .resume-toast {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,.9);
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s;
-    z-index: 25;
-    backdrop-filter: blur(6px);
-  }
-  .resume-toast.show { opacity: 1; pointer-events: auto; }
-  .resume-toast button {
-    background: #ff0000;
-    border: none;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
   .timestamps-block {
     margin-top: 16px;
     padding: 14px;
@@ -1031,8 +899,7 @@
   @media (max-width: 700px) {
     main { padding: 14px; }
     .video-grid { grid-template-columns: 1fr; gap: 12px; }
-    header { padding: 10px 14px; flex-wrap: wrap; }
-    .search-box { order: 3; flex-basis: 100%; margin-top: 8px; }
+    header { padding: 10px 14px; }
     .btn { padding: 7px 12px; font-size: 13px; }
     .player-title { font-size: 17px; }
     .ctrl-row { gap: 2px; }
@@ -1053,14 +920,10 @@
 <header>
   <div class="logo" onclick="showLibrary()">
     <div class="logo-icon">▶</div>
-    <span>YouTube</span>
-  </div>
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Поиск видео...">
+    <span>MyTube</span>
   </div>
   <div class="header-btns">
     <button class="btn" onclick="showLibrary()">Главная</button>
-    <button class="btn" id="favoritesBtn" onclick="toggleFavoritesFilter()">★ Избранное</button>
     <button class="btn btn-primary" onclick="showAdmin()">⚙ Админка</button>
     <button class="btn" id="logoutBtn" onclick="adminLogout()" style="display:none;">Выйти</button>
   </div>
@@ -1069,7 +932,6 @@
 <main>
   <div class="library-view" id="libraryView">
     <div id="libraryContent">
-      <div class="filters-bar" id="filtersBar"></div>
       <div class="video-grid" id="videoGrid"></div>
       <div class="empty-state" id="emptyState" style="display:none;">
         <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
@@ -1116,12 +978,6 @@
           <button class="ts-side-close" onclick="toggleTsPanel()">✕</button>
         </div>
         <div class="ts-side-list" id="tsSideList"></div>
-      </div>
-
-      <div class="resume-toast" id="resumeToast">
-        <span>Продолжить с <span id="resumeTime">0:00</span>?</span>
-        <button onclick="resumeFromSaved()">Да</button>
-        <button onclick="hideResumeToast()" style="background:#333;">Нет</button>
       </div>
 
       <div class="speed-menu" id="speedMenu"></div>
@@ -1189,7 +1045,6 @@
 
     <h1 class="player-title" id="playerTitle"></h1>
     <div class="player-meta" id="playerMeta"></div>
-    <div class="video-tags" id="playerTags" style="margin-top:10px;"></div>
 
     <div class="timestamps-block" id="timestampsBlock" style="display:none;">
       <div class="timestamps-header">
@@ -1223,11 +1078,6 @@
       <div class="field">
         <label>Ссылка на превью (необязательно)</label>
         <input type="text" id="videoThumb" placeholder="Если пусто — сгенерируется из середины видео">
-      </div>
-
-      <div class="field">
-        <label>Теги (через запятую)</label>
-        <input type="text" id="videoTags" placeholder="например: спорт, музыка, влог">
       </div>
 
       <div class="field">
@@ -1279,11 +1129,6 @@
         <div class="field">
           <label>Ссылка на превью</label>
           <input type="text" id="editThumb">
-        </div>
-
-        <div class="field">
-          <label>Теги (через запятую)</label>
-          <input type="text" id="editTags">
         </div>
 
         <div class="field">
@@ -1359,8 +1204,6 @@ const videosRef = dbRef(db, 'videos');
 const visibilityRef = dbRef(db, 'settings/visibility');
 
 const ADMIN_PASSWORD = 'admin123';
-const RESUME_THRESHOLD = 5;
-const RESUME_COMPLETE = 0.95;
 
 function isAdminSession() {
   return sessionStorage.getItem('mytube_admin') === '1';
@@ -1473,50 +1316,7 @@ function generateMidThumbnail(url) {
   });
 }
 
-function getFavorites() {
-  try { return JSON.parse(localStorage.getItem('mytube_favs') || '[]'); }
-  catch { return []; }
-}
-function setFavorites(arr) { localStorage.setItem('mytube_favs', JSON.stringify(arr)); }
-function isFavorite(id) { return getFavorites().includes(id); }
-function toggleFavorite(id) {
-  const favs = getFavorites();
-  const idx = favs.indexOf(id);
-  if (idx === -1) favs.push(id);
-  else favs.splice(idx, 1);
-  setFavorites(favs);
-  return isFavorite(id);
-}
-
-function getWatchProgress(id) {
-  try {
-    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
-    return all[id] || null;
-  } catch { return null; }
-}
-function setWatchProgress(id, time, duration) {
-  try {
-    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
-    if (!duration || time / duration > RESUME_COMPLETE) {
-      delete all[id];
-    } else if (time > RESUME_THRESHOLD) {
-      all[id] = { time, duration, updatedAt: Date.now() };
-    }
-    localStorage.setItem('mytube_progress', JSON.stringify(all));
-  } catch (e) {}
-}
-function clearWatchProgress(id) {
-  try {
-    const all = JSON.parse(localStorage.getItem('mytube_progress') || '{}');
-    delete all[id];
-    localStorage.setItem('mytube_progress', JSON.stringify(all));
-  } catch (e) {}
-}
-
 let allVideos = [];
-let activeTagFilter = '__all__';
-let showFavoritesOnly = false;
-let searchQuery = '';
 let videosHidden = false;
 
 window.showLibrary = function() {
@@ -1524,15 +1324,11 @@ window.showLibrary = function() {
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.remove('active');
   const v = document.getElementById('mainVideo');
-  if (currentVideo && v.duration) {
-    setWatchProgress(currentVideo.id, v.currentTime, v.duration);
-  }
   v.pause();
   v.removeAttribute('src');
   v.querySelectorAll('source').forEach(s => s.remove());
   v.load();
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
-  hideResumeToast();
   tsSidePanel.classList.remove('open');
   currentVideo = null;
   if (tsTrackerInterval) clearInterval(tsTrackerInterval);
@@ -1623,81 +1419,23 @@ window.toggleVisibility = async function(hidden) {
   }
 };
 
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  searchQuery = e.target.value.toLowerCase().trim();
-  renderVideoGrid();
-});
-
-function renderFiltersBar() {
-  const bar = document.getElementById('filtersBar');
-  const tags = new Set();
-  allVideos.forEach(v => {
-    if (Array.isArray(v.tags)) v.tags.forEach(t => tags.add(t));
-  });
-
-  const sortedTags = Array.from(tags).sort();
-  bar.innerHTML = '';
-
-  const allChip = document.createElement('button');
-  allChip.className = 'filter-chip' + (activeTagFilter === '__all__' ? ' active' : '');
-  allChip.textContent = 'Все';
-  allChip.onclick = () => { activeTagFilter = '__all__'; renderFiltersBar(); renderVideoGrid(); };
-  bar.appendChild(allChip);
-
-  sortedTags.forEach(tag => {
-    const chip = document.createElement('button');
-    chip.className = 'filter-chip' + (activeTagFilter === tag ? ' active' : '');
-    chip.textContent = tag;
-    chip.onclick = () => { activeTagFilter = tag; renderFiltersBar(); renderVideoGrid(); };
-    bar.appendChild(chip);
-  });
-
-  bar.style.display = (sortedTags.length === 0 && !showFavoritesOnly) ? 'none' : 'flex';
-}
-
-window.toggleFavoritesFilter = function() {
-  showFavoritesOnly = !showFavoritesOnly;
-  document.getElementById('favoritesBtn').classList.toggle('btn-primary', showFavoritesOnly);
-  renderVideoGrid();
-};
-
 function renderVideoGrid() {
   const videoGrid = document.getElementById('videoGrid');
   const emptyState = document.getElementById('emptyState');
 
-  let list = allVideos.slice();
-  if (showFavoritesOnly) list = list.filter(v => isFavorite(v.id));
-  if (activeTagFilter !== '__all__') {
-    list = list.filter(v => Array.isArray(v.tags) && v.tags.includes(activeTagFilter));
-  }
-  if (searchQuery) {
-    list = list.filter(v =>
-      (v.title || '').toLowerCase().includes(searchQuery) ||
-      (Array.isArray(v.tags) && v.tags.some(t => t.toLowerCase().includes(searchQuery)))
-    );
-  }
-
   videoGrid.innerHTML = '';
 
-  if (list.length === 0) {
+  if (allVideos.length === 0) {
     emptyState.style.display = 'block';
-    emptyState.querySelector('p').textContent = searchQuery
-      ? 'Ничего не найдено по запросу'
-      : showFavoritesOnly
-        ? 'В избранном пока нет видео'
-        : 'Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬';
     return;
   }
   emptyState.style.display = 'none';
 
-  list.forEach(v => {
+  allVideos.forEach(v => {
     const card = document.createElement('div');
     card.className = 'video-card';
 
     const ytId = getYouTubeId(v.url);
-    const tsCount = Array.isArray(v.timestamps) ? v.timestamps.length : 0;
-    const tsBadge = tsCount > 0 ? `<div class="ts-badge">⏱ ${tsCount}</div>` : '';
-
     let explicitThumb = '';
     if (v.thumb) explicitThumb = v.thumb;
     else if (ytId) explicitThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
@@ -1706,27 +1444,13 @@ function renderVideoGrid() {
       ? `background-image: url('${escapeAttr(explicitThumb)}')`
       : '';
 
-    const fav = isFavorite(v.id);
-    const progress = getWatchProgress(v.id);
-    const progressPct = progress && progress.duration
-      ? Math.min(100, (progress.time / progress.duration) * 100)
-      : 0;
-
-    const tagsHtml = Array.isArray(v.tags) && v.tags.length > 0
-      ? `<div class="video-tags">${v.tags.map(t => `<span class="video-tag">${escapeHtml(t)}</span>`).join('')}</div>`
-      : '';
-
     card.innerHTML = `
       <div class="video-thumb" style="${thumbStyle}">
-        ${tsBadge}
-        <button class="fav-btn ${fav ? 'active' : ''}" title="В избранное">★</button>
         <div class="play-overlay">▶</div>
-        ${progressPct > 0 ? `<div class="watch-progress"><div class="watch-progress-fill" style="width:${progressPct}%"></div></div>` : ''}
       </div>
       <div class="video-info">
         <div class="video-title">${escapeHtml(v.title)}</div>
         <div class="video-date">${fmtDate(v.createdAt)}</div>
-        ${tagsHtml}
         <div class="video-actions">
           <button class="action-btn edit">✎ Изменить</button>
           <button class="action-btn delete">Удалить</button>
@@ -1741,20 +1465,7 @@ function renderVideoGrid() {
       });
     }
 
-    card.querySelector('.video-thumb').onclick = (e) => {
-      if (e.target.closest('.fav-btn')) return;
-      playVideo(v);
-    };
-
-    const favBtn = card.querySelector('.fav-btn');
-    favBtn.onclick = (e) => {
-      e.stopPropagation();
-      const now = toggleFavorite(v.id);
-      favBtn.classList.toggle('active', now);
-      showToast(now ? '⭐ Добавлено в избранное' : 'Убрано из избранного');
-      if (showFavoritesOnly) renderVideoGrid();
-    };
-
+    card.querySelector('.video-thumb').onclick = () => playVideo(v);
     card.querySelector('.action-btn.edit').onclick = (e) => {
       e.stopPropagation();
       quickEdit(v);
@@ -1773,7 +1484,6 @@ onValue(videosRef, (snapshot) => {
   allVideos = Object.entries(data).map(([id, v]) => ({ id, ...v }))
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-  renderFiltersBar();
   renderVideoGrid();
   renderAdminVideoList(allVideos);
 });
@@ -1858,7 +1568,6 @@ function startEdit(v) {
   document.getElementById('editTitle').value = v.title || '';
   document.getElementById('editUrl').value = v.url || '';
   document.getElementById('editThumb').value = v.thumb || '';
-  document.getElementById('editTags').value = Array.isArray(v.tags) ? v.tags.join(', ') : '';
   document.getElementById('editVideoName').textContent = v.title || '';
 
   clearEditTsList();
@@ -1883,8 +1592,6 @@ window.saveEdit = async function() {
   const title = document.getElementById('editTitle').value.trim();
   const url = document.getElementById('editUrl').value.trim();
   const thumb = document.getElementById('editThumb').value.trim();
-  const tagsRaw = document.getElementById('editTags').value.trim();
-  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
   if (!title) return showToast('Введите название', true);
   if (!url) return showToast('Введите ссылку', true);
@@ -1901,7 +1608,6 @@ window.saveEdit = async function() {
     await update(dbRef(db, 'videos/' + editingVideo.id), {
       title, url,
       thumb: thumb || '',
-      tags,
       timestamps: tsResult.data,
     });
     showToast('✅ Изменения сохранены');
@@ -1999,7 +1705,6 @@ function clearEditTsList() {
   updateEditTsCounter();
 }
 
-// ===== Загрузка таймкодов из JSON =====
 function normalizeTimestamp(item) {
   if (!item || typeof item !== 'object') return null;
 
@@ -2093,7 +1798,6 @@ async function loadTimestampsFromFile(file, listId, updateCounterFn) {
   }
 }
 
-// ===== Плеер =====
 const mainVideo = document.getElementById('mainVideo');
 const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
@@ -2106,7 +1810,6 @@ const tsSideList = document.getElementById('tsSideList');
 
 let currentVideo = null;
 let currentTimestamps = [];
-let pendingResumeTime = null;
 
 const frameCache = new Map();
 
@@ -2171,13 +1874,6 @@ function playVideo(v) {
   document.getElementById('playerTitle').textContent = v.title;
   document.getElementById('playerMeta').textContent = `Добавлено: ${fmtDate(v.createdAt)}`;
 
-  const tagsEl = document.getElementById('playerTags');
-  if (Array.isArray(v.tags) && v.tags.length > 0) {
-    tagsEl.innerHTML = v.tags.map(t => `<span class="video-tag">${escapeHtml(t)}</span>`).join('');
-  } else {
-    tagsEl.innerHTML = '';
-  }
-
   window.scrollTo({top:0, behavior:'smooth'});
 
   currentTimestamps = Array.isArray(v.timestamps) ? v.timestamps : [];
@@ -2207,38 +1903,13 @@ function playVideo(v) {
   mainVideo.style.display = 'block';
   document.querySelector('.controls').style.display = 'block';
 
-  const saved = getWatchProgress(v.id);
-  pendingResumeTime = saved && saved.time > RESUME_THRESHOLD ? saved.time : null;
-
   const src = document.createElement('source');
   src.src = v.url;
   src.type = 'video/mp4';
   mainVideo.appendChild(src);
   mainVideo.load();
-
-  mainVideo.addEventListener('loadedmetadata', () => {
-    if (pendingResumeTime) showResumeToast(pendingResumeTime);
-  }, { once: true });
-
   mainVideo.play().catch(() => {});
 }
-
-function showResumeToast(time) {
-  const toast = document.getElementById('resumeToast');
-  document.getElementById('resumeTime').textContent = fmtTime(time);
-  toast.classList.add('show');
-  setTimeout(() => { if (toast.classList.contains('show')) hideResumeToast(); }, 6000);
-}
-window.hideResumeToast = function() {
-  document.getElementById('resumeToast').classList.remove('show');
-};
-window.resumeFromSaved = function() {
-  if (pendingResumeTime) {
-    mainVideo.currentTime = pendingResumeTime;
-    mainVideo.play();
-  }
-  hideResumeToast();
-};
 
 function renderTimestampsBlock(timestamps) {
   const block = document.getElementById('timestampsBlock');
@@ -2437,7 +2108,6 @@ mainVideo.addEventListener('loadedmetadata', () => {
   if (currentTimestamps.length > 0) renderTsMarkers(currentTimestamps);
 });
 
-// ===== Контролы =====
 const playBtn = document.getElementById('playBtn');
 const curTimeEl = document.getElementById('curTime');
 const durTimeEl = document.getElementById('durTime');
@@ -2482,10 +2152,6 @@ mainVideo.ontimeupdate = () => {
   const pct = dur ? (cur / dur) * 100 : 0;
   progressFill.style.width = pct + '%';
   progressThumb.style.left = pct + '%';
-
-  if (currentVideo && Math.floor(cur) % 5 === 0) {
-    setWatchProgress(currentVideo.id, cur, dur);
-  }
 };
 
 mainVideo.addEventListener('progress', () => {
@@ -2500,20 +2166,6 @@ mainVideo.onloadedmetadata = () => { durTimeEl.textContent = fmtTime(mainVideo.d
 mainVideo.addEventListener('waiting', () => loadingSpinner.classList.add('show'));
 mainVideo.addEventListener('playing', () => loadingSpinner.classList.remove('show'));
 mainVideo.addEventListener('canplay', () => loadingSpinner.classList.remove('show'));
-
-mainVideo.addEventListener('ended', () => {
-  if (currentVideo) {
-    clearWatchProgress(currentVideo.id);
-    const idx = allVideos.findIndex(x => x.id === currentVideo.id);
-    if (idx >= 0 && idx < allVideos.length - 1) {
-      const next = allVideos[idx + 1];
-      showToast('▶ Следующее видео через 3 сек...');
-      setTimeout(() => {
-        if (currentVideo && currentVideo.id !== next.id) playVideo(next);
-      }, 3000);
-    }
-  }
-});
 
 mainVideo.onerror = () => {
   if (!mainVideo.currentSrc && !mainVideo.querySelector('source')) return;
@@ -2599,7 +2251,6 @@ const SEEK_AMOUNT = 10;
 
 function handlePlayerTap(e) {
   if (e.target.closest('.controls')) return;
-  if (e.target.closest('.resume-toast')) return;
   if (e.target.closest('.speed-menu')) return;
   if (e.target.closest('.settings-menu')) return;
   if (e.target.closest('.ts-side-panel')) return;
@@ -2790,25 +2441,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'f' || e.key === 'F' || e.key === 'а') { fullBtn.click(); return; }
   if (e.key === 'p' || e.key === 'P' || e.key === 'з') { pipBtn.click(); return; }
   if (e.key === 't' || e.key === 'T' || e.key === 'е') { toggleTsPanel(); return; }
-
-  if (/^[0-9]$/.test(e.key)) {
-    const pct = parseInt(e.key) / 10;
-    if (mainVideo.duration) mainVideo.currentTime = mainVideo.duration * pct;
-  }
-});
-
-window.addEventListener('beforeunload', () => {
-  if (currentVideo && mainVideo.duration) {
-    setWatchProgress(currentVideo.id, mainVideo.currentTime, mainVideo.duration);
-  }
 });
 
 window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
   const url = document.getElementById('videoUrl').value.trim();
   const thumb = document.getElementById('videoThumb').value.trim();
-  const tagsRaw = document.getElementById('videoTags').value.trim();
-  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
   if (!title) return showToast('Введите название', true);
   if (!url) return showToast('Введите ссылку', true);
@@ -2826,7 +2464,6 @@ window.addVideo = async function() {
     await set(newRef, {
       title, url,
       thumb: thumb || '',
-      tags,
       timestamps: tsResult.data,
       createdAt: Date.now()
     });
@@ -2834,7 +2471,6 @@ window.addVideo = async function() {
     document.getElementById('videoTitle').value = '';
     document.getElementById('videoUrl').value = '';
     document.getElementById('videoThumb').value = '';
-    document.getElementById('videoTags').value = '';
     clearTsForm();
     addTsRow();
   } catch (err) {
@@ -2849,7 +2485,6 @@ async function deleteVideo(v) {
   if (!confirm(`Удалить "${v.title}"?`)) return;
   try {
     await remove(dbRef(db, 'videos/' + v.id));
-    clearWatchProgress(v.id);
     showToast('Видео удалено');
   } catch (err) {
     showToast('Ошибка удаления: ' + err.message, true);
@@ -2864,7 +2499,6 @@ window.deleteAllVideos = async function() {
   btn.textContent = 'Удаление...';
   try {
     await remove(videosRef);
-    localStorage.removeItem('mytube_progress');
     showToast('✅ Все видео удалены');
   } catch (err) {
     showToast('Ошибка: ' + err.message, true);
