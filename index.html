@@ -210,6 +210,49 @@
   .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
   .action-btn.delete:hover { background: #2a1010; }
 
+  /* Экран блокировки */
+  .locked-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #141414 0%, #0f0f0f 100%);
+    border: 1px solid #1f1f1f;
+    border-radius: 16px;
+    min-height: 340px;
+  }
+  .locked-screen .lock-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255,0,0,.1);
+    border: 2px solid rgba(255,0,0,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 32px;
+  }
+  .locked-screen h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .locked-screen p {
+    color: #888;
+    font-size: 14px;
+    max-width: 400px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .locked-screen .btn {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+
   .player-view { display: none; }
   .player-view.active { display: block; }
   .library-view.hidden { display: none; }
@@ -306,7 +349,6 @@
   .loading-spinner.show { opacity: 1; }
   @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-  /* ==== Полоска таймкодов в центре видео ==== */
   .ts-strip {
     position: absolute;
     left: 50%;
@@ -389,7 +431,6 @@
     background: #171717;
   }
 
-  /* ==== Боковая панель таймкодов ==== */
   .ts-side-panel {
     position: absolute;
     top: 0; right: 0;
@@ -489,7 +530,6 @@
     font-weight: 700;
   }
 
-  /* В полноэкранном режиме прячем боковую панель и полоску миниатюр */
   .player-wrap:fullscreen .ts-side-panel,
   .player-wrap:-webkit-full-screen .ts-side-panel,
   .player-wrap:fullscreen .ts-strip,
@@ -912,6 +952,66 @@
   .edit-section .btn-row { display: flex; gap: 10px; margin-top: 20px; }
   .edit-section .btn-row .btn { flex: 1; padding: 12px; }
 
+  /* Карточка видимости */
+  .visibility-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 12px;
+  }
+  .visibility-info { flex: 1; min-width: 0; }
+  .visibility-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+    transition: color .15s;
+  }
+  .visibility-title.hidden-state { color: #ff6b6b; }
+  .visibility-desc {
+    font-size: 12.5px;
+    color: #888;
+    line-height: 1.4;
+  }
+
+  /* Переключатель */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #2a2a2a;
+    border-radius: 30px;
+    transition: background .25s;
+  }
+  .switch .slider::before {
+    content: '';
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background: #888;
+    border-radius: 50%;
+    transition: transform .25s, background .25s;
+  }
+  .switch input:checked + .slider { background: #ff0000; }
+  .switch input:checked + .slider::before {
+    transform: translateX(22px);
+    background: #fff;
+  }
+
   .empty-state {
     text-align: center; padding: 60px 20px; color: #666;
   }
@@ -965,15 +1065,25 @@
     <button class="btn" onclick="showLibrary()">Главная</button>
     <button class="btn" id="favoritesBtn" onclick="toggleFavoritesFilter()">★ Избранное</button>
     <button class="btn btn-primary" onclick="showAdmin()">⚙ Админка</button>
+    <button class="btn" id="logoutBtn" onclick="adminLogout()" style="display:none;">Выйти</button>
   </div>
 </header>
 
 <main>
   <div class="library-view" id="libraryView">
-    <div class="filters-bar" id="filtersBar"></div>
-    <div class="video-grid" id="videoGrid"></div>
-    <div class="empty-state" id="emptyState" style="display:none;">
-      <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
+    <div id="libraryContent">
+      <div class="filters-bar" id="filtersBar"></div>
+      <div class="video-grid" id="videoGrid"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <p>Пока нет видео. Зайдите в админку и добавьте первую ссылку 🎬</p>
+      </div>
+    </div>
+
+    <div class="locked-screen" id="lockedScreen" style="display:none;">
+      <div class="lock-icon">🔒</div>
+      <h2>Видео временно недоступны</h2>
+      <p>Администратор скрыл все видео. Пожалуйста, зайдите позже или свяжитесь с владельцем сайта.</p>
+      <button class="btn btn-primary" onclick="showAdmin()">⚙ Войти как админ</button>
     </div>
   </div>
 
@@ -1192,7 +1302,21 @@
     </div>
 
     <div class="admin-tab-panel" id="tab-danger">
-      <h2 style="color:#ff6b6b; font-size:17px; margin-bottom:14px;">⚠ Опасная зона</h2>
+      <h2 style="font-size:17px; margin-bottom:14px;">👁 Видимость контента</h2>
+      <div class="visibility-card">
+        <div class="visibility-info">
+          <div class="visibility-title" id="visibilityTitle">Видео видны всем</div>
+          <div class="visibility-desc" id="visibilityDesc">
+            Обычные посетители могут смотреть видео.
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="visibilityToggle" onchange="toggleVisibility(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <h2 style="color:#ff6b6b; font-size:17px; margin:32px 0 14px;">⚠ Опасная зона</h2>
       <button class="btn btn-danger" style="width:100%; padding:14px; font-size:15px;" id="deleteAllBtn" onclick="deleteAllVideos()">
         🗑 Удалить все видео
       </button>
@@ -1224,11 +1348,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const videosRef = dbRef(db, 'videos');
+const visibilityRef = dbRef(db, 'settings/visibility');
 
 const ADMIN_PASSWORD = 'admin123';
 const RESUME_THRESHOLD = 5;
 const RESUME_COMPLETE = 0.95;
 
+// ===== Флаг админской сессии =====
+function isAdminSession() {
+  return sessionStorage.getItem('mytube_admin') === '1';
+}
+function setAdminSession(on) {
+  if (on) sessionStorage.setItem('mytube_admin', '1');
+  else sessionStorage.removeItem('mytube_admin');
+}
+
+// ===== Утилиты =====
 function fmtTime(s) {
   if (!isFinite(s) || s < 0) s = 0;
   s = Math.floor(s);
@@ -1281,7 +1416,7 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-// ===== Генерация превью из середины (для карточек) =====
+// ===== Генерация превью из середины =====
 const thumbCache = new Map();
 
 function generateMidThumbnail(url) {
@@ -1379,6 +1514,7 @@ let allVideos = [];
 let activeTagFilter = '__all__';
 let showFavoritesOnly = false;
 let searchQuery = '';
+let videosHidden = false;
 
 // ===== Навигация =====
 window.showLibrary = function() {
@@ -1398,19 +1534,33 @@ window.showLibrary = function() {
   tsSidePanel.classList.remove('open');
   currentVideo = null;
   if (tsTrackerInterval) clearInterval(tsTrackerInterval);
+
+  applyVisibility();
 };
 
 window.showAdmin = function() {
-  const pass = prompt('Введите пароль администратора:');
-  if (pass !== ADMIN_PASSWORD) {
-    if (pass !== null) showToast('Неверный пароль', true);
-    return;
+  if (!isAdminSession()) {
+    const pass = prompt('Введите пароль администратора:');
+    if (pass !== ADMIN_PASSWORD) {
+      if (pass !== null) showToast('Неверный пароль', true);
+      return;
+    }
+    setAdminSession(true);
   }
+
+  document.getElementById('logoutBtn').style.display = 'block';
   document.getElementById('libraryView').classList.add('hidden');
   document.getElementById('playerView').classList.remove('active');
   document.getElementById('adminPanel').classList.add('active');
   document.getElementById('mainVideo').pause();
   if (document.getElementById('tsAdminList').children.length === 0) addTsRow();
+};
+
+window.adminLogout = function() {
+  setAdminSession(false);
+  document.getElementById('logoutBtn').style.display = 'none';
+  showToast('Вы вышли из админки');
+  showLibrary();
 };
 
 window.switchAdminTab = function(tabName) {
@@ -1420,6 +1570,57 @@ window.switchAdminTab = function(tabName) {
   document.querySelectorAll('.admin-tab-panel').forEach(p => {
     p.classList.toggle('active', p.id === 'tab-' + tabName);
   });
+};
+
+// ===== Видимость =====
+function applyVisibility() {
+  const content = document.getElementById('libraryContent');
+  const locked = document.getElementById('lockedScreen');
+  if (!content || !locked) return;
+
+  // Если скрыто, но пользователь админ — показываем контент
+  if (videosHidden && !isAdminSession()) {
+    content.style.display = 'none';
+    locked.style.display = 'flex';
+  } else {
+    content.style.display = 'block';
+    locked.style.display = 'none';
+  }
+}
+
+onValue(visibilityRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  videosHidden = !!data.hidden;
+
+  const toggle = document.getElementById('visibilityToggle');
+  const title = document.getElementById('visibilityTitle');
+  const desc = document.getElementById('visibilityDesc');
+  if (toggle) {
+    toggle.checked = videosHidden;
+    if (videosHidden) {
+      title.textContent = '🔒 Видео скрыты от всех';
+      title.classList.add('hidden-state');
+      desc.textContent = 'Обычные посетители видят заглушку. Смотреть могут только админы.';
+    } else {
+      title.textContent = '👁 Видео видны всем';
+      title.classList.remove('hidden-state');
+      desc.textContent = 'Обычные посетители могут смотреть видео.';
+    }
+  }
+
+  applyVisibility();
+});
+
+window.toggleVisibility = async function(hidden) {
+  try {
+    await set(visibilityRef, {
+      hidden,
+      updatedAt: Date.now(),
+    });
+    showToast(hidden ? '🔒 Видео скрыты от зрителей' : '👁 Видео снова видны');
+  } catch (err) {
+    showToast('Ошибка: ' + err.message, true);
+  }
 };
 
 document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -1633,10 +1834,14 @@ function renderAdminVideoList(list) {
 let editingVideo = null;
 
 function quickEdit(v) {
-  const pass = prompt('Введите пароль администратора:');
-  if (pass !== ADMIN_PASSWORD) {
-    if (pass !== null) showToast('Неверный пароль', true);
-    return;
+  if (!isAdminSession()) {
+    const pass = prompt('Введите пароль администратора:');
+    if (pass !== ADMIN_PASSWORD) {
+      if (pass !== null) showToast('Неверный пароль', true);
+      return;
+    }
+    setAdminSession(true);
+    document.getElementById('logoutBtn').style.display = 'block';
   }
   document.getElementById('libraryView').classList.add('hidden');
   document.getElementById('playerView').classList.remove('active');
@@ -1861,6 +2066,11 @@ function generateFrameAt(videoUrl, seconds) {
 }
 
 function playVideo(v) {
+  if (videosHidden && !isAdminSession()) {
+    showToast('🔒 Видео скрыто администратором', true);
+    return;
+  }
+
   currentVideo = v;
 
   document.getElementById('libraryView').classList.add('hidden');
@@ -1955,7 +2165,6 @@ function renderTimestampsBlock(timestamps) {
   block.style.display = 'block';
   countEl.textContent = `${timestamps.length} шт.`;
 
-  // 1. Чипсы под плеером
   timestamps.forEach(ts => {
     const seconds = parseTime(ts.time);
     const chip = document.createElement('button');
@@ -1965,7 +2174,6 @@ function renderTimestampsBlock(timestamps) {
     list.appendChild(chip);
   });
 
-  // 2. Полоска с миниатюрами в центре видео
   tsStripInner.innerHTML = '';
   timestamps.forEach((ts, idx) => {
     const seconds = parseTime(ts.time);
@@ -2005,7 +2213,6 @@ function renderTimestampsBlock(timestamps) {
     }
   });
 
-  // 3. Боковая панель
   tsSideList.innerHTML = '';
   timestamps.forEach((ts, idx) => {
     const seconds = parseTime(ts.time);
