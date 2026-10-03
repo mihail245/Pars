@@ -14,7 +14,6 @@
     overflow-x: hidden;
   }
 
-  /* ===== Шапка ===== */
   header {
     display: flex;
     align-items: center;
@@ -82,7 +81,6 @@
 
   main { padding: 20px; max-width: 1400px; margin: 0 auto; }
 
-  /* Панель фильтров */
   .filters-bar {
     display: flex;
     gap: 8px;
@@ -112,7 +110,6 @@
     color: #fff;
   }
 
-  /* ===== Сетка видео ===== */
   .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -213,7 +210,6 @@
   .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
   .action-btn.delete:hover { background: #2a1010; }
 
-  /* ===== Плеер ===== */
   .player-view { display: none; }
   .player-view.active { display: block; }
   .library-view.hidden { display: none; }
@@ -310,7 +306,7 @@
   .loading-spinner.show { opacity: 1; }
   @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-  /* ===== Полоска таймкодов в центре видео ===== */
+  /* ==== Полоска таймкодов в центре видео ==== */
   .ts-strip {
     position: absolute;
     left: 50%;
@@ -393,7 +389,7 @@
     background: #171717;
   }
 
-  /* ===== Боковая панель таймкодов ===== */
+  /* ==== Боковая панель таймкодов ==== */
   .ts-side-panel {
     position: absolute;
     top: 0; right: 0;
@@ -493,7 +489,14 @@
     font-weight: 700;
   }
 
-  /* Контролы */
+  /* В полноэкранном режиме прячем боковую панель и полоску миниатюр */
+  .player-wrap:fullscreen .ts-side-panel,
+  .player-wrap:-webkit-full-screen .ts-side-panel,
+  .player-wrap:fullscreen .ts-strip,
+  .player-wrap:-webkit-full-screen .ts-strip {
+    display: none !important;
+  }
+
   .controls {
     position: absolute; left: 0; right: 0; bottom: 0;
     background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.4) 60%, transparent 100%);
@@ -798,7 +801,6 @@
   }
   .ts-chip .ts-time { font-variant-numeric: tabular-nums; opacity: .85; font-weight: 700; }
 
-  /* ===== Админка ===== */
   .admin-panel { display: none; max-width: 720px; margin: 0 auto; }
   .admin-panel.active { display: block; }
   .admin-panel h2 { margin-bottom: 20px; }
@@ -997,12 +999,10 @@
 
       <div class="loading-spinner" id="loadingSpinner"></div>
 
-      <!-- Полоска таймкодов с миниатюрами (в центре видео) -->
       <div class="ts-strip" id="tsStrip">
         <div class="ts-strip-inner" id="tsStripInner"></div>
       </div>
 
-      <!-- Боковая панель таймкодов -->
       <div class="ts-side-panel" id="tsSidePanel">
         <div class="ts-side-header">
           <h3>⏱ Таймкоды</h3>
@@ -1229,7 +1229,6 @@ const ADMIN_PASSWORD = 'admin123';
 const RESUME_THRESHOLD = 5;
 const RESUME_COMPLETE = 0.95;
 
-// ===== Утилиты =====
 function fmtTime(s) {
   if (!isFinite(s) || s < 0) s = 0;
   s = Math.floor(s);
@@ -1339,9 +1338,7 @@ function getFavorites() {
   try { return JSON.parse(localStorage.getItem('mytube_favs') || '[]'); }
   catch { return []; }
 }
-function setFavorites(arr) {
-  localStorage.setItem('mytube_favs', JSON.stringify(arr));
-}
+function setFavorites(arr) { localStorage.setItem('mytube_favs', JSON.stringify(arr)); }
 function isFavorite(id) { return getFavorites().includes(id); }
 function toggleFavorite(id) {
   const favs = getFavorites();
@@ -1425,13 +1422,11 @@ window.switchAdminTab = function(tabName) {
   });
 };
 
-// ===== Поиск =====
 document.getElementById('searchInput').addEventListener('input', (e) => {
   searchQuery = e.target.value.toLowerCase().trim();
   renderVideoGrid();
 });
 
-// ===== Фильтры по тегам =====
 function renderFiltersBar() {
   const bar = document.getElementById('filtersBar');
   const tags = new Set();
@@ -1459,20 +1454,17 @@ function renderFiltersBar() {
   bar.style.display = (sortedTags.length === 0 && !showFavoritesOnly) ? 'none' : 'flex';
 }
 
-// ===== Избранное =====
 window.toggleFavoritesFilter = function() {
   showFavoritesOnly = !showFavoritesOnly;
   document.getElementById('favoritesBtn').classList.toggle('btn-primary', showFavoritesOnly);
   renderVideoGrid();
 };
 
-// ===== Рендер сетки =====
 function renderVideoGrid() {
   const videoGrid = document.getElementById('videoGrid');
   const emptyState = document.getElementById('emptyState');
 
   let list = allVideos.slice();
-
   if (showFavoritesOnly) list = list.filter(v => isFavorite(v.id));
   if (activeTagFilter !== '__all__') {
     list = list.filter(v => Array.isArray(v.tags) && v.tags.includes(activeTagFilter));
@@ -1575,7 +1567,6 @@ function renderVideoGrid() {
   });
 }
 
-// ===== Firebase =====
 onValue(videosRef, (snapshot) => {
   const data = snapshot.val() || {};
   allVideos = Object.entries(data).map(([id, v]) => ({ id, ...v }))
@@ -1719,7 +1710,6 @@ window.saveEdit = async function() {
   }
 };
 
-// ===== Таймкоды формы =====
 window.addTsRow = function(time = '', label = '') {
   const list = document.getElementById('tsAdminList');
   const row = document.createElement('div');
@@ -1860,6 +1850,7 @@ function generateFrameAt(videoUrl, seconds) {
         clearTimeout(timeout);
         finish(dataUrl);
       } catch (e) {
+        console.warn('Frame extract blocked by CORS:', e);
         clearTimeout(timeout);
         finish(null);
       }
@@ -1947,7 +1938,6 @@ window.resumeFromSaved = function() {
   hideResumeToast();
 };
 
-// ===== Рендер таймкодов (3 места) =====
 function renderTimestampsBlock(timestamps) {
   const block = document.getElementById('timestampsBlock');
   const list = document.getElementById('timestampsList');
@@ -1984,7 +1974,7 @@ function renderTimestampsBlock(timestamps) {
     thumb.dataset.index = idx;
     thumb.innerHTML = `
       <div class="ts-thumb-canvas">
-        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#444;font-size:14px;">⏳</div>
+        <div class="thumb-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#444;font-size:14px;">⏳</div>
         <span class="ts-thumb-time">${escapeHtml(ts.time)}</span>
       </div>
       <div class="ts-thumb-label">${escapeHtml(ts.label)}</div>
@@ -1998,17 +1988,19 @@ function renderTimestampsBlock(timestamps) {
     const videoUrl = currentVideo?.url;
     if (videoUrl && !getYouTubeId(videoUrl) && seconds !== null) {
       generateFrameAt(videoUrl, seconds).then(dataUrl => {
-        if (!dataUrl) return;
         const canvasWrap = thumb.querySelector('.ts-thumb-canvas');
-        const img = document.createElement('img');
-        img.src = dataUrl;
-        img.alt = '';
-        canvasWrap.innerHTML = '';
-        canvasWrap.appendChild(img);
-        const timeTag = document.createElement('span');
-        timeTag.className = 'ts-thumb-time';
-        timeTag.textContent = ts.time;
-        canvasWrap.appendChild(timeTag);
+        const placeholder = canvasWrap.querySelector('.thumb-placeholder');
+        if (dataUrl) {
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = '';
+          if (placeholder) placeholder.remove();
+          canvasWrap.insertBefore(img, canvasWrap.firstChild);
+        } else if (placeholder) {
+          placeholder.textContent = '🎬';
+          placeholder.style.color = '#666';
+          placeholder.title = 'Превью недоступно (CORS)';
+        }
       });
     }
   });
@@ -2021,7 +2013,7 @@ function renderTimestampsBlock(timestamps) {
     item.className = 'ts-side-item';
     item.dataset.index = idx;
     item.innerHTML = `
-      <div class="ts-side-thumb-wrap">⏳</div>
+      <div class="ts-side-thumb-wrap"><span class="thumb-placeholder">⏳</span></div>
       <div class="ts-side-item-info">
         <div class="ts-side-item-label">${escapeHtml(ts.label)}</div>
         <div class="ts-side-item-time">${escapeHtml(ts.time)}</div>
@@ -2033,13 +2025,18 @@ function renderTimestampsBlock(timestamps) {
     const videoUrl = currentVideo?.url;
     if (videoUrl && !getYouTubeId(videoUrl) && seconds !== null) {
       generateFrameAt(videoUrl, seconds).then(dataUrl => {
-        if (!dataUrl) return;
         const wrap = item.querySelector('.ts-side-thumb-wrap');
-        const img = document.createElement('img');
-        img.src = dataUrl;
-        img.alt = '';
-        wrap.innerHTML = '';
-        wrap.appendChild(img);
+        const placeholder = wrap.querySelector('.thumb-placeholder');
+        if (dataUrl) {
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = '';
+          wrap.innerHTML = '';
+          wrap.appendChild(img);
+        } else if (placeholder) {
+          placeholder.textContent = '🎬';
+          placeholder.style.color = '#666';
+        }
       });
     }
   });
@@ -2099,7 +2096,6 @@ function startTsTracker() {
   }, 500);
 }
 
-// ===== Управление боковой панелью =====
 const tsBtn = document.getElementById('tsBtn');
 function toggleTsPanel() {
   if (!currentTimestamps || currentTimestamps.length === 0) {
@@ -2115,7 +2111,6 @@ tsBtn.onclick = (e) => {
   toggleTsPanel();
 };
 
-// ===== Маркеры таймкодов на прогресс-баре =====
 function renderTsMarkers(timestamps) {
   tsMarkersLayer.innerHTML = '';
   if (!timestamps || timestamps.length === 0) return;
@@ -2226,7 +2221,6 @@ mainVideo.onerror = () => {
   showToast('Не удалось воспроизвести. Ссылка могла устареть или быть привязанной к другому IP.', true);
 };
 
-// ===== DRAG прогресс-бара =====
 let dragging = false;
 let wasPlayingBeforeDrag = false;
 
@@ -2300,7 +2294,6 @@ progressWrap.addEventListener('mousemove', (e) => {
   if (mainVideo.duration) timeTooltip.textContent = fmtTime(ratio * mainVideo.duration);
 });
 
-// ===== Двойной тап =====
 let lastTapTime = 0;
 const DOUBLE_TAP_DELAY = 300;
 const SEEK_AMOUNT = 10;
@@ -2369,7 +2362,6 @@ playerWrap.addEventListener('mouseleave', () => {
   if (!dragging) tsStrip.classList.remove('show');
 });
 
-// ===== Громкость =====
 function updateVolumeIcon() {
   muteBtn.innerHTML = (mainVideo.muted || mainVideo.volume === 0) ? ICON_MUTE : ICON_VOL;
 }
@@ -2383,10 +2375,13 @@ volumeSlider.oninput = () => {
 };
 updateVolumeIcon();
 
-// ===== Fullscreen =====
 fullBtn.onclick = async () => {
   try {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      tsSidePanel.classList.remove('open');
+      tsBtn.classList.remove('active');
+      tsStrip.classList.remove('show');
+
       if (playerWrap.requestFullscreen) await playerWrap.requestFullscreen();
       else if (playerWrap.webkitRequestFullscreen) playerWrap.webkitRequestFullscreen();
     } else {
@@ -2396,7 +2391,6 @@ fullBtn.onclick = async () => {
   } catch (err) {}
 };
 
-// ===== PiP =====
 pipBtn.onclick = async () => {
   try {
     if (document.pictureInPictureElement) {
@@ -2411,7 +2405,6 @@ pipBtn.onclick = async () => {
   }
 };
 
-// ===== Меню скорости =====
 const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 let currentSpeed = 1;
 
@@ -2470,7 +2463,6 @@ document.getElementById('volumeSlider2').addEventListener('input', (e) => {
   updateVolumeIcon();
 });
 
-// ===== Клавиатура =====
 document.addEventListener('keydown', (e) => {
   if (!playerView.classList.contains('active')) return;
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -2512,7 +2504,6 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-// ===== Админка =====
 window.addVideo = async function() {
   const title = document.getElementById('videoTitle').value.trim();
   const url = document.getElementById('videoUrl').value.trim();
@@ -2584,7 +2575,6 @@ window.deleteAllVideos = async function() {
   }
 };
 
-// Инициализация
 addTsRow();
 renderSpeedMenu();
 </script>
