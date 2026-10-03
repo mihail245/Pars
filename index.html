@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>MyTube — прототип</title>
+<title>YouTube</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
@@ -210,7 +210,6 @@
   .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
   .action-btn.delete:hover { background: #2a1010; }
 
-  /* Экран блокировки */
   .locked-screen {
     display: flex;
     flex-direction: column;
@@ -952,7 +951,6 @@
   .edit-section .btn-row { display: flex; gap: 10px; margin-top: 20px; }
   .edit-section .btn-row .btn { flex: 1; padding: 12px; }
 
-  /* Карточка видимости */
   .visibility-card {
     display: flex;
     align-items: center;
@@ -978,7 +976,6 @@
     line-height: 1.4;
   }
 
-  /* Переключатель */
   .switch {
     position: relative;
     display: inline-block;
@@ -1056,7 +1053,7 @@
 <header>
   <div class="logo" onclick="showLibrary()">
     <div class="logo-icon">▶</div>
-    <span>MyTube</span>
+    <span>YouTube</span>
   </div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Поиск видео...">
@@ -1241,7 +1238,14 @@
             <span id="tsCounter">0 шт.</span>
           </div>
           <div class="ts-admin-list" id="tsAdminList"></div>
-          <button class="ts-add-btn" onclick="addTsRow()">+ Добавить таймкод</button>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="ts-add-btn" style="flex:1; margin-top:0;" onclick="addTsRow()">+ Добавить вручную</button>
+            <button class="ts-add-btn" style="flex:1; margin-top:0; color:#a78bfa; border-color:#4c3a7a;" onclick="openJsonUpload()">📂 Загрузить JSON</button>
+          </div>
+          <input type="file" id="tsJsonInput" accept=".json,application/json" style="display:none;">
+          <small style="color:#666; font-size:12px; display:block; margin-top:8px;">
+            JSON: <code style="color:#888;">[{"start":"00:00:14","seconds":14,"title":"Разговоры"}]</code>
+          </small>
         </div>
       </div>
 
@@ -1290,7 +1294,11 @@
               <span id="editTsCounter">0 шт.</span>
             </div>
             <div class="ts-admin-list" id="editTsList"></div>
-            <button class="ts-add-btn" onclick="addEditTsRow()">+ Добавить таймкод</button>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+              <button class="ts-add-btn" style="flex:1; margin-top:0;" onclick="addEditTsRow()">+ Добавить вручную</button>
+              <button class="ts-add-btn" style="flex:1; margin-top:0; color:#a78bfa; border-color:#4c3a7a;" onclick="openEditJsonUpload()">📂 Загрузить JSON</button>
+            </div>
+            <input type="file" id="editTsJsonInput" accept=".json,application/json" style="display:none;">
           </div>
         </div>
 
@@ -1354,7 +1362,6 @@ const ADMIN_PASSWORD = 'admin123';
 const RESUME_THRESHOLD = 5;
 const RESUME_COMPLETE = 0.95;
 
-// ===== Флаг админской сессии =====
 function isAdminSession() {
   return sessionStorage.getItem('mytube_admin') === '1';
 }
@@ -1363,7 +1370,6 @@ function setAdminSession(on) {
   else sessionStorage.removeItem('mytube_admin');
 }
 
-// ===== Утилиты =====
 function fmtTime(s) {
   if (!isFinite(s) || s < 0) s = 0;
   s = Math.floor(s);
@@ -1416,7 +1422,6 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-// ===== Генерация превью из середины =====
 const thumbCache = new Map();
 
 function generateMidThumbnail(url) {
@@ -1468,7 +1473,6 @@ function generateMidThumbnail(url) {
   });
 }
 
-// ===== LocalStorage =====
 function getFavorites() {
   try { return JSON.parse(localStorage.getItem('mytube_favs') || '[]'); }
   catch { return []; }
@@ -1509,14 +1513,12 @@ function clearWatchProgress(id) {
   } catch (e) {}
 }
 
-// ===== State =====
 let allVideos = [];
 let activeTagFilter = '__all__';
 let showFavoritesOnly = false;
 let searchQuery = '';
 let videosHidden = false;
 
-// ===== Навигация =====
 window.showLibrary = function() {
   document.getElementById('libraryView').classList.remove('hidden');
   document.getElementById('playerView').classList.remove('active');
@@ -1572,13 +1574,11 @@ window.switchAdminTab = function(tabName) {
   });
 };
 
-// ===== Видимость =====
 function applyVisibility() {
   const content = document.getElementById('libraryContent');
   const locked = document.getElementById('lockedScreen');
   if (!content || !locked) return;
 
-  // Если скрыто, но пользователь админ — показываем контент
   if (videosHidden && !isAdminSession()) {
     content.style.display = 'none';
     locked.style.display = 'flex';
@@ -1830,7 +1830,6 @@ function renderAdminVideoList(list) {
   });
 }
 
-// ===== Редактирование =====
 let editingVideo = null;
 
 function quickEdit(v) {
@@ -2000,6 +1999,100 @@ function clearEditTsList() {
   updateEditTsCounter();
 }
 
+// ===== Загрузка таймкодов из JSON =====
+function normalizeTimestamp(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  let seconds = null;
+  if (typeof item.seconds === 'number' && isFinite(item.seconds)) {
+    seconds = item.seconds;
+  } else if (typeof item.start === 'string') {
+    seconds = parseTime(item.start);
+  } else if (typeof item.time === 'string') {
+    seconds = parseTime(item.time);
+  }
+
+  if (seconds === null || seconds < 0) return null;
+
+  const label = String(item.title || item.label || item.category || '').trim();
+  if (!label) return null;
+
+  return {
+    time: fmtTime(seconds),
+    label,
+  };
+}
+
+window.openJsonUpload = function() {
+  document.getElementById('tsJsonInput').click();
+};
+window.openEditJsonUpload = function() {
+  document.getElementById('editTsJsonInput').click();
+};
+
+document.getElementById('tsJsonInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  await loadTimestampsFromFile(file, 'tsAdminList', updateTsCounter);
+  e.target.value = '';
+});
+
+document.getElementById('editTsJsonInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  await loadTimestampsFromFile(file, 'editTsList', updateEditTsCounter);
+  e.target.value = '';
+});
+
+async function loadTimestampsFromFile(file, listId, updateCounterFn) {
+  try {
+    const text = await file.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      showToast('❌ Неверный JSON файл: ' + err.message, true);
+      return;
+    }
+
+    let items = Array.isArray(data) ? data : (data.timestamps || data.items || []);
+    if (!Array.isArray(items)) {
+      showToast('❌ JSON должен содержать массив таймкодов', true);
+      return;
+    }
+
+    const normalized = items
+      .map(normalizeTimestamp)
+      .filter(Boolean)
+      .sort((a, b) => parseTime(a.time) - parseTime(b.time));
+
+    if (normalized.length === 0) {
+      showToast('❌ В файле нет валидных таймкодов', true);
+      return;
+    }
+
+    const hasExisting = document.getElementById(listId).children.length > 0;
+    let replace = false;
+    if (hasExisting) {
+      replace = confirm(`Загружено ${normalized.length} таймкодов.\n\nOK — заменить существующие\nОтмена — добавить к текущим`);
+    }
+
+    if (replace) {
+      document.getElementById(listId).innerHTML = '';
+    }
+
+    const addRowFn = listId === 'tsAdminList' ? addTsRow : addEditTsRow;
+    normalized.forEach(ts => addRowFn(ts.time, ts.label));
+
+    updateCounterFn();
+    showToast(`✅ Загружено ${normalized.length} таймкодов`);
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Ошибка чтения файла: ' + err.message, true);
+  }
+}
+
 // ===== Плеер =====
 const mainVideo = document.getElementById('mainVideo');
 const playerView = document.getElementById('playerView');
@@ -2015,7 +2108,6 @@ let currentVideo = null;
 let currentTimestamps = [];
 let pendingResumeTime = null;
 
-// ===== Кэш кадров =====
 const frameCache = new Map();
 
 function generateFrameAt(videoUrl, seconds) {
