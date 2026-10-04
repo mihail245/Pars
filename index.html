@@ -139,6 +139,8 @@
   .action-btn:hover { background: var(--bg-3); color: var(--text); }
   .action-btn.edit { color: #38bdf8; border-color: #1e4054; }
   .action-btn.delete { color: #ff6b6b; border-color: #5a2020; }
+  .action-btn.tg { color: #29b6f6; border-color: #1c4a63; }
+  .action-btn.tg:hover { background: #0d2030; }
 
   /* Locked */
   .locked-screen {
@@ -311,6 +313,7 @@
   }
   .ctrl-btn:hover { background: rgba(255,255,255,.12); }
   .ctrl-btn.active { background: rgba(255,0,0,.3); }
+  .ctrl-btn.tg-active { background: rgba(41,182,246,.25); }
   .ctrl-btn svg { width: 22px; height: 22px; fill: #fff; display: block; }
   .ctrl-btn.small svg { width: 18px; height: 18px; }
 
@@ -488,6 +491,7 @@
   }
   .toast.error { border-left-color: #f44336; }
   .toast.info { border-left-color: #38bdf8; }
+  .toast.tg { border-left-color: #29b6f6; }
   @keyframes toast-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .toast.fade-out { animation: toast-out .25s ease forwards; }
   @keyframes toast-out { to { opacity: 0; transform: translateY(20px); } }
@@ -697,6 +701,10 @@
 
           <button class="ctrl-btn" id="tsBtn" title="Таймкоды">
             <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+          </button>
+
+          <button class="ctrl-btn" id="telegramBtn" title="Поделиться в Telegram">
+            <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
           </button>
 
           <button class="ctrl-btn" id="mirrorBtn" title="Отзеркалить">
@@ -928,13 +936,23 @@ function isMobile() { return window.matchMedia('(max-width: 700px)').matches; }
 function showToast(msg, type = 'success') {
   const container = document.getElementById('toastContainer');
   const t = document.createElement('div');
-  t.className = 'toast' + (type === 'error' ? ' error' : type === 'info' ? ' info' : '');
+  t.className = 'toast' + (type === 'error' ? ' error' : type === 'info' ? ' info' : type === 'tg' ? ' tg' : '');
   t.textContent = msg;
   container.appendChild(t);
   setTimeout(() => {
     t.classList.add('fade-out');
     setTimeout(() => t.remove(), 250);
   }, 2400);
+}
+
+/* ============ Telegram share ============ */
+function shareToTelegram(v) {
+  if (!v) return;
+  const url = location.origin + location.pathname + '?v=' + v.id;
+  const text = v.title;
+  const tgUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
+  window.open(tgUrl, '_blank', 'noopener,noreferrer');
+  showToast('✈ Открываем Telegram…', 'tg');
 }
 
 /* ============ Thumbnails ============ */
@@ -1035,6 +1053,7 @@ function renderVideoGrid() {
           <button class="action-btn edit">✎</button>
           <button class="action-btn delete">✕</button>
           <button class="action-btn hide-btn">${isHidden ? '👁' : '🚫'}</button>
+          <button class="action-btn tg" title="Поделиться в Telegram">✈</button>
         </div>
       </div>
     `;
@@ -1054,6 +1073,10 @@ function renderVideoGrid() {
       const h = toggleHidden(v.id);
       showToast(h ? '🚫 Скрыто' : '👁 Показано', 'info');
       renderVideoGrid();
+    };
+    card.querySelector('.action-btn.tg').onclick = (e) => {
+      e.stopPropagation();
+      shareToTelegram(v);
     };
 
     grid.appendChild(card);
@@ -1674,6 +1697,7 @@ const settingsMenu = document.getElementById('settingsMenu');
 const mirrorBtn = document.getElementById('mirrorBtn');
 const cinemaBtn = document.getElementById('cinemaBtn');
 const fpsBtn = document.getElementById('fpsBtn');
+const telegramBtn = document.getElementById('telegramBtn');
 const prevFrameBtn = document.getElementById('prevFrameBtn');
 const nextFrameBtn = document.getElementById('nextFrameBtn');
 const back5Btn = document.getElementById('back5Btn');
@@ -1958,6 +1982,16 @@ fpsBtn.onclick = () => {
   } else if (fpsInterval) { clearInterval(fpsInterval); fpsInterval = null; }
 };
 
+/* Telegram button in player */
+if (telegramBtn) {
+  telegramBtn.onclick = () => {
+    if (!currentVideo) return;
+    telegramBtn.classList.add('tg-active');
+    setTimeout(() => telegramBtn.classList.remove('tg-active'), 400);
+    shareToTelegram(currentVideo);
+  };
+}
+
 /* Frame step */
 function stepFrame(dir) { mainVideo.pause(); try { mainVideo.currentTime = Math.max(0, mainVideo.currentTime + dir / 30); } catch {} }
 prevFrameBtn.onclick = () => stepFrame(-1);
@@ -1980,6 +2014,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 't' || e.key === 'T' || e.key === 'е') { toggleTsPanel(); return; }
   if (e.key === 'x' || e.key === 'X' || e.key === 'ч') { mirrorBtn.click(); return; }
   if (e.key === 'i' || e.key === 'I' || e.key === 'ш') { fpsBtn.click(); return; }
+  if (e.key === 'g' || e.key === 'G' || e.key === 'п') { if (telegramBtn) telegramBtn.click(); return; }
 });
 
 /* Add video */
