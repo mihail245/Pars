@@ -107,7 +107,6 @@
     backdrop-filter: blur(4px); z-index: 2; position: relative;
   }
   .video-card:hover .video-thumb .play-overlay { opacity: 1; }
-  .video-thumb video.preview-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
 
   .duration-badge {
     position: absolute; bottom: 6px; right: 6px;
@@ -227,15 +226,6 @@
   .volume-osd .bar { width: 80px; height: 4px; background: rgba(255,255,255,.25); border-radius: 2px; overflow: hidden; }
   .volume-osd .bar > div { height: 100%; background: #fff; }
 
-  .ab-indicator {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(74,222,128,.9); color: #001;
-    padding: 6px 12px; border-radius: 8px;
-    font-size: 12px; font-weight: 700;
-    display: none; z-index: 25;
-  }
-  .ab-indicator.show { display: block; }
-
   .fps-counter {
     position: absolute; top: 16px; right: 16px;
     background: rgba(0,0,0,.75); color: #0f0;
@@ -292,7 +282,6 @@
   .progress-wrap:hover .progress-bg, .progress-wrap.dragging .progress-bg { height: 6px; }
   .progress-buffer { position: absolute; top: 0; left: 0; height: 100%; background: rgba(255,255,255,.35); border-radius: 2px; width: 0%; }
   .progress-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--accent); border-radius: 2px; z-index: 2; }
-  .progress-ab { position: absolute; top: 0; height: 100%; background: rgba(74,222,128,.5); z-index: 1; display: none; }
   .ts-marker { position: absolute; top: 50%; width: 3px; height: 12px; background: #ffcc00; border-radius: 2px; transform: translate(-50%, -50%); pointer-events: none; z-index: 3; box-shadow: 0 0 4px rgba(255, 204, 0, 0.6); }
   .progress-thumb {
     position: absolute; width: 14px; height: 14px; background: var(--accent);
@@ -333,7 +322,7 @@
   .volume-wrap:hover .volume-slider, .volume-wrap:focus-within .volume-slider { width: 70px; opacity: 1; margin: 0 6px; }
 
   /* Menus */
-  .speed-menu, .settings-menu, .more-menu {
+  .speed-menu, .settings-menu {
     position: absolute; bottom: 70px; right: 60px;
     background: #1c1c1c; border: 1px solid #333;
     border-radius: 12px; padding: 6px;
@@ -342,8 +331,7 @@
     z-index: 30; max-height: 70vh; overflow-y: auto;
   }
   .settings-menu { right: 90px; min-width: 240px; padding: 10px; }
-  .more-menu { right: 20px; min-width: 200px; }
-  .speed-menu.show, .settings-menu.show, .more-menu.show { display: block; }
+  .speed-menu.show, .settings-menu.show { display: block; }
   .speed-menu-item {
     padding: 10px 14px; font-size: 14px; color: #ddd;
     cursor: pointer; border-radius: 8px;
@@ -368,8 +356,6 @@
     min-height: 44px;
   }
   .speed-btn:hover { background: rgba(255,255,255,.12); }
-
-  .mob-more-btn { display: none; }
 
   /* Fullscreen */
   .player-wrap:fullscreen, .player-wrap:-webkit-full-screen {
@@ -527,17 +513,10 @@
     .action-btn { padding: 5px 8px; font-size: 11px; min-height: 28px; }
 
     .controls { padding: 40px 8px 8px; }
-    .ctrl-row {
-      display: grid;
-      grid-template-columns: auto auto auto 1fr auto auto auto;
-      gap: 0;
-      min-height: 44px;
-    }
-    .ctrl-row .ctrl-btn { min-width: 40px; min-height: 40px; padding: 8px; }
+    .ctrl-row { gap: 2px; min-height: 44px; }
+    .ctrl-row .ctrl-btn { min-width: 38px; min-height: 38px; padding: 6px; }
     .ctrl-row .ctrl-btn svg { width: 20px; height: 20px; }
     .ctrl-row .ctrl-btn.small svg { width: 18px; height: 18px; }
-    .ctrl-row .desktop-only { display: none !important; }
-    .mob-more-btn { display: flex !important; }
 
     .time-display { font-size: 11px; padding: 0 4px; }
 
@@ -557,7 +536,7 @@
     }
     .ts-side-header { padding-top: 18px; }
 
-    .speed-menu, .settings-menu, .more-menu {
+    .speed-menu, .settings-menu {
       left: 8px; right: 8px; bottom: 76px; min-width: auto;
       max-height: 60vh;
     }
@@ -632,7 +611,6 @@
         <span id="volPct">100%</span>
       </div>
 
-      <div class="ab-indicator" id="abIndicator">A-B</div>
       <div class="fps-counter" id="fpsCounter">FPS</div>
 
       <div class="seek-indicator left" id="seekBack">
@@ -674,23 +652,12 @@
           <input type="text" id="customSpeedInput" placeholder="например 1.75">
           <button onclick="applyCustomSpeed()">OK</button>
         </div>
-        <div style="padding:6px 4px;">
-          <button class="btn" style="width:100%; justify-content:center;" onclick="toggleAbRepeat()">A-B повтор</button>
-        </div>
-      </div>
-      <div class="more-menu" id="moreMenu">
-        <div class="menu-title">Ещё</div>
-        <div class="speed-menu-item" data-action="mirror">🪞 Отзеркалить</div>
-        <div class="speed-menu-item" data-action="pip">🖼 Картинка-в-картинке</div>
-        <div class="speed-menu-item" data-action="cinema">🎬 Кинотеатр</div>
-        <div class="speed-menu-item" data-action="fps">📊 Показать FPS</div>
       </div>
 
       <div class="controls" id="controls">
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-bg">
             <div class="progress-buffer" id="progressBuffer"></div>
-            <div class="progress-ab" id="progressAb"></div>
             <div class="progress-fill" id="progressFill"></div>
             <div id="tsMarkersLayer"></div>
           </div>
@@ -701,10 +668,10 @@
         <div class="ctrl-row">
           <button class="ctrl-btn" id="playBtn" title="Play/Pause"></button>
 
-          <button class="ctrl-btn small desktop-only" id="prevFrameBtn" title="Кадр назад">
+          <button class="ctrl-btn small" id="prevFrameBtn" title="Кадр назад">
             <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg>
           </button>
-          <button class="ctrl-btn small desktop-only" id="nextFrameBtn" title="Кадр вперёд">
+          <button class="ctrl-btn small" id="nextFrameBtn" title="Кадр вперёд">
             <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6z"/></svg>
           </button>
 
@@ -723,28 +690,32 @@
 
           <button class="speed-btn" id="speedBtn">1x</button>
 
-          <div class="volume-wrap desktop-only">
+          <div class="volume-wrap">
             <button class="ctrl-btn" id="muteBtn"></button>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
           </div>
 
-          <button class="ctrl-btn desktop-only" id="tsBtn" title="Таймкоды">
+          <button class="ctrl-btn" id="tsBtn" title="Таймкоды">
             <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
           </button>
 
-          <button class="ctrl-btn desktop-only" id="mirrorBtn" title="Отзеркалить">
+          <button class="ctrl-btn" id="mirrorBtn" title="Отзеркалить">
             <svg viewBox="0 0 24 24"><path d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z"/></svg>
           </button>
 
-          <button class="ctrl-btn desktop-only" id="settingsBtn" title="Настройки">
-            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-          </button>
-          <button class="ctrl-btn desktop-only" id="pipBtn" title="PiP">
-            <svg viewBox="0 0 24 24"><path d="M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>
+          <button class="ctrl-btn" id="cinemaBtn" title="Кинотеатр">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
           </button>
 
-          <button class="ctrl-btn mob-more-btn" id="mobMoreBtn" title="Ещё">
-            <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          <button class="ctrl-btn" id="fpsBtn" title="FPS">
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+          </button>
+
+          <button class="ctrl-btn" id="settingsBtn" title="Настройки">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </button>
+          <button class="ctrl-btn" id="pipBtn" title="PiP">
+            <svg viewBox="0 0 24 24"><path d="M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>
           </button>
 
           <button class="ctrl-btn" id="fullBtn" title="Полный экран">
@@ -897,14 +868,13 @@ const ADMIN_PASSWORD = 'admin123';
 /* ============ LocalStorage ============ */
 const LS = {
   get(k, def) { try { return JSON.parse(localStorage.getItem('mytube_' + k)) ?? def; } catch { return def; } },
-  set(k, v) { try { localStorage.setItem('mytube_' + k, JSON.stringify(v)); } catch {} },
-  del(k) { localStorage.removeItem('mytube_' + k); }
+  set(k, v) { try { localStorage.setItem('mytube_' + k, JSON.stringify(v)); } catch {} }
 };
 
 let positions = LS.get('positions', {});
 let hiddenVideos = LS.get('hiddenVideos', []);
 let showHiddenOnly = false;
-let currentSpeed = LS.get('speed', 1);
+let currentSpeed = 1;
 
 function savePositions() { LS.set('positions', positions); }
 function saveHidden() { LS.set('hiddenVideos', hiddenVideos); }
@@ -1085,34 +1055,6 @@ function renderVideoGrid() {
       showToast(h ? '🚫 Скрыто' : '👁 Показано', 'info');
       renderVideoGrid();
     };
-
-    if (v.url && !getYouTubeId(v.url) && !isMobile()) {
-      const thumbEl = card.querySelector('.video-thumb');
-      let previewVideo = null, hoverTimer = null, hoverTimeout = null;
-      card.addEventListener('mouseenter', () => {
-        hoverTimer = setTimeout(() => {
-          if (!previewVideo) {
-            previewVideo = document.createElement('video');
-            previewVideo.className = 'preview-video';
-            previewVideo.src = v.url;
-            previewVideo.muted = true;
-            previewVideo.playsInline = true;
-            previewVideo.preload = 'metadata';
-            thumbEl.appendChild(previewVideo);
-          }
-          const pos2 = positions[v.id]?.t || 0;
-          try { previewVideo.currentTime = pos2 + 5; } catch {}
-          previewVideo.play().catch(() => {});
-        }, 800);
-        hoverTimeout = setTimeout(() => {
-          if (previewVideo) { previewVideo.pause(); previewVideo.remove(); previewVideo = null; }
-        }, 5000);
-      });
-      card.addEventListener('mouseleave', () => {
-        clearTimeout(hoverTimer); clearTimeout(hoverTimeout);
-        if (previewVideo) { previewVideo.pause(); previewVideo.remove(); previewVideo = null; }
-      });
-    }
 
     grid.appendChild(card);
   });
@@ -1517,7 +1459,6 @@ const tsSideList = document.getElementById('tsSideList');
 let currentVideo = null;
 let currentTimestamps = [];
 let currentTimeFormat = 'normal';
-let abStart = null, abEnd = null, abLooping = false;
 let showFps = false;
 let fpsInterval = null;
 
@@ -1558,7 +1499,6 @@ function playVideo(v, opts = {}) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   currentTimestamps = Array.isArray(v.timestamps) ? v.timestamps : [];
   renderTimestampsBlock(currentTimestamps);
-  resetAB();
 
   const ytId = getYouTubeId(v.url);
   document.querySelectorAll('.player-view iframe').forEach(f => f.remove());
@@ -1567,8 +1507,8 @@ function playVideo(v, opts = {}) {
   mainVideo.querySelectorAll('source').forEach(s => s.remove());
   tsSidePanel.classList.remove('open');
   tsBtn.classList.remove('active');
-  mainVideo.volume = LS.get('volume', 1);
-  brightnessOverlay.style.opacity = (100 - LS.get('brightness', 100)) / 100 * 0.8;
+  mainVideo.volume = 1;
+  brightnessOverlay.style.opacity = 0;
 
   if (ytId) {
     mainVideo.style.display = 'none';
@@ -1716,7 +1656,6 @@ const durTimeEl = document.getElementById('durTime');
 const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
 const progressBuffer = document.getElementById('progressBuffer');
-const progressAb = document.getElementById('progressAb');
 const progressThumb = document.getElementById('progressThumb');
 const timeTooltip = document.getElementById('timeTooltip');
 const muteBtn = document.getElementById('muteBtn');
@@ -1732,18 +1671,17 @@ const seekBack = document.getElementById('seekBack');
 const seekFwd = document.getElementById('seekFwd');
 const speedMenu = document.getElementById('speedMenu');
 const settingsMenu = document.getElementById('settingsMenu');
-const moreMenu = document.getElementById('moreMenu');
 const mirrorBtn = document.getElementById('mirrorBtn');
+const cinemaBtn = document.getElementById('cinemaBtn');
+const fpsBtn = document.getElementById('fpsBtn');
 const prevFrameBtn = document.getElementById('prevFrameBtn');
 const nextFrameBtn = document.getElementById('nextFrameBtn');
 const back5Btn = document.getElementById('back5Btn');
 const fwd5Btn = document.getElementById('fwd5Btn');
-const mobMoreBtn = document.getElementById('mobMoreBtn');
 const volumeOsd = document.getElementById('volumeOsd');
 const volBar = document.getElementById('volBar');
 const volPct = document.getElementById('volPct');
 const volIcon = document.getElementById('volIcon');
-const abIndicator = document.getElementById('abIndicator');
 const fpsCounter = document.getElementById('fpsCounter');
 
 const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
@@ -1784,9 +1722,6 @@ mainVideo.ontimeupdate = () => {
   const pct = dur ? (cur / dur) * 100 : 0;
   progressFill.style.width = pct + '%';
   progressThumb.style.left = pct + '%';
-  if (abLooping && abEnd !== null && cur >= abEnd) {
-    mainVideo.currentTime = abStart;
-  }
 };
 
 setInterval(() => {
@@ -1869,7 +1804,7 @@ progressWrap.addEventListener('mousemove', (e) => {
 let lastTapTime = 0;
 const DOUBLE_TAP_DELAY = 300;
 function handlePlayerTap(e) {
-  if (e.target.closest('.controls, .speed-menu, .settings-menu, .more-menu, .ts-side-panel')) return;
+  if (e.target.closest('.controls, .speed-menu, .settings-menu, .ts-side-panel')) return;
   const now = Date.now();
   const rect = playerWrap.getBoundingClientRect();
   const x = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - rect.left;
@@ -1894,27 +1829,6 @@ function togglePlayWithIcon() {
 }
 playerWrap.addEventListener('click', handlePlayerTap);
 
-/* Swipe on player */
-let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
-playerWrap.addEventListener('touchstart', (e) => {
-  if (e.target.closest('.controls, .ts-side-panel, .speed-menu, .settings-menu, .more-menu')) return;
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-  touchStartTime = Date.now();
-}, { passive: true });
-playerWrap.addEventListener('touchend', (e) => {
-  if (!touchStartX) return;
-  const dx = (e.changedTouches[0]?.clientX || 0) - touchStartX;
-  const dy = (e.changedTouches[0]?.clientY || 0) - touchStartY;
-  const dt = Date.now() - touchStartTime;
-  touchStartX = 0; touchStartY = 0;
-  if (dt > 500 || Math.abs(dy) > 60) return;
-  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-    if (dx > 0) { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); showSeekIndicator('fwd'); }
-    else { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); showSeekIndicator('back'); }
-  }
-});
-
 /* Volume + OSD */
 function showVolumeOsd() {
   const v = mainVideo.muted ? 0 : mainVideo.volume;
@@ -1932,7 +1846,6 @@ muteBtn.onclick = () => { mainVideo.muted = !mainVideo.muted; updateVolumeIcon()
 volumeSlider.oninput = () => {
   mainVideo.volume = parseFloat(volumeSlider.value);
   mainVideo.muted = mainVideo.volume === 0;
-  LS.set('volume', mainVideo.volume);
   updateVolumeIcon(); showVolumeOsd();
   document.getElementById('volumeSlider2').value = mainVideo.volume * 100;
   document.getElementById('volumeVal').textContent = Math.round(mainVideo.volume * 100) + '%';
@@ -1944,7 +1857,6 @@ document.getElementById('brightnessSlider').addEventListener('input', (e) => {
   const val = parseInt(e.target.value);
   document.getElementById('brightnessVal').textContent = val + '%';
   brightnessOverlay.style.opacity = (100 - val) / 100 * 0.8;
-  LS.set('brightness', val);
 });
 document.getElementById('volumeSlider2').addEventListener('input', (e) => {
   const val = parseInt(e.target.value);
@@ -1952,7 +1864,6 @@ document.getElementById('volumeSlider2').addEventListener('input', (e) => {
   mainVideo.volume = val / 100;
   mainVideo.muted = mainVideo.volume === 0;
   volumeSlider.value = mainVideo.volume;
-  LS.set('volume', mainVideo.volume);
   updateVolumeIcon(); showVolumeOsd();
 });
 
@@ -1993,7 +1904,6 @@ function renderSpeedMenu() {
       currentSpeed = parseFloat(el.dataset.speed);
       mainVideo.playbackRate = currentSpeed;
       speedBtn.textContent = currentSpeed + 'x';
-      LS.set('speed', currentSpeed);
       renderSpeedMenu();
       speedMenu.classList.remove('show');
     };
@@ -2006,56 +1916,33 @@ window.applyCustomSpeed = function() {
   currentSpeed = v;
   mainVideo.playbackRate = v;
   speedBtn.textContent = v + 'x';
-  LS.set('speed', v);
   renderSpeedMenu();
   settingsMenu.classList.remove('show');
   showToast('Скорость ' + v + 'x');
 };
 speedBtn.textContent = currentSpeed + 'x';
 
-function closeAllMenusExcept(keep) { [speedMenu, settingsMenu, moreMenu].forEach(m => { if (m !== keep) m.classList.remove('show'); }); }
-
+function closeAllMenusExcept(keep) { [speedMenu, settingsMenu].forEach(m => { if (m !== keep) m.classList.remove('show'); }); }
 speedBtn.onclick = (e) => { e.stopPropagation(); renderSpeedMenu(); speedMenu.classList.toggle('show'); closeAllMenusExcept(speedMenu); };
-if (settingsBtn) settingsBtn.onclick = (e) => { e.stopPropagation(); settingsMenu.classList.toggle('show'); closeAllMenusExcept(settingsMenu); };
-if (mobMoreBtn) mobMoreBtn.onclick = (e) => { e.stopPropagation(); moreMenu.classList.toggle('show'); closeAllMenusExcept(moreMenu); };
+settingsBtn.onclick = (e) => { e.stopPropagation(); settingsMenu.classList.toggle('show'); closeAllMenusExcept(settingsMenu); };
 
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.speed-menu') && !e.target.closest('#speedBtn')) speedMenu.classList.remove('show');
   if (!e.target.closest('.settings-menu') && !e.target.closest('#settingsBtn')) settingsMenu.classList.remove('show');
-  if (!e.target.closest('.more-menu') && !e.target.closest('#mobMoreBtn')) moreMenu.classList.remove('show');
-});
-
-/* More menu actions */
-moreMenu.querySelectorAll('.speed-menu-item').forEach(el => {
-  el.onclick = () => {
-    const a = el.dataset.action;
-    if (a === 'mirror') mirrorBtn.click();
-    else if (a === 'pip') pipBtn.click();
-    else if (a === 'cinema') toggleCinema();
-    else if (a === 'fps') toggleFps();
-    moreMenu.classList.remove('show');
-  };
 });
 
 /* Mirror */
 mirrorBtn.onclick = () => { playerWrap.classList.toggle('mirrored'); mirrorBtn.classList.toggle('active', playerWrap.classList.contains('mirrored')); };
 
-/* Frame step */
-function stepFrame(dir) { mainVideo.pause(); try { mainVideo.currentTime = Math.max(0, mainVideo.currentTime + dir / 30); } catch {} }
-if (prevFrameBtn) prevFrameBtn.onclick = () => stepFrame(-1);
-if (nextFrameBtn) nextFrameBtn.onclick = () => stepFrame(1);
-back5Btn.onclick = () => { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 5); };
-fwd5Btn.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 5); };
-
 /* Cinema mode */
-function toggleCinema() {
+cinemaBtn.onclick = () => {
   playerView.classList.toggle('cinema-mode');
   document.body.classList.toggle('no-scroll', playerView.classList.contains('cinema-mode'));
   showToast(playerView.classList.contains('cinema-mode') ? '🎬 Кинотеатр' : 'Обычный режим', 'info');
-}
+};
 
 /* FPS */
-function toggleFps() {
+fpsBtn.onclick = () => {
   showFps = !showFps;
   fpsCounter.classList.toggle('show', showFps);
   if (showFps) {
@@ -2069,36 +1956,14 @@ function toggleFps() {
     const countFrame = () => { if (showFps) { frames++; requestAnimationFrame(countFrame); } };
     requestAnimationFrame(countFrame);
   } else if (fpsInterval) { clearInterval(fpsInterval); fpsInterval = null; }
-}
-
-/* A-B repeat */
-window.toggleAbRepeat = function() {
-  if (abStart === null) { abStart = mainVideo.currentTime; abIndicator.textContent = 'A → ?'; abIndicator.classList.add('show'); showToast('A установлена. Кликните ещё для B', 'info'); }
-  else if (abEnd === null) {
-    abEnd = mainVideo.currentTime;
-    if (abEnd <= abStart) { [abStart, abEnd] = [abEnd, abStart]; }
-    abLooping = true;
-    abIndicator.textContent = `A-B: ${fmtTime(abStart)} - ${fmtTime(abEnd)}`;
-    updateAbBar();
-    showToast('A-B повтор включён', 'info');
-  } else {
-    resetAB();
-    showToast('A-B повтор сброшен', 'info');
-  }
-  settingsMenu.classList.remove('show');
 };
-function resetAB() {
-  abStart = null; abEnd = null; abLooping = false;
-  abIndicator.classList.remove('show');
-  progressAb.style.display = 'none';
-}
-function updateAbBar() {
-  const dur = mainVideo.duration;
-  if (!dur || abStart === null || abEnd === null) return;
-  progressAb.style.display = 'block';
-  progressAb.style.left = (abStart / dur * 100) + '%';
-  progressAb.style.width = ((abEnd - abStart) / dur * 100) + '%';
-}
+
+/* Frame step */
+function stepFrame(dir) { mainVideo.pause(); try { mainVideo.currentTime = Math.max(0, mainVideo.currentTime + dir / 30); } catch {} }
+prevFrameBtn.onclick = () => stepFrame(-1);
+nextFrameBtn.onclick = () => stepFrame(1);
+back5Btn.onclick = () => { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 5); };
+fwd5Btn.onclick = () => { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 5); };
 
 /* Keyboard */
 document.addEventListener('keydown', (e) => {
@@ -2108,17 +1973,13 @@ document.addEventListener('keydown', (e) => {
   if (e.key === ' ') { e.preventDefault(); playBtn.click(); return; }
   if (e.key === 'ArrowLeft') { mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10); return; }
   if (e.key === 'ArrowRight') { mainVideo.currentTime = Math.min(mainVideo.duration || 0, mainVideo.currentTime + 10); return; }
-  if (e.key === 'ArrowUp') { mainVideo.volume = Math.min(1, mainVideo.volume + 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); showVolumeOsd(); return; }
-  if (e.key === 'ArrowDown') { mainVideo.volume = Math.max(0, mainVideo.volume - 0.1); volumeSlider.value = mainVideo.volume; updateVolumeIcon(); showVolumeOsd(); return; }
   if (e.key === ',') { stepFrame(-1); return; }
   if (e.key === '.') { stepFrame(1); return; }
-  if (e.key === 'm' || e.key === 'M' || e.key === 'ь') { muteBtn.click(); return; }
   if (e.key === 'f' || e.key === 'F' || e.key === 'а') { fullBtn.click(); return; }
   if (e.key === 'p' || e.key === 'P' || e.key === 'з') { pipBtn.click(); return; }
   if (e.key === 't' || e.key === 'T' || e.key === 'е') { toggleTsPanel(); return; }
   if (e.key === 'x' || e.key === 'X' || e.key === 'ч') { mirrorBtn.click(); return; }
-  if (e.key === 'i' || e.key === 'I' || e.key === 'ш') { toggleFps(); return; }
-  if (e.key === 'B' && e.shiftKey) { toggleAbRepeat(); return; }
+  if (e.key === 'i' || e.key === 'I' || e.key === 'ш') { fpsBtn.click(); return; }
 });
 
 /* Add video */
@@ -2169,9 +2030,6 @@ window.addEventListener('scroll', () => {
 /* ============ Init ============ */
 addTsRow();
 renderSpeedMenu();
-document.getElementById('brightnessSlider').value = LS.get('brightness', 100);
-document.getElementById('volumeSlider2').value = (LS.get('volume', 1)) * 100;
-volumeSlider.value = LS.get('volume', 1);
 
 (function() {
   const p = new URLSearchParams(location.search);
