@@ -248,88 +248,6 @@
   .loading-spinner.show { opacity: 1; }
   @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-  .ts-strip {
-    position: absolute;
-    left: 50%;
-    bottom: 62px;
-    transform: translateX(-50%) translateY(8px);
-    max-width: 92%;
-    background: rgba(0,0,0,.7);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 6px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s, transform .25s;
-    z-index: 22;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-  .ts-strip::-webkit-scrollbar { display: none; }
-  .ts-strip.show {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
-  }
-  .ts-strip-inner {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .ts-thumb {
-    flex: 0 0 auto;
-    width: 96px;
-    background: #111;
-    border: 2px solid transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    overflow: hidden;
-    transition: border-color .15s, transform .15s;
-    padding: 0;
-    font-family: inherit;
-    text-align: left;
-  }
-  .ts-thumb:hover {
-    border-color: #ff0000;
-    transform: translateY(-2px);
-  }
-  .ts-thumb.active { border-color: #ff0000; }
-  .ts-thumb-canvas {
-    width: 96px;
-    height: 54px;
-    background: #000 center/cover no-repeat;
-    display: block;
-    position: relative;
-    overflow: hidden;
-  }
-  .ts-thumb-canvas canvas,
-  .ts-thumb-canvas img {
-    width: 100%; height: 100%;
-    display: block;
-    object-fit: cover;
-  }
-  .ts-thumb-time {
-    position: absolute;
-    bottom: 3px; right: 3px;
-    background: rgba(0,0,0,.85);
-    color: #fff;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-  .ts-thumb-label {
-    font-size: 10.5px;
-    color: #ddd;
-    padding: 4px 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: #171717;
-  }
-
   .ts-side-panel {
     position: absolute;
     top: 0; right: 0;
@@ -403,7 +321,6 @@
     font-size: 12px;
     overflow: hidden;
   }
-  .ts-side-thumb-wrap canvas,
   .ts-side-thumb-wrap img {
     width: 100%; height: 100%;
     object-fit: cover;
@@ -427,13 +344,6 @@
     color: #ff8080;
     font-variant-numeric: tabular-nums;
     font-weight: 700;
-  }
-
-  .player-wrap:fullscreen .ts-side-panel,
-  .player-wrap:-webkit-full-screen .ts-side-panel,
-  .player-wrap:fullscreen .ts-strip,
-  .player-wrap:-webkit-full-screen .ts-strip {
-    display: none !important;
   }
 
   .controls {
@@ -462,7 +372,6 @@
     border-radius: 2px;
     transition: height .15s;
     position: relative;
-    overflow: visible;
   }
   .progress-wrap:hover .progress-bg,
   .progress-wrap.dragging .progress-bg { height: 6px; }
@@ -909,9 +818,6 @@
     .speed-menu { right: 20px; }
     .settings-menu { right: 20px; left: 20px; }
     .ts-side-panel { width: 240px; }
-    .ts-thumb { width: 80px; }
-    .ts-thumb-canvas { width: 80px; height: 45px; }
-    .ts-strip { bottom: 58px; max-width: 96%; }
   }
 </style>
 </head>
@@ -967,10 +873,6 @@
       </div>
 
       <div class="loading-spinner" id="loadingSpinner"></div>
-
-      <div class="ts-strip" id="tsStrip">
-        <div class="ts-strip-inner" id="tsStripInner"></div>
-      </div>
 
       <div class="ts-side-panel" id="tsSidePanel">
         <div class="ts-side-header">
@@ -1803,8 +1705,6 @@ const playerView = document.getElementById('playerView');
 const playerWrap = document.getElementById('playerWrap');
 const tsMarkersLayer = document.getElementById('tsMarkersLayer');
 const brightnessOverlay = document.getElementById('brightnessOverlay');
-const tsStrip = document.getElementById('tsStrip');
-const tsStripInner = document.getElementById('tsStripInner');
 const tsSidePanel = document.getElementById('tsSidePanel');
 const tsSideList = document.getElementById('tsSideList');
 
@@ -1919,8 +1819,6 @@ function renderTimestampsBlock(timestamps) {
 
   if (!timestamps || timestamps.length === 0) {
     block.style.display = 'none';
-    tsStrip.classList.remove('show');
-    tsStripInner.innerHTML = '';
     tsSideList.innerHTML = '<div style="padding:20px; text-align:center; color:#666; font-size:13px;">Таймкодов нет</div>';
     return;
   }
@@ -1935,45 +1833,6 @@ function renderTimestampsBlock(timestamps) {
     chip.innerHTML = `<span class="ts-time">${escapeHtml(ts.time)}</span> ${escapeHtml(ts.label)}`;
     chip.onclick = () => jumpToTimestamp(seconds);
     list.appendChild(chip);
-  });
-
-  tsStripInner.innerHTML = '';
-  timestamps.forEach((ts, idx) => {
-    const seconds = parseTime(ts.time);
-    const thumb = document.createElement('button');
-    thumb.className = 'ts-thumb';
-    thumb.dataset.index = idx;
-    thumb.innerHTML = `
-      <div class="ts-thumb-canvas">
-        <div class="thumb-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#444;font-size:14px;">⏳</div>
-        <span class="ts-thumb-time">${escapeHtml(ts.time)}</span>
-      </div>
-      <div class="ts-thumb-label">${escapeHtml(ts.label)}</div>
-    `;
-    thumb.onclick = (e) => {
-      e.stopPropagation();
-      jumpToTimestamp(seconds);
-    };
-    tsStripInner.appendChild(thumb);
-
-    const videoUrl = currentVideo?.url;
-    if (videoUrl && !getYouTubeId(videoUrl) && seconds !== null) {
-      generateFrameAt(videoUrl, seconds).then(dataUrl => {
-        const canvasWrap = thumb.querySelector('.ts-thumb-canvas');
-        const placeholder = canvasWrap.querySelector('.thumb-placeholder');
-        if (dataUrl) {
-          const img = document.createElement('img');
-          img.src = dataUrl;
-          img.alt = '';
-          if (placeholder) placeholder.remove();
-          canvasWrap.insertBefore(img, canvasWrap.firstChild);
-        } else if (placeholder) {
-          placeholder.textContent = '🎬';
-          placeholder.style.color = '#666';
-          placeholder.title = 'Превью недоступно (CORS)';
-        }
-      });
-    }
   });
 
   tsSideList.innerHTML = '';
@@ -2011,7 +1870,6 @@ function renderTimestampsBlock(timestamps) {
     }
   });
 
-  showTsStripTemporarily();
   startTsTracker();
 }
 
@@ -2031,16 +1889,6 @@ function jumpToTimestamp(seconds) {
   }
 }
 
-let tsStripTimer = null;
-function showTsStripTemporarily() {
-  if (!currentTimestamps || currentTimestamps.length === 0) return;
-  tsStrip.classList.add('show');
-  clearTimeout(tsStripTimer);
-  tsStripTimer = setTimeout(() => {
-    if (!playerWrap.matches(':hover')) tsStrip.classList.remove('show');
-  }, 3000);
-}
-
 let tsTrackerInterval = null;
 function startTsTracker() {
   if (tsTrackerInterval) clearInterval(tsTrackerInterval);
@@ -2052,13 +1900,11 @@ function startTsTracker() {
       const sec = parseTime(ts.time);
       if (sec !== null && cur >= sec) activeIdx = i;
     });
-    document.querySelectorAll('.ts-thumb, .ts-side-item').forEach(el => {
+    document.querySelectorAll('.ts-side-item').forEach(el => {
       el.classList.toggle('active', parseInt(el.dataset.index) === activeIdx);
     });
     if (activeIdx >= 0) {
-      const strip = document.querySelector(`.ts-thumb[data-index="${activeIdx}"]`);
       const side = document.querySelector(`.ts-side-item[data-index="${activeIdx}"]`);
-      if (strip) strip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       if (side && tsSidePanel.classList.contains('open')) {
         side.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
@@ -2254,7 +2100,6 @@ function handlePlayerTap(e) {
   if (e.target.closest('.speed-menu')) return;
   if (e.target.closest('.settings-menu')) return;
   if (e.target.closest('.ts-side-panel')) return;
-  if (e.target.closest('.ts-strip')) return;
 
   const now = Date.now();
   const rect = playerWrap.getBoundingClientRect();
@@ -2303,15 +2148,6 @@ function togglePlayWithIcon() {
 
 playerWrap.addEventListener('click', handlePlayerTap);
 
-playerWrap.addEventListener('mouseenter', () => {
-  if (currentTimestamps && currentTimestamps.length > 0) {
-    tsStrip.classList.add('show');
-  }
-});
-playerWrap.addEventListener('mouseleave', () => {
-  if (!dragging) tsStrip.classList.remove('show');
-});
-
 function updateVolumeIcon() {
   muteBtn.innerHTML = (mainVideo.muted || mainVideo.volume === 0) ? ICON_MUTE : ICON_VOL;
 }
@@ -2328,10 +2164,6 @@ updateVolumeIcon();
 fullBtn.onclick = async () => {
   try {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      tsSidePanel.classList.remove('open');
-      tsBtn.classList.remove('active');
-      tsStrip.classList.remove('show');
-
       if (playerWrap.requestFullscreen) await playerWrap.requestFullscreen();
       else if (playerWrap.webkitRequestFullscreen) playerWrap.webkitRequestFullscreen();
     } else {
